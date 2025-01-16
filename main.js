@@ -2,9 +2,9 @@ const gameEngine = new GameEngine();
 
 const ASSET_MANAGER = new AssetManager();
 
-ASSET_MANAGER.queueDownload("./jump.png");
-ASSET_MANAGER.queueDownload("./idle.png");
-ASSET_MANAGER.queueDownload("./run.png");
+ASSET_MANAGER.queueDownload("./anims/jump.png");
+ASSET_MANAGER.queueDownload("./anims/idle.png");
+ASSET_MANAGER.queueDownload("./anims/run.png");
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");

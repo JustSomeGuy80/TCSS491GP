@@ -2,8 +2,17 @@ import { Animator } from "./engine/animator.js";
 import { ColliderRect } from "./components/ColliderRect.js";
 import { Position } from "./components/position.js";
 import { Sprite } from "./components/sprite.js";
+import { GameEngine } from "./engine/gameengine.js";
+import { AssetManager } from "./engine/assetmanager.js";
 
+/**
+ * Player is an entity controlled by the user within the game.
+ */
 export class Player {
+    /**
+     * @param {GameEngine} game
+     * @param {AssetManager} assetManager
+     */
     constructor(game, assetManager) {
         this.game = game;
         this.tempGrounded = 500;
@@ -34,6 +43,7 @@ export class Player {
         this.maxSpeed = 350;
         this.walkAccel = 1050;
 
+        /** @type {Animator[]} */
         this.animations = [];
         this.loadAnimations(assetManager);
 
@@ -74,18 +84,13 @@ export class Player {
         const collision = this.collider.getCollision();
         const newPosition = this.position.asVector();
         if (collision) {
-            const otherBounds = collision.getBounds();
-            const difference = newPosition.subtract(initialPosition);
+            const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
+            const { x: xDiff, y: yDiff } = newPosition.subtract(initialPosition);
 
-            otherBounds.xStart -= this.collider.w / 2;
-            otherBounds.xEnd += this.collider.w / 2;
-            otherBounds.yStart -= this.collider.h / 2;
-            otherBounds.yEnd += this.collider.h / 2;
-
-            let nearX = (otherBounds.xStart - initialPosition.x) / difference.x;
-            let farX = (otherBounds.xEnd - initialPosition.x) / difference.x;
-            let nearY = (otherBounds.yStart - initialPosition.y) / difference.y;
-            let farY = (otherBounds.yEnd - initialPosition.y) / difference.y;
+            let nearX = (xStart - this.collider.w / 2 - initialPosition.x) / xDiff;
+            let farX = (xEnd + this.collider.w / 2 - initialPosition.x) / xDiff;
+            let nearY = (yStart - this.collider.h / 2 - initialPosition.y) / yDiff;
+            let farY = (yEnd + this.collider.h / 2 - initialPosition.y) / yDiff;
 
             if (nearX > farX) {
                 [farX, nearX] = [nearX, farX];

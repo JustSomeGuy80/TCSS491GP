@@ -80,6 +80,15 @@ class Player {
 		this.y += this.yV*this.game.clockTick;
 		if (this.y > this.tempGrounded) this.y = this.tempGrounded;
 		if (!this.isGrounded()) this.yV += gravity*this.game.clockTick;
+
+		// Add map bounds
+		if (this.x < 0) {
+			this.x = 0;
+			this.xV = 0;
+		} else if (this.x > this.game.camera.mapWidth) {
+			this.x = this.game.camera.mapWidth;
+			this.xV = 0;
+		}
 	}
 
 	setState() {
@@ -96,13 +105,16 @@ class Player {
 	}
 
 	draw(ctx) {
+		// Apply camera offset
+		const camX = this.x - this.game.camera.x;
+		
 		if (this.facing == 1) {
 			ctx.save();
 			ctx.scale(-1,1);
-			this.animations[this.state].drawFrame(this.game.clockTick, ctx, -this.x + 100, this.y, 3);
+			this.animations[this.state].drawFrame(this.game.clockTick, ctx, -camX + 100, this.y, 3);
 			ctx.restore();
 		} else {
-			this.animations[this.state].drawFrame(this.game.clockTick, ctx, this.x, this.y, 3);
+			this.animations[this.state].drawFrame(this.game.clockTick, ctx, camX, this.y, 3);
 		}
 	};
 }

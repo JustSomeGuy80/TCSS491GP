@@ -11,9 +11,9 @@ ASSET_MANAGER.downloadAll(() => {
 	const ctx = canvas.getContext("2d");
 	ctx.imageSmoothingEnabled = false;
 
-	gameEngine.addEntity(new Player(gameEngine));
+	const sceneManager = new SceneManager(gameEngine);
+	gameEngine.addEntity(sceneManager);
 
 	gameEngine.init(ctx);
-
 	gameEngine.start();
 });

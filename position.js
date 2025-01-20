@@ -1,9 +1,9 @@
-import { Vector } from "../primitives/vector.js";
+// import { Vector } from "../primitives/vector.js";
 
 /**
  * Position is similar to a Vector but performing operations does not create a new copy.
  */
-export class Position {
+class Position {
     /**
      * @param {number} x
      * @param {number} y

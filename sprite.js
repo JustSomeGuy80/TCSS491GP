@@ -1,10 +1,10 @@
-import { Animator } from "../engine/animator.js";
-import { Position } from "./position.js";
+// import { Animator } from "../engine/animator.js";
+// import { Position } from "./position.js";
 
 /**
  * Sprite is a component used to display a spritesheet on to the canvas
  */
-export class Sprite {
+class Sprite {
     /**
      * @param {Position} parent
      * @param {number} scale

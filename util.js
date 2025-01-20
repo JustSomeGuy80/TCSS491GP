@@ -1,11 +1,11 @@
 /** Global Parameters Object */
-export const params = {};
+const params = {};
 
 /**
  * @param {Number} n
  * @returns Random Integer Between 0 and n-1
  */
-export function randomInt(n) {
+function randomInt(n) {
     Math.floor(Math.random() * n);
 }
 
@@ -15,7 +15,7 @@ export function randomInt(n) {
  * @param {Number} b Blue Value
  * @returns String that can be used as a rgb web color
  */
-export function rgb(r, g, b) {
+function rgb(r, g, b) {
     return `rgba(${r}, ${g}, ${b})`;
 }
 
@@ -26,7 +26,7 @@ export function rgb(r, g, b) {
  * @param {Number} a Alpha Value
  * @returns String that can be used as a rgba web color
  */
-export function rgba(r, g, b, a) {
+function rgba(r, g, b, a) {
     return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
@@ -36,7 +36,7 @@ export function rgba(r, g, b, a) {
  * @param {Number} l Lightness
  * @returns String that can be used as a hsl web color
  */
-export function hsl(h, s, l) {
+function hsl(h, s, l) {
     return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
@@ -49,10 +49,10 @@ export function hsl(h, s, l) {
  * @param {Number} p1, p2 Two objects with x and y coordinates
  * @returns Distance between the two points
  */
-export function getDistance(p1, p2) {
+function getDistance(p1, p2) {
     return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 }
 
-export function inRange(x, min, max) {
+function inRange(x, min, max) {
     return x >= min && x <= max;
 }

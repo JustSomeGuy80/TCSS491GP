@@ -1,4 +1,4 @@
-export class AssetManager {
+class AssetManager {
     constructor() {
         this.successCount = 0;
         this.errorCount = 0;

@@ -1,15 +1,15 @@
-import { Animator } from "./engine/animator.js";
-import { ColliderRect } from "./components/ColliderRect.js";
-import { Position } from "./components/position.js";
-import { Sprite } from "./components/sprite.js";
-import { GameEngine } from "./engine/gameengine.js";
-import { AssetManager } from "./engine/assetmanager.js";
-import { Vector } from "./primitives/vector.js";
+// import { Animator } from "./engine/animator.js";
+// import { ColliderRect } from "./components/ColliderRect.js";
+// import { Position } from "./components/position.js";
+// import { Sprite } from "./components/sprite.js";
+// import { GameEngine } from "./engine/gameengine.js";
+// import { AssetManager } from "./engine/assetmanager.js";
+// import { Vector } from "./primitives/vector.js";
 
 /**
  * Player is an entity controlled by the user within the game.
  */
-export class Player {
+class Player {
     /**
      * @param {GameEngine} game
      * @param {AssetManager} assetManager
@@ -23,10 +23,10 @@ export class Player {
         this.position = new Position(500, this.tempGrounded - 100);
         this.collider = new ColliderRect(this.position, 0, 0, 56, 96);
         this.sprite = new Sprite(this.position, 3, -48, -48, {
-            idle: new Animator(assetManager.getAsset("/anims/idle.png"), 0, 0, 32, 32, 2, 2),
-            running: new Animator(assetManager.getAsset("/anims/run.png"), 0, 0, 32, 32, 4, 0.2),
-            rising: new Animator(assetManager.getAsset("/anims/jump.png"), 0, 0, 32, 32, 1, 1),
-            falling: new Animator(assetManager.getAsset("/anims/jump.png"), 32, 0, 32, 32, 1, 1),
+            idle: new Animator(assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
+            running: new Animator(assetManager.getAsset("anims/run.png"), 0, 0, 32, 32, 4, 0.2),
+            rising: new Animator(assetManager.getAsset("anims/jump.png"), 0, 0, 32, 32, 1, 1),
+            falling: new Animator(assetManager.getAsset("anims/jump.png"), 32, 0, 32, 32, 1, 1),
         });
 
         this.sprite.setHorizontalFlip(false); // 0 = right, 1 = left

@@ -1,4 +1,4 @@
-export class Animator {
+class Animator {
     constructor(spritesheet, xStart, yStart, width, height, frameCount, frameDuration) {
         Object.assign(this, {
             spritesheet,

@@ -1,4 +1,4 @@
-import { Position } from "./position.js";
+// import { Position } from "./position.js";
 
 /** @type {ColliderRect[]} */
 const colliders = [];
@@ -7,7 +7,7 @@ const colliders = [];
  * ColliderRect exists only to detect (not resolve) collisions between 2 rectangles.
  * Currently, if there are 3 or more collisions then they will be ignored (only first counts)
  */
-export class ColliderRect {
+class ColliderRect {
     /**
      * @param {Position} parent
      * @param {number} xOffset

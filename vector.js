@@ -1,7 +1,7 @@
 /**
  * Vector represents a 2D vector (anything with an x and y component)
  */
-export class Vector {
+class Vector {
     /**
      * @param {number} x
      * @param {number} y

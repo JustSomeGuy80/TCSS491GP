@@ -10,34 +10,33 @@ export class Sprite {
      * @param {number} scale
      * @param {number} xOffset
      * @param {number} yOffset
-     * @param  {...Animator} animations
+     * @param  {Object<string, Animator>} animations
      */
-    constructor(parent, scale, xOffset, yOffset, ...animations) {
+    constructor(parent, scale, xOffset, yOffset, animations) {
+        if (Object.keys(animations).length === 0) {
+            throw new Error("Must pass at least 1 animation into Sprite");
+        }
+
         this.parent = parent;
         this.scale = scale;
 
         this.offset = new Position(xOffset, yOffset);
 
         this.animations = animations;
-        this.state = 0;
+        /** @type {string} */
+        this.state = Object.keys(animations)[0];
 
         this.verticalFlip = false;
         this.horizontalFlip = false;
-
-        if (animations.length === 0) {
-            throw new Error("Must pass at least 1 animation into Sprite");
-        }
     }
 
     /**
      * Sets the currently playing animation
-     * @param {number} state must be between 0 and n-1 where n is the number of animations
+     * @param {string} state
      */
     setState(state) {
-        if (state >= this.animations.length) {
-            throw new Error(
-                "Invalid state value (must be between 0 and n-1 where n is the number of animations)"
-            );
+        if (!Object.hasOwn(this.animations, state)) {
+            throw new Error("Invalid state value (state does not exist)");
         }
 
         this.state = state;

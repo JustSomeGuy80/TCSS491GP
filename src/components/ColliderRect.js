@@ -1,4 +1,4 @@
-import { Position } from "./position";
+import { Position } from "./position.js";
 
 /** @type {ColliderRect[]} */
 const colliders = [];
@@ -31,10 +31,10 @@ export class ColliderRect {
      * Finds the first colliding rectangle and returns it.
      * @returns The ColliderRect object which collides with this one
      */
-    getCollision() {
+    *getCollision() {
         for (const collider of colliders) {
             if (this !== collider && this.collidesWith(collider)) {
-                return collider;
+                yield collider;
             }
         }
 
@@ -67,10 +67,10 @@ export class ColliderRect {
         const otherBounds = other.getBounds();
 
         return !(
-            selfBounds.xStart >= otherBounds.xEnd ||
-            otherBounds.xStart >= selfBounds.xEnd ||
-            selfBounds.yStart >= otherBounds.yEnd ||
-            otherBounds.yStart >= selfBounds.yEnd
+            selfBounds.xStart > otherBounds.xEnd ||
+            otherBounds.xStart > selfBounds.xEnd ||
+            selfBounds.yStart > otherBounds.yEnd ||
+            otherBounds.yStart > selfBounds.yEnd
         );
     }
 

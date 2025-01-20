@@ -19,8 +19,8 @@ ASSET_MANAGER.downloadAll(() => {
     ctx.imageSmoothingEnabled = false;
 
     gameEngine.addEntity(new Player(gameEngine, ASSET_MANAGER));
-    gameEngine.addEntity(new ColliderRect(new Position(250, 500), 0, 0, 50, 50));
-    gameEngine.addEntity(new ColliderRect(new Position(750, 500), 0, 0, 50, 500));
+    gameEngine.addEntity(new ColliderRect(new Position(500, 500), 0, 0, 400, 50));
+    gameEngine.addEntity(new ColliderRect(new Position(700, 500), 0, 0, 50, 500));
 
     gameEngine.init(ctx);
 

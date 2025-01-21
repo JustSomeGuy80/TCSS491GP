@@ -1,10 +1,10 @@
-// import { Animator } from "./engine/animator.js";
-// import { ColliderRect } from "./components/ColliderRect.js";
-// import { Position } from "./components/position.js";
-// import { Sprite } from "./components/sprite.js";
-// import { GameEngine } from "./engine/gameengine.js";
-// import { AssetManager } from "./engine/assetmanager.js";
-// import { Vector } from "./primitives/vector.js";
+/** @typedef {import("./engine/animator")} */
+/** @typedef {import("./components/ColliderRect")} */
+/** @typedef {import("./components/position")} */
+/** @typedef {import("./components/sprite")} */
+/** @typedef {import("./engine/gameengine")} */
+/** @typedef {import("./engine/assetmanager")} */
+/** @typedef {import("./primitives/vector")} */
 
 /**
  * Player is an entity controlled by the user within the game.

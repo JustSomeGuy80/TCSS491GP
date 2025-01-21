@@ -1,5 +1,5 @@
-// import { Animator } from "../engine/animator.js";
-// import { Position } from "./position.js";
+/** @typedef {import("../engine/animator")} */
+/** @typedef {import("./position")} */
 
 /**
  * Sprite is a component used to display a spritesheet on to the canvas

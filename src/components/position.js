@@ -1,4 +1,4 @@
-// import { Vector } from "../primitives/vector.js";
+/** @typedef {import("../primitives/vector")} */
 
 /**
  * Position is similar to a Vector but performing operations does not create a new copy.

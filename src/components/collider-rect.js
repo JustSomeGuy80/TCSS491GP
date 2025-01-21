@@ -1,4 +1,4 @@
-// import { Position } from "./position.js";
+/** @typedef {import("./position")} */
 
 /** @type {ColliderRect[]} */
 const colliders = [];

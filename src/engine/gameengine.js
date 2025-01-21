@@ -1,5 +1,5 @@
 // This game shell was happily modified from Googler Seth Ladd's "Bad Aliens" game and his Google IO talk in 2011
-// import { Timer } from "../engine/timer.js";
+/** @typedef {import("./timer")} */
 
 class GameEngine {
     constructor(options) {

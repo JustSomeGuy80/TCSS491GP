@@ -16,12 +16,12 @@ class Player {
      */
     constructor(game, assetManager) {
         this.game = game;
-        this.tempGrounded = 500;
+        this.tempGrounded = 1000;
         this.jumpHeight = 550;
-        this.debugMode = true;
+        this.debugMode = false;
 
-        this.position = new Position(500, this.tempGrounded - 100);
-        this.collider = new ColliderRect(this.position, 0, 0, 56, 96);
+        this.position = new Position(525, 500);
+        this.collider = new ColliderRect(this.position, -28, -48, 56, 96);
         this.sprite = new Sprite(this.position, 3, -48, -48, {
             idle: new Animator(assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
             running: new Animator(assetManager.getAsset("anims/run.png"), 0, 0, 32, 32, 4, 0.2),
@@ -65,6 +65,7 @@ class Player {
     }
 
     update() {
+
         this.checkInput();
 
         let origin = this.position.asVector();
@@ -77,6 +78,7 @@ class Player {
         //      - to test, spawn the player inside of a wall in the constructor
         const collisions = this.collider.getCollision();
         let target = this.position.asVector();
+
 
         while (true) {
             const { value: collision, done } = collisions.next();
@@ -140,7 +142,6 @@ class Player {
                 }
             }
         }
-
         this.setState();
     }
 
@@ -225,7 +226,10 @@ class Player {
     }
 
     draw(ctx) {
+        // Consider a cleaner method of adjusting sprite camera offset
+        this.sprite.offset.x -= this.game.camera.x;
         this.sprite.drawSprite(this.game.clockTick, ctx);
+        this.sprite.offset.x += this.game.camera.x;
 
         if (this.debugMode) {
             this.collider.draw(ctx);

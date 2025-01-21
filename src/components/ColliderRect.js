@@ -22,6 +22,8 @@ class ColliderRect {
         this.w = w;
         this.h = h;
 
+        this.debugMode = false;
+
         colliders.push(this);
     }
 
@@ -46,8 +48,8 @@ class ColliderRect {
      * @returns The bounds of this ColliderRect
      */
     getBounds() {
-        const xStart = this.parent.x + this.xOffset - Math.round(this.w / 2);
-        const yStart = this.parent.y + this.yOffset - Math.round(this.h / 2);
+        const xStart = this.parent.x + this.xOffset;
+        const yStart = this.parent.y + this.yOffset;
 
         return {
             xStart,
@@ -79,7 +81,9 @@ class ColliderRect {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        const bounds = this.getBounds();
-        ctx.strokeRect(bounds.xStart, bounds.yStart, this.w, this.h);
+        if (this.debugMode) {
+            const bounds = this.getBounds();
+            ctx.strokeRect(bounds.xStart, bounds.yStart, this.w, this.h);
+        }
     }
 }

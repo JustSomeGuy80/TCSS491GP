@@ -21,7 +21,7 @@ class Slasher {
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96);
         this.sprite = new Sprite(this.position, 3, -48, -48, {
-            moving: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2)
+            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2)
         });
 
         this.moveSpeed = 200;
@@ -33,12 +33,20 @@ class Slasher {
         this.patrolRight = x + 200;
 
         this.sprite.setHorizontalFlip(false);
-        this.sprite.setState("moving");
+        this.sprite.setState("running");
+
+        /** @type {Animator[]} */
+        this.animations = [];
+        this.loadAnimations(this.assetManager);
+    }
+
+    loadAnimations(assetManager) {
+        this.animations.push(new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2));
     }
 
     update() {
         this.handleMovement();
-        this.updateSpriteState();
+        this.setState();
     }
 
     handleMovement() {
@@ -56,7 +64,7 @@ class Slasher {
         }
     }
 
-    updateSpriteState() {
+    setState() {
         this.sprite.setHorizontalFlip(this.moveDirection === -1);
     }
 

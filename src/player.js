@@ -17,19 +17,20 @@ class Player {
      */
     constructor(game, assetManager) {
         this.game = game;
+        this.assetManager = assetManager;
         this.tempGrounded = 1000;
         this.jumpHeight = 550;
         this.debugMode = false;
 
         this.position = new Position(525, 500);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96);
-        this.arm = new Arm(game, assetManager, this, 6, -4, "bladed");
+        this.arm = new Arm(game, this.assetManager, this, 6, -4, "bladed");
         this.sprite = new Sprite(this.position, 3, -48, -48, {
-            idle: new Animator(assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
-            running: new Animator(assetManager.getAsset("anims/run.png"), 0, 0, 32, 32, 4, 0.2),
-            bwrunning: new Animator(assetManager.getAsset("anims/bwrun.png"), 0, 0, 32, 32, 4, 0.2),
-            airLeanBack: new Animator(assetManager.getAsset("anims/jump.png"), 0, 0, 32, 32, 1, 1),
-            airLeanFront: new Animator(assetManager.getAsset("anims/jump.png"), 32, 0, 32, 32, 1, 1),
+            idle: new Animator(this.assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
+            running: new Animator(this.assetManager.getAsset("anims/run.png"), 0, 0, 32, 32, 4, 0.2),
+            bwrunning: new Animator(this.assetManager.getAsset("anims/bwrun.png"), 0, 0, 32, 32, 4, 0.2),
+            airLeanBack: new Animator(this.assetManager.getAsset("anims/jump.png"), 0, 0, 32, 32, 1, 1),
+            airLeanFront: new Animator(this.assetManager.getAsset("anims/jump.png"), 32, 0, 32, 32, 1, 1),
         });
 
         this.sprite.setHorizontalFlip(false);
@@ -45,7 +46,7 @@ class Player {
 
         /** @type {Animator[]} */
         this.animations = [];
-        this.loadAnimations(assetManager);
+        this.loadAnimations(this.assetManager);
 
         // TEMP (standing on hitboxes is not recognized by Player.isGrounded())
         this.groundOverride = 0;
@@ -160,6 +161,7 @@ class Player {
             if (grounded && this.jumped == 0) {
                 this.velocity.y = -this.jumpHeight;
                 this.jumped = 1;
+                this.assetManager.playAsset("sounds/jump.mp3");
             }
         } else {
             if (grounded) this.jumped = 0;

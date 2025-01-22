@@ -1,29 +1,56 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Blue 5 Game Project</title>
-        <style>
-            body {
-                min-height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: #21143d;
-                margin: 0;
-            }
-        </style>
-    </head>
-    <body>
-        <canvas
-            id="gameWorld"
-            width="1024"
-            height="768"
-            style="background: rgb(255, 196, 245); border: 1px solid black"
-            tabindex="0"
-            autofocus
-        ></canvas>
+<head>
+    <meta charset="utf-8" />
+    <title>Blue 5 Game Project</title>
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #21143d;
+            margin: 0;
+            gap: 20px;
+        }
+        .controls-container {
+            padding-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            color: white;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+<canvas
+        id="gameWorld"
+        width="1024"
+        height="768"
+        style="background: rgb(255, 196, 245); border: 1px solid black"
+        tabindex="0"
+        autofocus
+></canvas>
 
+<div class="controls-container">
+    <div class="control-group">
+        <label for="mute">Mute</label>
+        <input type="checkbox" id="mute">
+    </div>
+    <div class="control-group">
+        <label for="volume">Volume</label>
+        <input type="range" id="volume" min="0" max="1" value="0.1" step="0.05">
+    </div>
+</div>
+
+</body>
+</html>
         <script type="text/javascript" src="./src/engine/assetmanager.js"></script>
         <script type="text/javascript" src="./src/obstacle.js"></script>
         <script type="text/javascript" src="./src/engine/timer.js"></script>
@@ -38,5 +65,7 @@
         <script type="text/javascript" src="./src/player.js"></script>
         <script type="text/javascript" src="./src/engine/scenemanager.js"></script>
         <script type="text/javascript" src="./src/main.js"></script>
+
     </body>
+
 </html>

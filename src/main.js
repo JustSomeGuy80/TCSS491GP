@@ -15,8 +15,15 @@
     ASSET_MANAGER.queueDownload("anims/bwrun.png");
     ASSET_MANAGER.queueDownload("anims/arm.png");
 
+    ASSET_MANAGER.queueDownload("sounds/music.mp3");
+
+    ASSET_MANAGER.queueDownload("sounds/jump.mp3");
+
     ASSET_MANAGER.downloadAll(() => {
         /** @type {HTMLCanvasElement} */
+
+        ASSET_MANAGER.autoRepeat("sounds/music.mp3");
+
         const canvas = document.getElementById("gameWorld");
         const ctx = canvas.getContext("2d");
         ctx.imageSmoothingEnabled = false;

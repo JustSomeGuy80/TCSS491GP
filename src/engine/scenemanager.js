@@ -21,7 +21,6 @@ class SceneManager {
 
         // testing (delete later)
         this.debug = true;
-        
         this.loadLevel();
     }
 
@@ -53,8 +52,20 @@ class SceneManager {
         this.game.addEntity(new Obstacle(this.game, x, y, width, height, type));
     }
 
+    updateAudio() {
+        let mute = document.getElementById("mute").checked;
+        let volume = document.getElementById("volume").value;
+
+        this.assetManager.muteAudio(mute);
+        this.assetManager.adjustVolume(volume);
+    }
+
     update() {
         this.updateCamera();
+        this.updateAudio();
+
+        //TODO delete this, just for testing
+        //this.assetManager.playAsset("sounds/music.mp3");
     }
 
     updateCamera() {

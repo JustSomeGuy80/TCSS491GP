@@ -1,6 +1,7 @@
 /** @typedef {import("./engine/animator")} */
 /** @typedef {import("./components/ColliderRect")} */
 /** @typedef {import("./components/position")} */
+/** @typedef {import("./components/arm")} */
 /** @typedef {import("./components/sprite")} */
 /** @typedef {import("./engine/gameengine")} */
 /** @typedef {import("./engine/assetmanager")} */
@@ -22,21 +23,25 @@ class Player {
 
         this.position = new Position(525, 500);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96);
+        this.arm = new Arm(game, assetManager, this, 6, -4, "bladed");
         this.sprite = new Sprite(this.position, 3, -48, -48, {
             idle: new Animator(assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
             running: new Animator(assetManager.getAsset("anims/run.png"), 0, 0, 32, 32, 4, 0.2),
-            rising: new Animator(assetManager.getAsset("anims/jump.png"), 0, 0, 32, 32, 1, 1),
-            falling: new Animator(assetManager.getAsset("anims/jump.png"), 32, 0, 32, 32, 1, 1),
+            bwrunning: new Animator(assetManager.getAsset("anims/bwrun.png"), 0, 0, 32, 32, 4, 0.2),
+            airLeanBack: new Animator(assetManager.getAsset("anims/jump.png"), 0, 0, 32, 32, 1, 1),
+            airLeanFront: new Animator(assetManager.getAsset("anims/jump.png"), 32, 0, 32, 32, 1, 1),
         });
 
-        this.sprite.setHorizontalFlip(false); // 0 = right, 1 = left
-        this.sprite.setState("idle"); // 0 = idle, 1 = running // 2 = running backwards // 3 = rising 4 = falling
+        this.sprite.setHorizontalFlip(false);
+        this.sprite.setState("idle");
 
+        this.facing = 1; // 1 = right, -1 = left, used for calculations, should never be set to 0
         this.jumped = 0; // 0 = can jump, 1 = can vary gravity, 2 = can't vary gravity
 
         this.velocity = new Vector(0, 0);
         this.maxSpeed = 350;
         this.walkAccel = 1050;
+        this.aimVector = new Vector(1, 0)
 
         /** @type {Animator[]} */
         this.animations = [];
@@ -173,9 +178,21 @@ class Player {
             this.velocity.x += this.walkAccel * move * this.game.clockTick;
         }
 
-        //Set facing direction
-        if (move == -1) this.sprite.setHorizontalFlip(true);
-        if (move == 1) this.sprite.setHorizontalFlip(false);
+        if (this.game.mouse != null) {
+            //Set facing direction
+            if ((this.game.mouse.x + this.game.camera.x) >= this.position.x) {
+                this.sprite.setHorizontalFlip(false);
+                this.arm.sprite.setHorizontalFlip(false);
+                this.facing = 1;
+            } else {
+                this.sprite.setHorizontalFlip(true);
+                this.arm.sprite.setHorizontalFlip(true);
+                this.facing = -1;
+            }
+
+            this.aimVector.x = (this.game.mouse.x + this.game.camera.x) - this.position.x + this.arm.xOffset * this.facing;
+            this.aimVector.y = ((this.game.mouse.y + this.game.camera.y) - (this.position.y + this.arm.yOffset));
+        }
 
         // Do we apply ground friction to the player?
         var traction =
@@ -191,6 +208,7 @@ class Player {
             if (this.velocity.x < this.maxSpeed / 20 && this.velocity.x > -this.maxSpeed / 20)
                 this.velocity.x = 0;
         }
+
     }
 
     calcMovement() {
@@ -208,15 +226,16 @@ class Player {
     setState() {
         if (this.isGrounded()) {
             if (this.velocity.x == 0) this.sprite.setState("idle");
-            else this.sprite.setState("running");
+            else if (this.velocity.x * this.facing > 0) this.sprite.setState("running");
+            else this.sprite.setState("bwrunning")
         } else {
-            if (this.velocity.y < 0) this.sprite.setState("rising");
-            else this.sprite.setState("falling");
-        }
-
-        // TEMP (running into wall causes alternation between running and idle) for 1 frame each
-        if (this.game.keys["d"] || this.game.keys["a"]) {
-            this.sprite.setState("running");
+            if (this.velocity.y < 0) {
+                if (this.velocity.x * this.facing >= 0) this.sprite.setState("airLeanBack");
+                else this.sprite.setState("airLeanFront");
+            } else {
+                if (this.velocity.x * this.facing >= 0) this.sprite.setState("airLeanFront");
+                else this.sprite.setState("airLeanBack");
+            }
         }
     }
 
@@ -227,6 +246,7 @@ class Player {
 
     draw(ctx) {
         // Consider a cleaner method of adjusting sprite camera offset
+        this.arm.draw(ctx);
         this.sprite.offset.x -= this.game.camera.x;
         this.sprite.drawSprite(this.game.clockTick, ctx);
         this.sprite.offset.x += this.game.camera.x;

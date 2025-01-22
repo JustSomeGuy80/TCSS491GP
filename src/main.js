@@ -12,6 +12,8 @@
     ASSET_MANAGER.queueDownload("anims/jump.png");
     ASSET_MANAGER.queueDownload("anims/idle.png");
     ASSET_MANAGER.queueDownload("anims/run.png");
+    ASSET_MANAGER.queueDownload("anims/bwrun.png");
+    ASSET_MANAGER.queueDownload("anims/arm.png");
 
     ASSET_MANAGER.downloadAll(() => {
         /** @type {HTMLCanvasElement} */

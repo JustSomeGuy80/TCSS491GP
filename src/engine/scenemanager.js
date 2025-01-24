@@ -48,7 +48,7 @@ class SceneManager {
         this.addObstacle(1000, 550, 50, 50, "spike");
         this.addObstacle(1600, 550, 50, 50, "spike");
 
-        this.game.addEntity(new Slasher(this.game, this.assetManager, 350, 550));
+        this.game.addEntity(new Slasher(this.game, this.assetManager, 350, 0));
     }
 
     addObstacle(x, y, width, height, type) {

@@ -25,7 +25,7 @@ class Player {
         this.position = new Position(525, 500);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96);
         this.arm = new Arm(game, this.assetManager, this, 6, -4, "bladed");
-        this.sprite = new Sprite(this.position, 3, -48, -48, {
+        this.sprite = new Sprite(this.position, this.game, 3, -48, -48, {
             idle: new Animator(this.assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
             running: new Animator(this.assetManager.getAsset("anims/run.png"), 0, 0, 32, 32, 4, 0.2),
             bwrunning: new Animator(this.assetManager.getAsset("anims/bwrun.png"), 0, 0, 32, 32, 4, 0.2),
@@ -149,6 +149,8 @@ class Player {
             }
         }
         this.setState();
+
+        this.arm.update();
     }
 
     checkInput() {
@@ -195,6 +197,8 @@ class Player {
             this.aimVector.x = (this.game.mouse.x + this.game.camera.x) - this.position.x + this.arm.xOffset * this.facing;
             this.aimVector.y = ((this.game.mouse.y + this.game.camera.y) - (this.position.y + this.arm.yOffset));
         }
+        
+        if (this.game.buttons[0]) this.arm.fire();
 
         // Do we apply ground friction to the player?
         var traction =
@@ -247,11 +251,8 @@ class Player {
     }
 
     draw(ctx) {
-        // Consider a cleaner method of adjusting sprite camera offset
         this.arm.draw(ctx);
-        this.sprite.offset.x -= this.game.camera.x;
         this.sprite.drawSprite(this.game.clockTick, ctx);
-        this.sprite.offset.x += this.game.camera.x;
 
         if (this.debugMode) {
             this.collider.draw(ctx);

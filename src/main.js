@@ -14,6 +14,7 @@
     ASSET_MANAGER.queueDownload("anims/run.png");
     ASSET_MANAGER.queueDownload("anims/bwrun.png");
     ASSET_MANAGER.queueDownload("anims/arm.png");
+    ASSET_MANAGER.queueDownload("anims/bullet.png");
 
     ASSET_MANAGER.queueDownload("sounds/music.mp3");
 

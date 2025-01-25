@@ -12,12 +12,13 @@ class Sprite {
      * @param {number} yOffset
      * @param  {Object<string, Animator>} animations
      */
-    constructor(parent, scale, xOffset, yOffset, animations) {
+    constructor(parent, game, scale, xOffset, yOffset, animations) {
         if (Object.keys(animations).length === 0) {
             throw new Error("Must pass at least 1 animation into Sprite");
         }
 
         this.parent = parent;
+        this.game = game;
         this.scale = scale;
 
         this.offset = new Position(xOffset, yOffset);
@@ -69,8 +70,8 @@ class Sprite {
         this.animations[this.state].drawFrame(
             tick,
             ctx,
-            position.x,
-            position.y,
+            position.x - this.game.camera.x,
+            position.y - this.game.camera.y,
             this.scale,
             this.horizontalFlip,
             this.verticalFlip

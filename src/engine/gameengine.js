@@ -11,10 +11,11 @@ class GameEngine {
         this.entities = [];
 
         // Information on the input
-        this.click = null;
+        this.click = [null];
         this.mouse = null;
         this.wheel = null;
         this.keys = {};
+        this.buttons = {};
 
         // Options and the Details
         this.options = options || {
@@ -76,6 +77,9 @@ class GameEngine {
 
         this.ctx.canvas.addEventListener("keydown", event => (this.keys[event.key] = true));
         this.ctx.canvas.addEventListener("keyup", event => (this.keys[event.key] = false));
+
+        this.ctx.canvas.addEventListener("mousedown", event => (this.buttons[event.button] = true));
+        this.ctx.canvas.addEventListener("mouseup", event => (this.buttons[event.button] = false));
     }
 
     addEntity(entity) {

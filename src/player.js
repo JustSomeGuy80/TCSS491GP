@@ -23,7 +23,7 @@ class Player {
         this.debugMode = false;
 
         this.position = new Position(525, 500);
-        this.collider = new ColliderRect(this.position, -28, -48, 56, 96);
+        this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 0);
         this.arm = new Arm(game, this.assetManager, this, 6, -4, "bladed");
         this.sprite = new Sprite(this.position, this.game, 3, -48, -48, {
             idle: new Animator(this.assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
@@ -78,76 +78,8 @@ class Player {
 
         this.calcMovement();
 
-        // TEMPORARY IMPLEMENTATION OF HITBOXES
-        // bugs:
-        // - (sort of a bug) when you are in the left side of a wall and go left, you tp to the right of wall
-        //      - to test, spawn the player inside of a wall in the constructor
-        const collisions = this.collider.getCollision();
-        let target = this.position.asVector();
+        this.runCollisions(origin);
 
-
-        while (true) {
-            const { value: collision, done } = collisions.next();
-
-            if (done) {
-                this.groundOverride -= 1;
-                break;
-            }
-
-            const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
-            const difference = target.subtract(origin);
-
-            // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
-            if (difference.getMagnitude() >= 0.0) {
-                let nearX = (xStart - this.collider.w / 2 - origin.x) / difference.x;
-                let farX = (xEnd + this.collider.w / 2 - origin.x) / difference.x;
-                let nearY = (yStart - this.collider.h / 2 - origin.y) / difference.y;
-                let farY = (yEnd + this.collider.h / 2 - origin.y) / difference.y;
-
-                if (nearX > farX) {
-                    [farX, nearX] = [nearX, farX];
-                }
-                if (nearY > farY) {
-                    [farY, nearY] = [nearY, farY];
-                }
-
-                const horizontalHit = nearX > nearY;
-                const hitNear = horizontalHit ? nearX : nearY;
-
-                let normal = undefined;
-                if (horizontalHit) {
-                    if (difference.x >= 0) {
-                        normal = new Vector(-1, 0);
-                    } else {
-                        normal = new Vector(1, 0);
-                    }
-                } else {
-                    if (difference.y >= 0) {
-                        normal = new Vector(0, -1);
-                    } else {
-                        normal = new Vector(0, 1);
-                    }
-                }
-
-                if (hitNear && isFinite(hitNear)) {
-                    const { x, y } = origin.add(difference.multiply(hitNear));
-
-                    if (horizontalHit) {
-                        this.velocity.x = 0;
-                        this.position.set(x, this.position.y);
-                    } else {
-                        // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
-                        this.groundOverride = 4;
-                        this.velocity.y = 0;
-                        this.position.set(this.position.x, y);
-                    }
-
-                    // force player to not touch a wall anymore after collision resolution
-                    // this might get in the way of some potential features
-                    this.position.add(normal.multiply(0.01));
-                }
-            }
-        }
         this.setState();
 
         this.arm.update();
@@ -227,6 +159,82 @@ class Player {
         // if (!this.isGrounded()) this.velocity.y += gravity * this.game.clockTick;
 
         this.velocity.y += gravity * this.game.clockTick;
+    }
+
+    runCollisions(origin) {
+        // TEMPORARY IMPLEMENTATION OF HITBOXES
+        // bugs:
+        // - (sort of a bug) when you are in the left side of a wall and go left, you tp to the right of wall
+        //      - to test, spawn the player inside of a wall in the constructor
+        const collisions = this.collider.getCollision();
+        let target = this.position.asVector();
+
+
+        while (true) {
+            const { value: collision, done } = collisions.next();
+
+            if (done) {
+                this.groundOverride -= 1;
+                break;
+            }
+
+            const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
+            const difference = target.subtract(origin);
+
+            // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
+            if (difference.getMagnitude() >= 0.0) {
+                let nearX = (xStart - this.collider.w / 2 - origin.x) / difference.x;
+                let farX = (xEnd + this.collider.w / 2 - origin.x) / difference.x;
+                let nearY = (yStart - this.collider.h / 2 - origin.y) / difference.y;
+                let farY = (yEnd + this.collider.h / 2 - origin.y) / difference.y;
+
+                if (nearX > farX) {
+                    [farX, nearX] = [nearX, farX];
+                }
+                if (nearY > farY) {
+                    [farY, nearY] = [nearY, farY];
+                }
+
+                const horizontalHit = nearX > nearY;
+                const hitNear = horizontalHit ? nearX : nearY;
+
+                let normal = undefined;
+                if (horizontalHit) {
+                    if (difference.x >= 0) {
+                        normal = new Vector(-1, 0);
+                    } else {
+                        normal = new Vector(1, 0);
+                    }
+                } else {
+                    if (difference.y >= 0) {
+                        normal = new Vector(0, -1);
+                    } else {
+                        normal = new Vector(0, 1);
+                    }
+                }
+
+                if (hitNear && isFinite(hitNear)) {
+                    if (collision.id == 1) {
+                        const { x, y } = origin.add(difference.multiply(hitNear));
+    
+                        if (horizontalHit) {
+                            this.velocity.x = 0;
+                            this.position.set(x, this.position.y);
+                        } else {
+                            // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
+                            this.groundOverride = 4;
+                            this.velocity.y = 0;
+                            this.position.set(this.position.x, y);
+                        }
+    
+                        // force player to not touch a wall anymore after collision resolution
+                        // this might get in the way of some potential features
+                        this.position.add(normal.multiply(0.01));
+                    }
+                }
+            }
+        }
+
     }
 
     setState() {

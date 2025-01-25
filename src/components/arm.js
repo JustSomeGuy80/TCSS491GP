@@ -28,14 +28,15 @@ class Arm {
         this.state = state;
         
         this.sprite = new Sprite(this.parent.position, this.game, 3, -48, -48, {
-            bladed: new Animator(assetManager.getAsset("anims/arm.png"), 0, 0, 32, 32, 1, 1),
+            blade: new Animator(assetManager.getAsset("anims/arm.png"), 0, 0, 32, 32, 1, 1),
+            bladeFire: new Animator(assetManager.getAsset("anims/arm.png"), 32, 0, 32, 32, 1, 1),
         });
 
         this.sprite.setHorizontalFlip(false); // 0 = right, 1 = left
-        this.sprite.setState("bladed"); // 0 = bladed
+        this.sprite.setState("blade"); // 0 = bladed
 
         this.bullets = [];
-        this.fireRate = .5;
+        this.fireRate = .75;
         this.fireCD = 0; // tracks when the player can shoot again
         this.bulletSpeed = 750;
     }
@@ -50,6 +51,12 @@ class Arm {
             }
         });
         this.bullets = newBullets;
+        this.setState();
+    }
+
+    setState() {
+        if (this.fireCD >= (this.fireRate / 2)) this.sprite.setState("bladeFire");
+        else this.sprite.setState("blade")
     }
 
     fire() {

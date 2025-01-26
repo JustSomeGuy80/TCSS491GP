@@ -65,52 +65,13 @@ class Bullet {
             const { value: collision, done } = collisions.next();
 
             if (done) {
-                this.groundOverride -= 1;
                 break;
             }
-
-            const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
-            const difference = target.subtract(origin);
-
-            // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
-            if (difference.getMagnitude() >= 0.0) {
-                let nearX = (xStart - this.collider.w / 2 - origin.x) / difference.x;
-                let farX = (xEnd + this.collider.w / 2 - origin.x) / difference.x;
-                let nearY = (yStart - this.collider.h / 2 - origin.y) / difference.y;
-                let farY = (yEnd + this.collider.h / 2 - origin.y) / difference.y;
-
-                if (nearX > farX) {
-                    [farX, nearX] = [nearX, farX];
-                }
-                if (nearY > farY) {
-                    [farY, nearY] = [nearY, farY];
-                }
-
-                const horizontalHit = nearX > nearY;
-                const hitNear = horizontalHit ? nearX : nearY;
-
-                let normal = undefined;
-                if (horizontalHit) {
-                    if (difference.x >= 0) {
-                        normal = new Vector(-1, 0);
-                    } else {
-                        normal = new Vector(1, 0);
-                    }
-                } else {
-                    if (difference.y >= 0) {
-                        normal = new Vector(0, -1);
-                    } else {
-                        normal = new Vector(0, 1);
-                    }
-                }
-
-                if (hitNear && isFinite(hitNear)) {
-                    if (collision.id == 1) {
-                        this.age = 0;
-                        this.active = false;
-                        this.sprite.setState("blueExplode");
-                    }
-                }
+            
+            if (collision.id == 1) {
+                this.age = 0;
+                this.active = false;
+                this.sprite.setState("blueExplode");
             }
         }
 

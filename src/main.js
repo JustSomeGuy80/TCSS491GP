@@ -4,7 +4,8 @@
 /** @typedef {import("./components/ColliderRect")} */
 /** @typedef {import("./components/position")} */
 /** @typedef {import("./player")} */
-{
+
+function main() {
     const gameEngine = new GameEngine();
 
     const ASSET_MANAGER = new AssetManager();
@@ -36,5 +37,5 @@
         gameEngine.init(ctx);
 
         gameEngine.start();
-});
+    });
 }

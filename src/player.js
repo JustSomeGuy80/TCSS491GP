@@ -27,10 +27,42 @@ class Player {
         this.arm = new Arm(game, this.assetManager, this, 6, -4, "bladed");
         this.sprite = new Sprite(this.position, this.game, 3, -48, -48, {
             idle: new Animator(this.assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
-            running: new Animator(this.assetManager.getAsset("anims/run.png"), 0, 0, 32, 32, 4, 0.2),
-            bwrunning: new Animator(this.assetManager.getAsset("anims/bwrun.png"), 0, 0, 32, 32, 4, 0.2),
-            airLeanBack: new Animator(this.assetManager.getAsset("anims/jump.png"), 0, 0, 32, 32, 1, 1),
-            airLeanFront: new Animator(this.assetManager.getAsset("anims/jump.png"), 32, 0, 32, 32, 1, 1),
+            running: new Animator(
+                this.assetManager.getAsset("anims/run.png"),
+                0,
+                0,
+                32,
+                32,
+                4,
+                0.2
+            ),
+            bwrunning: new Animator(
+                this.assetManager.getAsset("anims/bwrun.png"),
+                0,
+                0,
+                32,
+                32,
+                4,
+                0.2
+            ),
+            airLeanBack: new Animator(
+                this.assetManager.getAsset("anims/jump.png"),
+                0,
+                0,
+                32,
+                32,
+                1,
+                1
+            ),
+            airLeanFront: new Animator(
+                this.assetManager.getAsset("anims/jump.png"),
+                32,
+                0,
+                32,
+                32,
+                1,
+                1
+            ),
         });
 
         this.sprite.setHorizontalFlip(false);
@@ -42,7 +74,7 @@ class Player {
         this.velocity = new Vector(0, 0);
         this.maxSpeed = 350;
         this.walkAccel = 1050;
-        this.aimVector = new Vector(1, 0)
+        this.aimVector = new Vector(1, 0);
 
         /** @type {Animator[]} */
         this.animations = [];
@@ -50,6 +82,8 @@ class Player {
 
         // TEMP (standing on hitboxes is not recognized by Player.isGrounded())
         this.groundOverride = 0;
+
+        this.health = 100;
     }
 
     loadAnimations(assetManager) {
@@ -71,10 +105,12 @@ class Player {
     }
 
     update() {
-
         this.checkInput();
 
         let origin = this.position.asVector();
+
+        this.health -= 1 * this.game.clockTick;
+        GUI.setHealth(this.health / 100);
 
         this.calcMovement();
 
@@ -116,7 +152,7 @@ class Player {
 
         if (this.game.mouse != null) {
             //Set facing direction
-            if ((this.game.mouse.x + this.game.camera.x) >= this.position.x) {
+            if (this.game.mouse.x + this.game.camera.x >= this.position.x) {
                 this.sprite.setHorizontalFlip(false);
                 this.arm.sprite.setHorizontalFlip(false);
                 this.facing = 1;
@@ -126,10 +162,15 @@ class Player {
                 this.facing = -1;
             }
 
-            this.aimVector.x = (this.game.mouse.x + this.game.camera.x) - this.position.x + this.arm.xOffset * this.facing;
-            this.aimVector.y = ((this.game.mouse.y + this.game.camera.y) - (this.position.y + this.arm.yOffset));
+            this.aimVector.x =
+                this.game.mouse.x +
+                this.game.camera.x -
+                this.position.x +
+                this.arm.xOffset * this.facing;
+            this.aimVector.y =
+                this.game.mouse.y + this.game.camera.y - (this.position.y + this.arm.yOffset);
         }
-        
+
         if (this.game.buttons[0]) this.arm.fire();
 
         // Do we apply ground friction to the player?
@@ -146,7 +187,6 @@ class Player {
             if (this.velocity.x < this.maxSpeed / 20 && this.velocity.x > -this.maxSpeed / 20)
                 this.velocity.x = 0;
         }
-
     }
 
     calcMovement() {
@@ -168,7 +208,6 @@ class Player {
         //      - to test, spawn the player inside of a wall in the constructor
         const collisions = this.collider.getCollision();
         let target = this.position.asVector();
-
 
         while (true) {
             const { value: collision, done } = collisions.next();
@@ -216,7 +255,7 @@ class Player {
                 if (hitNear && isFinite(hitNear)) {
                     if (collision.id == 1) {
                         const { x, y } = origin.add(difference.multiply(hitNear));
-    
+
                         if (horizontalHit) {
                             this.velocity.x = 0;
                             this.position.set(x, this.position.y);
@@ -226,7 +265,7 @@ class Player {
                             this.velocity.y = 0;
                             this.position.set(this.position.x, y);
                         }
-    
+
                         // force player to not touch a wall anymore after collision resolution
                         // this might get in the way of some potential features
                         this.position.add(normal.multiply(0.01));
@@ -234,14 +273,13 @@ class Player {
                 }
             }
         }
-
     }
 
     setState() {
         if (this.isGrounded()) {
             if (this.velocity.x == 0) this.sprite.setState("idle");
             else if (this.velocity.x * this.facing > 0) this.sprite.setState("running");
-            else this.sprite.setState("bwrunning")
+            else this.sprite.setState("bwrunning");
         } else {
             if (this.velocity.y < 0) {
                 if (this.velocity.x * this.facing >= 0) this.sprite.setState("airLeanBack");

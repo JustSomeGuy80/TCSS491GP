@@ -70,6 +70,7 @@ class Player {
 
         this.facing = 1; // 1 = right, -1 = left, used for calculations, should never be set to 0
         this.jumped = 0; // 0 = can jump, 1 = can vary gravity, 2 = can't vary gravity
+        this.jumpBuffer = 0;
 
         this.velocity = new Vector(0, 0);
         this.maxSpeed = 350;
@@ -128,15 +129,18 @@ class Player {
         if (this.game.keys["a"]) move -= 1;
 
         if (this.game.keys[" "]) {
-            if (grounded && this.jumped == 0) {
+            if (grounded && (this.jumped == 0 || this.jumpBuffer <= .1)) {
                 this.velocity.y = -this.jumpHeight;
                 this.jumped = 1;
                 this.assetManager.playAsset("sounds/jump.mp3");
+
             }
+            this.jumpBuffer += this.game.clockTick;
         } else {
             if (grounded) this.jumped = 0;
             else if (this.velocity.y < 0 && this.jumped == 1)
                 this.velocity.y -= this.velocity.y * 8 * this.game.clockTick;
+            this.jumpBuffer = 0;
         }
 
         // Don't let the player exceed max speed
@@ -172,6 +176,7 @@ class Player {
         }
 
         if (this.game.buttons[0]) this.arm.fire();
+        if (this.game.keys["Shift"] || this.game.buttons[3]) this.arm.slash();
 
         // Do we apply ground friction to the player?
         var traction =
@@ -179,7 +184,7 @@ class Player {
             (move == 0 ||
                 (move == 1 && this.velocity.x < 0) ||
                 (move == -1 && this.velocity.x > 0) ||
-                (this.velocity.x > this.maxSpeed && this.velocity.x < -this.maxSpeed));
+                (this.velocity.x > this.maxSpeed || this.velocity.x < -this.maxSpeed));
         if (traction) {
             // Apply ground friction
             if (this.velocity.x < 0) this.velocity.x += this.walkAccel * this.game.clockTick;

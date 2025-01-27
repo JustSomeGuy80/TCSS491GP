@@ -4,6 +4,7 @@
 /** @typedef {import("../primitives/vector")} */
 /** @typedef {import("./position")} */
 /** @typedef {import("./bullet")} */
+/** @typedef {import("./ColliderRect")} */
 /** @typedef {import("./sprite")} */
 
 /**
@@ -66,6 +67,34 @@ class Arm {
             bulPos = bulPos.asVector();
             bulPos = bulPos.add(this.parent.aimVector.normalize().multiply(36));
             this.bullets.push(new Bullet(this.game, this.assetManager, bulPos.x, bulPos.y, this.parent.aimVector, this.bulletSpeed, 0));
+        }
+    }
+
+    slash() {
+        if (this.fireCD <= 0) {
+            this.fireCD = 2 * this.fireRate;
+            var slashPos = new Position(this.parent.position.x + (this.xOffset * this.parent.facing), this.parent.position.y + this.yOffset);
+            slashPos = slashPos.asVector();
+            slashPos = slashPos.add(this.parent.aimVector.normalize().multiply(60));
+
+            var slashCol = new ColliderRect(slashPos, -25, -25, 50, 70, 4);
+            this.game.addEntity(slashCol);
+            
+            const collisions = slashCol.getCollision();
+            while (true) {
+                const { value: collision, done } = collisions.next();
+
+                if (done) {
+                    break;
+                }
+            
+                if (collision.id == 1) {
+                    const bounce = this.parent.aimVector.normalize().multiply(-150)
+                    this.parent.velocity = this.parent.velocity.add(bounce);
+                }
+            }
+
+            slashCol.removeFromWorld = true;
         }
     }
 

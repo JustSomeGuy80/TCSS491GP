@@ -14,7 +14,7 @@ class ColliderRect {
      * @param {number} yOffset
      * @param {number} w width
      * @param {number} h height
-     * @param {number} id identification. 0 = player, 1 = block, 2 = bullet
+     * @param {number} id identification. 0 = player, 1 = block, 2 = bullet, 3 = enemy, 4 = slash
      */
     constructor(parent, xOffset, yOffset, w, h, id) {
         this.parent = parent;
@@ -24,7 +24,7 @@ class ColliderRect {
         this.h = h;
         this.id = id;
 
-        this.debugMode = false;
+        this.debugMode = true;
 
         colliders.push(this);
     }

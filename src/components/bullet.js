@@ -38,27 +38,26 @@ class Bullet {
 
     update() {
         if (this.active) {
-            let origin = this.position.asVector();
             this.position.add(this.vect.multiply(this.game.clockTick))
-            this.runCollisions(origin);
+            this.runCollisions();
             if (this.age >= 4) {
                 this.age = 0;
                 this.active = false;
                 this.sprite.setState("blueExplode");
             } 
         } else if (this.age > .3) {
+            this.collider.removeFromWorld = true;
             this.unload = true;
         }
         this.age += this.game.clockTick;
     }
 
-    runCollisions(origin) {
+    runCollisions() {
         // TEMPORARY IMPLEMENTATION OF HITBOXES
         // bugs:
         // - (sort of a bug) when you are in the left side of a wall and go left, you tp to the right of wall
         //      - to test, spawn the player inside of a wall in the constructor
         const collisions = this.collider.getCollision();
-        let target = this.position.asVector();
 
 
         while (true) {

@@ -21,6 +21,7 @@ class Player {
         this.tempGrounded = 1000;
         this.jumpHeight = 550;
         this.debugMode = false;
+        this.removeFromWorld = false;
 
         this.position = new Position(525, 500);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 0, this);

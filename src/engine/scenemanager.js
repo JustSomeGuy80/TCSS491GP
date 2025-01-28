@@ -1,5 +1,6 @@
 /** @typedef {import("../obstacle")} */
 /** @typedef {import("../player")} */
+/** @typedef {import("./slasher")} */
 /** @typedef {import("./assetmanager")} */
 /** @typedef {import("./gameengine")} */
 
@@ -46,6 +47,8 @@ class SceneManager {
         // traps (add no collision)
         this.addObstacle(1000, 550, 50, 50, "spike");
         this.addObstacle(1600, 550, 50, 50, "spike");
+
+        this.game.addEntity(new Slasher(this.game, this.assetManager, 350, 0));
     }
 
     addObstacle(x, y, width, height, type) {

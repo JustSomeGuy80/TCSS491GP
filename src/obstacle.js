@@ -11,7 +11,7 @@ class Obstacle {
         this.type = type;
 
 
-        this.collision = new ColliderRect(this.position, 0, 0, width, height, 1);
+        this.collision = new ColliderRect(this.position, 0, 0, width, height, 1, this);
         this.game.addEntity(this.collision);
     }
 

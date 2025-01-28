@@ -16,12 +16,16 @@ class Slasher {
     constructor(game, assetManager, x, y) {
         this.game = game;
         this.assetManager = assetManager;
-        this.debugMode = false;
+        this.debugMode = true;
+        this.active = true;
+        this.health = 3;
+        this.removeFromWorld = false;
 
         this.position = new Position(x, y);
-        this.collider = new ColliderRect(this.position, -28, -48, 56, 96);
-        this.sprite = new Sprite(this.position, 3, -48, -48, {
-            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2)
+        this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 3, this);
+        this.sprite = new Sprite(this.position, this.game,3, -48, -48, {
+            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2),
+            death: new Animator(this.assetManager.getAsset("anims/run.png"), 1000, 0, 32, 32, 4, 0.2)
         });
 
         this.moveSpeed = 200;
@@ -30,7 +34,7 @@ class Slasher {
         this.gravity = 1000; // Enable gravity for falling
 
         this.patrolLeft = x - 200;
-        this.patrolRight = x + 10000;
+        this.patrolRight = x + 200;
 
         this.sprite.setHorizontalFlip(false);
         this.sprite.setState("running");
@@ -45,14 +49,25 @@ class Slasher {
     }
 
     update() {
-        const originalPosition = new Vector(this.position.x, this.position.y);
-        this.handleMovement();
-        this.handleCollisions(originalPosition);
-        this.checkPatrolBounds();
-        this.setState();
+        if (this.active) {
+            const origin = this.position.asVector();
+            this.calcMovement();
+            this.runCollisions(origin);
+            this.checkPatrolBounds();
+            this.flip();
+            this.death();
+        }
     }
 
-    handleMovement() {
+    death() {
+        if (this.health <= 0) {
+            this.sprite.setState("death");
+            this.active = false;
+            this.removeFromWorld = true;
+        }
+    }
+
+    calcMovement() {
         this.velocity.x = this.moveDirection * this.moveSpeed;
         this.velocity.y += this.gravity * this.game.clockTick;
 
@@ -60,75 +75,71 @@ class Slasher {
         this.position.y += this.velocity.y * this.game.clockTick;
     }
 
-    handleCollisions(originalPosition) {
-        const target = new Vector(this.position.x, this.position.y);
-        let hitHorizontal = false;
-
+    runCollisions(origin) {
         const collisions = this.collider.getCollision();
+        let target = this.position.asVector();
+
         while (true) {
             const { value: collision, done } = collisions.next();
             if (done) break;
 
             const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
-            const difference = target.subtract(originalPosition);
+            const difference = target.subtract(origin);
 
-            if (difference.getMagnitude() > 0) {
-                let nearX = (xStart - this.collider.w / 2 - originalPosition.x) / difference.x;
-                let farX = (xEnd + this.collider.w / 2 - originalPosition.x) / difference.x;
-                let nearY = (yStart - this.collider.h / 2 - originalPosition.y) / difference.y;
-                let farY = (yEnd + this.collider.h / 2 - originalPosition.y) / difference.y;
+            if (collision.id === 0) { // player
 
-                if (nearX > farX) {
-                    [farX, nearX] = [nearX, farX];
-                }
-                if (nearY > farY) {
-                    [farY, nearY] = [nearY, farY];
-                }
+            }
 
-                const horizontalHit = nearX > nearY;
+            else if (collision.id === 1) { // platform
+                const difference = target.subtract(origin);
 
-                let hitNear;
-                if (horizontalHit) {
-                    hitNear = nearX;
-                } else {
-                    hitNear = nearY;
-                }
+                // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
+                if (difference.getMagnitude() >= 0.0) {
+                    let nearX = (xStart - this.collider.w / 2 - origin.x) / difference.x;
+                    let farX = (xEnd + this.collider.w / 2 - origin.x) / difference.x;
+                    let nearY = (yStart - this.collider.h / 2 - origin.y) / difference.y;
+                    let farY = (yEnd + this.collider.h / 2 - origin.y) / difference.y;
 
-                let normal;
-                if (horizontalHit) {
-                    if (difference.x >= 0) {
-                        normal = new Vector(-1, 0);
-                    } else {
-                        normal = new Vector(1, 0);
+                    if (nearX > farX) {
+                        [farX, nearX] = [nearX, farX];
                     }
-                    hitHorizontal = true;
-                } else {
-                    if (difference.y >= 0) {
-                        normal = new Vector(0, -1);
-                    } else {
-                        normal = new Vector(0, 1);
+                    if (nearY > farY) {
+                        [farY, nearY] = [nearY, farY];
                     }
-                }
 
-                if (hitNear >= 0 && hitNear <= 1 && isFinite(hitNear)) {
-                    const hitPosition = originalPosition.add(difference.multiply(hitNear));
+                    const horizontalHit = nearX > nearY;
+                    const hitNear = horizontalHit ? nearX : nearY;
 
+                    let normal = undefined;
                     if (horizontalHit) {
-                        this.velocity.x = 0;
-                        this.position.x = hitPosition.x;
+                        if (difference.x >= 0) {
+                            normal = new Vector(-1, 0);
+                        } else {
+                            normal = new Vector(1, 0);
+                        }
                     } else {
-                        this.velocity.y = 0;
-                        this.position.y = hitPosition.y;
+                        if (difference.y >= 0) {
+                            normal = new Vector(0, -1);
+                        } else {
+                            normal = new Vector(0, 1);
+                        }
                     }
 
-                    this.position.add(normal.multiply(0.01));
+                    if (hitNear && isFinite(hitNear)) {
+                        const {x, y} = origin.add(difference.multiply(hitNear));
+
+                        if (horizontalHit) {
+                            this.velocity.x = 0;
+                            this.position.set(x, this.position.y);
+                        } else {
+                            // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
+                            this.groundOverride = 4;
+                            this.velocity.y = 0;
+                            this.position.set(this.position.x, y);
+                        }
+                    }
                 }
             }
-        }
-
-        if (hitHorizontal) {
-            this.moveDirection *= -1;
-            this.velocity.x = this.moveDirection * this.moveSpeed;
         }
     }
 
@@ -140,18 +151,21 @@ class Slasher {
         }
     }
 
-    setState() {
+    flip() {
         this.sprite.setHorizontalFlip(this.moveDirection === -1);
     }
 
     draw(ctx) {
-        this.sprite.offset.x -= this.game.camera.x;
         this.sprite.drawSprite(this.game.clockTick, ctx);
-        this.sprite.offset.x += this.game.camera.x;
 
         if (this.debugMode) {
-            this.collider.draw(ctx);
-            this.position.draw(ctx);
+            const bounds = this.collider.getBounds();
+            ctx.strokeStyle = 'yellow';
+            ctx.strokeRect(
+                bounds.xStart - this.game.camera.x,
+                bounds.yStart,
+                bounds.xEnd - bounds.xStart,
+                bounds.yEnd - bounds.yStart);
         }
     }
 }

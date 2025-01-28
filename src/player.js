@@ -23,7 +23,7 @@ class Player {
         this.debugMode = false;
 
         this.position = new Position(525, 500);
-        this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 0);
+        this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 0, this);
         this.arm = new Arm(game, this.assetManager, this, 6, -4, "bladed");
         this.sprite = new Sprite(this.position, this.game, 3, -48, -48, {
             idle: new Animator(this.assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
@@ -258,7 +258,7 @@ class Player {
                 }
 
                 if (hitNear && isFinite(hitNear)) {
-                    if (collision.id == 1) {
+                    if (collision.id === 1) {
                         const { x, y } = origin.add(difference.multiply(hitNear));
 
                         if (horizontalHit) {

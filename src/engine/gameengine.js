@@ -97,9 +97,7 @@ class GameEngine {
     }
 
     update() {
-        let entitiesCount = this.entities.length;
-
-        for (let i = 0; i < entitiesCount; i++) {
+        for (let i = 0; i < this.entities.length; i++) {
             let entity = this.entities[i];
 
             if (!entity.removeFromWorld) {
@@ -112,7 +110,14 @@ class GameEngine {
                 this.entities.splice(i, 1);
             }
         }
+
+        for (let i = 0; i < colliders.length; i++) {
+            if (colliders[i].owner.removeFromWorld) {
+                colliders.splice(i, 1);
+            }
+        }
     }
+
 
     loop() {
         this.clockTick = this.timer.tick();

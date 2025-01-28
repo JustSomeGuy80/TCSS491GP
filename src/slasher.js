@@ -34,7 +34,7 @@ class Slasher {
         this.gravity = 1000; // Enable gravity for falling
 
         this.patrolLeft = x - 200;
-        this.patrolRight = x + 200;
+        this.patrolRight = x + 1000;
 
         this.sprite.setHorizontalFlip(false);
         this.sprite.setState("running");
@@ -112,6 +112,7 @@ class Slasher {
 
                     let normal = undefined;
                     if (horizontalHit) {
+                        this.moveDirection = -1;
                         if (difference.x >= 0) {
                             normal = new Vector(-1, 0);
                         } else {

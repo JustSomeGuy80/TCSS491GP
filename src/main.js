@@ -19,8 +19,9 @@ function main() {
     ASSET_MANAGER.queueDownload("anims/slasher.png");
 
     ASSET_MANAGER.queueDownload("sounds/music.mp3");
-
     ASSET_MANAGER.queueDownload("sounds/jump.mp3");
+    ASSET_MANAGER.queueDownload("sounds/slashHit.mp3");
+    ASSET_MANAGER.queueDownload("sounds/slashReady.mp3");
 
     ASSET_MANAGER.downloadAll(() => {
         /** @type {HTMLCanvasElement} */

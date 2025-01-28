@@ -25,7 +25,7 @@ class ColliderRect {
         this.id = id;
         this.owner = owner;
 
-        this.debugMode = true;
+        this.debugMode = false;
 
         colliders.push(this);
     }

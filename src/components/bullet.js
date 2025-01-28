@@ -20,7 +20,7 @@ class Bullet {
         this.position = new Position(x, y);
         this.vect = vect.normalize().multiply(speed);
         this.team = team;
-        this.debugMode = true;
+        this.debugMode = false;
 
         this.sprite = new Sprite(this.position, this.game, 3, -10.5, -10.5, {
             blue: new Animator(assetManager.getAsset("anims/bullet.png"), 0, 0, 7, 7, 2, .25),

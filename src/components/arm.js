@@ -39,11 +39,16 @@ class Arm {
         this.bullets = [];
         this.fireRate = .75;
         this.fireCD = 0; // tracks when the player can shoot again
+        this.CDType = 0; // Tracks if cooldown is from shooting (0) or slashing (1)
         this.bulletSpeed = 750;
     }
 
     update() {
         if (this.fireCD > 0) this.fireCD -= this.game.clockTick;
+        if (this.fireCD <= 0 && this.CDType == 1) {
+            this.assetManager.playAsset("sounds/slashReady.mp3");
+            this.CDType = 0;
+        } 
         var newBullets = [];
         this.bullets.forEach(el => {
             el.update();
@@ -62,6 +67,7 @@ class Arm {
 
     fire() {
         if (this.fireCD <= 0) {
+            this.CDType = 0;
             this.fireCD = this.fireRate;
             var bulPos = new Position(this.parent.position.x + (this.xOffset * this.parent.facing), this.parent.position.y + this.yOffset);
             bulPos = bulPos.asVector();
@@ -70,9 +76,11 @@ class Arm {
         }
     }
 
+    //TEMPORARY implementation of the slash attack for the prototype presentation
     slash() {
         if (this.fireCD <= 0) {
-            this.fireCD = 2 * this.fireRate;
+            this.CDType = 1;
+            this.fireCD = 1.5 * this.fireRate;
             var slashPos = new Position(this.parent.position.x + (this.xOffset * this.parent.facing), this.parent.position.y + this.yOffset);
             slashPos = slashPos.asVector();
             slashPos = slashPos.add(this.parent.aimVector.normalize().multiply(60));
@@ -91,6 +99,7 @@ class Arm {
                 if (collision.id == 1) {
                     const bounce = this.parent.aimVector.normalize().multiply(-150)
                     this.parent.velocity = this.parent.velocity.add(bounce);
+                    this.assetManager.playAsset("sounds/slashHit.mp3");
                 }
             }
 

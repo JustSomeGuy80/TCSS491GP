@@ -72,10 +72,21 @@ class GameEngine {
             this.rightclick = getXandY(e);
         });
 
+<<<<<<< Updated upstream:gameengine.js
         this.ctx.canvas.addEventListener("keydown", event => this.keys[event.key] = true);
         this.ctx.canvas.addEventListener("keyup", event => this.keys[event.key] = false);
 
     };
+=======
+        // Move keyboard listeners to window instead of canvas
+        window.addEventListener("keydown", event => {
+            this.keys[event.key] = true;
+        });
+        window.addEventListener("keyup", event => {
+            this.keys[event.key] = false;
+        });
+    }
+>>>>>>> Stashed changes:src/engine/gameengine.js
 
     addEntity(entity) {
         this.entities.push(entity);

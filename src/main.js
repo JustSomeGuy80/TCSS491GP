@@ -26,6 +26,7 @@ function main() {
         /** @type {HTMLCanvasElement} */
 
         ASSET_MANAGER.autoRepeat("sounds/music.mp3");
+        ASSET_MANAGER.playAsset("sounds/music.mp3");
 
         const canvas = document.getElementById("gameWorld");
         const ctx = canvas.getContext("2d");

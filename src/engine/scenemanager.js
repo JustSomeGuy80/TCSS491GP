@@ -121,7 +121,7 @@ class SceneManager {
             if (this.deleteMode) {
                 const clickedObstacle = this.game.entities.find(entity => {
                     if (entity instanceof Obstacle) {
-                        return worldX >= entity.position.x && 
+                        return worldX >= entity.position.x &&
                                worldX <= entity.position.x + entity.width &&
                                worldY >= entity.position.y && 
                                worldY <= entity.position.y + entity.height;
@@ -130,6 +130,7 @@ class SceneManager {
                 });
 
                 if (clickedObstacle) {
+                    clickedObstacle.removeFromWorld = true;
                     this.undoStack.push({
                         action: 'delete',
                         obstacle: clickedObstacle,

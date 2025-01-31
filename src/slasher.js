@@ -93,7 +93,7 @@ class Slasher {
 
     calcMovement() {
         this.velocity.x = this.moveDirection * this.moveSpeed;
-        if (!this.isGrounded()) this.velocity.y += this.gravity * this.game.clockTick;
+        this.velocity.y += this.gravity * this.game.clockTick;
 
         this.position.x += this.velocity.x * this.game.clockTick;
         this.position.y += this.velocity.y * this.game.clockTick;
@@ -106,9 +106,10 @@ class Slasher {
         this.position.add(adjustment);
 
         if (adjustment.y < 0) {
+            this.velocity.y = 0;
             this.groundOverride = 2;
         } else {
-            this.groundOverride = 0;
+            this.groundOverride -= 1;
         }
     }
 

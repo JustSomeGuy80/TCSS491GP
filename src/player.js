@@ -202,9 +202,9 @@ class Player {
         if (this.position.y > this.tempGrounded) this.position.y = this.tempGrounded;
 
         // player needs to be put into the ground anyways for game to detect ground collision
-        if (!this.isGrounded()) this.velocity.y += gravity * this.game.clockTick;
+        // if (!this.isGrounded()) this.velocity.y += gravity * this.game.clockTick;
 
-        // this.velocity.y += gravity * this.game.clockTick;
+        this.velocity.y += gravity * this.game.clockTick;
     }
 
     runCollisions(origin) {
@@ -214,9 +214,10 @@ class Player {
         this.position.add(adjustment);
 
         if (adjustment.y < 0) {
+            this.velocity.y = 0;
             this.groundOverride = 2;
         } else {
-            this.groundOverride = 0;
+            this.groundOverride -= 1;
         }
     }
 

@@ -27,7 +27,7 @@ class Arm {
         this.xOffset = xOffset;
         this.yOffset = yOffset;
         this.state = state;
-        
+
         this.sprite = new Sprite(this.parent.position, this.game, 3, -48, -48, {
             blade: new Animator(assetManager.getAsset("anims/arm.png"), 0, 0, 32, 32, 1, 1),
             bladeFire: new Animator(assetManager.getAsset("anims/arm.png"), 32, 0, 32, 32, 1, 1),
@@ -37,7 +37,7 @@ class Arm {
         this.sprite.setState("blade"); // 0 = bladed
 
         this.bullets = [];
-        this.fireRate = .75;
+        this.fireRate = 0.75;
         this.fireCD = 0; // tracks when the player can shoot again
         this.CDType = 0; // Tracks if cooldown is from shooting (0) or slashing (1)
         this.bulletSpeed = 750;
@@ -48,7 +48,7 @@ class Arm {
         if (this.fireCD <= 0 && this.CDType == 1) {
             this.assetManager.playAsset("sounds/slashReady.mp3");
             this.CDType = 0;
-        } 
+        }
         var newBullets = [];
         this.bullets.forEach(el => {
             el.update();
@@ -61,18 +61,31 @@ class Arm {
     }
 
     setState() {
-        if (this.fireCD >= (this.fireRate / 2)) this.sprite.setState("bladeFire");
-        else this.sprite.setState("blade")
+        if (this.fireCD >= this.fireRate / 2) this.sprite.setState("bladeFire");
+        else this.sprite.setState("blade");
     }
 
     fire() {
         if (this.fireCD <= 0) {
             this.CDType = 0;
             this.fireCD = this.fireRate;
-            var bulPos = new Position(this.parent.position.x + (this.xOffset * this.parent.facing), this.parent.position.y + this.yOffset);
+            var bulPos = new Position(
+                this.parent.position.x + this.xOffset * this.parent.facing,
+                this.parent.position.y + this.yOffset
+            );
             bulPos = bulPos.asVector();
             bulPos = bulPos.add(this.parent.aimVector.normalize().multiply(36));
-            this.bullets.push(new Bullet(this.game, this.assetManager, bulPos.x, bulPos.y, this.parent.aimVector, this.bulletSpeed, 0));
+            this.bullets.push(
+                new Bullet(
+                    this.game,
+                    this.assetManager,
+                    bulPos.x,
+                    bulPos.y,
+                    this.parent.aimVector,
+                    this.bulletSpeed,
+                    0
+                )
+            );
         }
     }
 
@@ -81,23 +94,26 @@ class Arm {
         if (this.fireCD <= 0) {
             this.CDType = 1;
             this.fireCD = 1.5 * this.fireRate;
-            var slashPos = new Position(this.parent.position.x + (this.xOffset * this.parent.facing), this.parent.position.y + this.yOffset);
+            var slashPos = new Position(
+                this.parent.position.x + this.xOffset * this.parent.facing,
+                this.parent.position.y + this.yOffset
+            );
             slashPos = slashPos.asVector();
             slashPos = slashPos.add(this.parent.aimVector.normalize().multiply(60));
 
             var slashCol = new ColliderRect(slashPos, -25, -25, 50, 70, 4);
             this.game.addEntity(slashCol);
-            
-            const collisions = slashCol.getCollision();
+
+            const collisions = slashCol.getCollisions();
             while (true) {
                 const { value: collision, done } = collisions.next();
 
                 if (done) {
                     break;
                 }
-            
+
                 if (collision.id == 1) {
-                    const bounce = this.parent.aimVector.normalize().multiply(-150)
+                    const bounce = this.parent.aimVector.normalize().multiply(-150);
                     this.parent.velocity = this.parent.velocity.add(bounce);
                     this.assetManager.playAsset("sounds/slashHit.mp3");
                 }
@@ -116,7 +132,7 @@ class Arm {
         this.bullets.forEach(el => {
             el.draw(ctx);
         });
-        
+
         let angle = Math.atan2(this.parent.aimVector.y, this.parent.aimVector.x);
         if (angle < 0) angle += Math.PI * 2;
 
@@ -126,14 +142,13 @@ class Arm {
         } else {
             xTranslate = this.parent.position.x - this.game.camera.x - this.xOffset;
             angle += Math.PI;
-        } 
+        }
 
         ctx.save();
-        ctx.translate(xTranslate, (this.parent.position.y + this.yOffset));
+        ctx.translate(xTranslate, this.parent.position.y + this.yOffset);
         ctx.rotate(angle);
         ctx.translate(-xTranslate, -(this.parent.position.y + this.yOffset));
         this.sprite.drawSprite(this.game.clockTick, ctx);
         ctx.restore();
-
     }
-} 
+}

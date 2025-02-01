@@ -18,7 +18,7 @@ class ColliderRect {
      * @param {number} yOffset
      * @param {number} w width
      * @param {number} h height
-     * @param {number} id identification. 0 = player, 1 = block, 2 = bullet, 3 = enemy
+     * @param {number} id identification. 0 = player, 1 = block, 2 = bullet, 3 = enemy, 4 = slash
      * @param {any} owner
      */
     constructor(parent, xOffset, yOffset, w, h, id, owner) {

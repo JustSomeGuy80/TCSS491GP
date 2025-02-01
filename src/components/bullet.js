@@ -38,7 +38,6 @@ class Bullet {
         this.sprite.setState("blue");
 
         this.collider = new ColliderRect(this.position, -7.5, -7.5, 15, 15, 2, this);
-        // this.game.addEntity(this.collider);
 
         this.age = 0;
         this.active = true;
@@ -78,14 +77,16 @@ class Bullet {
             if (done) {
                 break;
             }
-
-            if (collision.id === 1 || collision.id === 3) {
+            
+            if (collision.id !== 0) {
                 this.age = 0;
                 this.active = false;
                 this.sprite.setState("blueExplode");
 
                 this.removeFromWorld = true;
+            }
 
+            if (collision.id === 3) {
                 collision.owner.health -= 1;
             }
         }
@@ -96,13 +97,14 @@ class Bullet {
 
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
-            ctx.strokeStyle = "yellow";
+            ctx.save();
+            ctx.strokeStyle = 'yellow';
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart
-            );
+                bounds.yEnd - bounds.yStart);
+            ctx.restore();
         }
     }
 }

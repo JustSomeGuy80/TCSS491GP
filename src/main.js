@@ -4,7 +4,8 @@
 /** @typedef {import("./components/ColliderRect")} */
 /** @typedef {import("./components/position")} */
 /** @typedef {import("./player")} */
-{
+
+function main() {
     const gameEngine = new GameEngine();
 
     const ASSET_MANAGER = new AssetManager();
@@ -15,15 +16,20 @@
     ASSET_MANAGER.queueDownload("anims/bwrun.png");
     ASSET_MANAGER.queueDownload("anims/arm.png");
     ASSET_MANAGER.queueDownload("anims/bullet.png");
+    ASSET_MANAGER.queueDownload("anims/slash.png");
+    ASSET_MANAGER.queueDownload("anims/slashEffect.png");
+    ASSET_MANAGER.queueDownload("anims/slasher.png");
 
     ASSET_MANAGER.queueDownload("sounds/music.mp3");
-
     ASSET_MANAGER.queueDownload("sounds/jump.mp3");
+    ASSET_MANAGER.queueDownload("sounds/slashHit.mp3");
+    ASSET_MANAGER.queueDownload("sounds/slashReady.mp3");
 
     ASSET_MANAGER.downloadAll(() => {
         /** @type {HTMLCanvasElement} */
 
         ASSET_MANAGER.autoRepeat("sounds/music.mp3");
+        ASSET_MANAGER.playAsset("sounds/music.mp3");
 
         const canvas = document.getElementById("gameWorld");
         const ctx = canvas.getContext("2d");
@@ -36,5 +42,5 @@
         gameEngine.init(ctx);
 
         gameEngine.start();
-});
+    });
 }

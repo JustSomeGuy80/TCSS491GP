@@ -1,0 +1,11 @@
+#game-ui {
+    pointer-events: none;
+
+    & #health {
+        --full-width: 18rem;
+        --percentage: 1;
+        background-color: green;
+        width: calc(var(--full-width) * var(--percentage));
+        height: 1.5rem;
+    }
+}

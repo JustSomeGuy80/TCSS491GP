@@ -9,9 +9,9 @@ class Obstacle {
         this.width = width;
         this.height = height;
         this.type = type;
+        this.removeFromWorld = false;
 
-
-        this.collision = new ColliderRect(this.position, 0, 0, width, height);
+        this.collision = new ColliderRect(this.position, 0, 0, width, height, 1, this);
         this.game.addEntity(this.collision);
     }
 

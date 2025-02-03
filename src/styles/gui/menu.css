@@ -1,0 +1,22 @@
+#menu {
+    display: grid;
+    background-color: black;
+    color: white;
+    grid-template-rows: repeat(2, 1fr);
+    place-items: center;
+
+    & button {
+        border: none;
+        outline: none;
+        background-color: white;
+        border-radius: 4px;
+        height: 4rem;
+        width: 12rem;
+        font-size: larger;
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgb(200, 200, 200);
+        }
+    }
+}

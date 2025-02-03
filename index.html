@@ -1,56 +1,69 @@
 ﻿<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <title>Blue 5 Game Project</title>
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #21143d;
-            margin: 0;
-            gap: 20px;
-        }
-        .controls-container {
-            padding-bottom: 20px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            color: white;
-        }
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-    </style>
-</head>
-<body>
-<canvas
-        id="gameWorld"
-        width="1024"
-        height="768"
-        style="background: rgb(255, 196, 245); border: 1px solid black"
-        tabindex="0"
-        autofocus
-></canvas>
+    <head>
+        <meta charset="utf-8" />
+        <title>Godspeed Breacher</title>
+        <link rel="stylesheet" href="./src/styles/global.css" />
+        <link rel="stylesheet" href="./src/styles/gui/menu.css" />
+        <link rel="stylesheet" href="./src/styles/gui/game-ui.css" />
+        <style>
+            .controls-container {
+                padding-bottom: 20px;
+                display: flex;
+                gap: 20px;
+                align-items: center;
+                color: white;
+            }
+            .control-group {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="overlay-container">
+            <canvas id="gameWorld" class="layer" width="1024" height="768" tabindex="0"></canvas>
+            <div id="game-ui"><div id="health"></div></div>
+            <div id="editorUI" style="display: none; position: absolute; right: 10px; top: 10px; background: rgba(255, 255, 255, 0.9); padding: 10px; border-radius: 5px;">
+                <div style="margin-bottom: 10px;">
+                    <label for="toolSelect">Tool:</label>
+                    <select id="toolSelect">
+                        <option value="platform">Platform</option>
+                        <option value="spike">Spike</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label>Size:</label><br>
+                    <input type="number" id="widthInput" value="100" style="width: 60px;"> x 
+                    <input type="number" id="heightInput" value="20" style="width: 60px;">
+                </div>
+                <div>
+                    <button id="deleteMode">Delete Mode (Del)</button>
+                    <button id="toggleGrid">Toggle Grid</button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <small>Press ` to toggle editor</small><br>
+                    <small>Ctrl+Z to undo</small>
+                </div>
+            </div>
+            <div id="menu">
+                <h1>Godspeed Breacher</h1>
+                <button onclick="GUI.onPlayClick()">Play</button>
+            </div>
+        </div>
 
-<div class="controls-container">
-    <div class="control-group">
-        <label for="mute">Mute</label>
-        <input type="checkbox" id="mute">
-    </div>
-    <div class="control-group">
-        <label for="volume">Volume</label>
-        <input type="range" id="volume" min="0" max="1" value="0.1" step="0.05">
-    </div>
-</div>
+        <div class="controls-container">
+            <div class="control-group">
+                <label for="mute">Mute</label>
+                <input type="checkbox" id="mute" />
+            </div>
+            <div class="control-group">
+                <label for="volume">Volume</label>
+                <input type="range" id="volume" min="0" max="1" value="0.1" step="0.05" />
+            </div>
+        </div>
 
-</body>
-</html>
         <script type="text/javascript" src="./src/engine/assetmanager.js"></script>
         <script type="text/javascript" src="./src/obstacle.js"></script>
         <script type="text/javascript" src="./src/engine/timer.js"></script>
@@ -60,13 +73,14 @@
         <script type="text/javascript" src="./src/components/position.js"></script>
         <script type="text/javascript" src="./src/components/ColliderRect.js"></script>
         <script type="text/javascript" src="./src/components/bullet.js"></script>
+        <script type="text/javascript" src="./src/components/slash.js"></script>
         <script type="text/javascript" src="./src/components/arm.js"></script>
         <script type="text/javascript" src="./src/components/sprite.js"></script>
         <script type="text/javascript" src="./src/util.js"></script>
         <script type="text/javascript" src="./src/player.js"></script>
+        <script type="text/javascript" src="./src/slasher.js"></script>
         <script type="text/javascript" src="./src/engine/scenemanager.js"></script>
         <script type="text/javascript" src="./src/main.js"></script>
-
+        <script type="text/javascript" src="./src/gui.js"></script>
     </body>
-
 </html>

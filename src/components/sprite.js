@@ -77,4 +77,12 @@ class Sprite {
             this.verticalFlip
         );
     }
+
+    isDone() {
+        return this.animations[this.state].isDone();
+    }
+
+    resetAnim() {
+        this.animations[this.state].reset();
+    }
 }

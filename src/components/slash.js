@@ -27,7 +27,7 @@ class Slash {
         this.vect = vect.normalize();
         this.hit = false;
 
-        this.debugMode = false;
+        this.debugMode = true;
 
         this.flip = this.vect.x < 0
 
@@ -163,6 +163,18 @@ class Slash {
         ctx.translate(-xTranslate, -(this.position.y + this.yOffset));
         this.sprite.drawSprite(this.game.clockTick, ctx);
         ctx.restore();
+
+        if (this.debugMode) {
+            const bounds = this.collider.getBounds();
+            ctx.save();
+            ctx.strokeStyle = 'blue';
+            ctx.strokeRect(
+                bounds.xStart - this.game.camera.x,
+                bounds.yStart,
+                bounds.xEnd - bounds.xStart,
+                bounds.yEnd - bounds.yStart);
+            ctx.restore();
+        }
 
     }
 } 

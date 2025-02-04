@@ -182,6 +182,16 @@ class Slasher {
                 bounds.yStart,
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
+
+            if (this.lastSlash) {
+                const slashBounds = this.lastSlash.collider.getBounds();
+                ctx.strokeStyle = 'yellow';
+                ctx.strokeRect(
+                    slashBounds.xStart - this.game.camera.x,
+                    slashBounds.yStart,
+                    slashBounds.xEnd - slashBounds.xStart,
+                    slashBounds.yEnd - slashBounds.yStart);
+            }
         }
     }
 }

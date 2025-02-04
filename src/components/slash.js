@@ -58,9 +58,9 @@ class Slash {
         // Calculate where the collision should be placed
         var slashPos = new Position(this.position.x + (this.xOffset * this.player.facing), this.position.y + this.yOffset);
         slashPos = slashPos.asVector();
-        slashPos.add(this.player.aimVector.normalize().multiply(60));
+        slashPos = slashPos.add(this.player.aimVector.normalize().multiply(60));
         // Place collision
-        var slashCol = new ColliderRect(slashPos, -25, -35, 50, 80, 4, this);
+        var slashCol = new ColliderRect(slashPos, -25, -35, 50, 80, 4);
 
         // Handle collisions
         const collisions = slashCol.getCollision();
@@ -82,6 +82,10 @@ class Slash {
                     collision.owner.health -= 3;
                     this.hit = true;
                 }
+                // Play sound if it hit something
+                if (this.hit) {
+                    this.assetManager.playAsset("sounds/slashHit.mp3");
+                }
             }
 
             else { // SLASHER IS SLASHING (TYPE FISH)
@@ -90,11 +94,6 @@ class Slash {
                     this.hit = true;
                 }
             }
-        }
-
-        // Play sound if it hit something
-        if (this.hit) {
-            this.assetManager.playAsset("sounds/slashHit.mp3");
         }
 
         // Remove the collision box from the world
@@ -167,14 +166,14 @@ class Slash {
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
             ctx.save();
-            ctx.strokeStyle = 'blue';
+            ctx.strokeStyle = 'yellow';
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart,
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
             ctx.restore();
-        }
 
+        }
     }
 } 

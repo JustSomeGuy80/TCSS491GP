@@ -32,7 +32,7 @@ class Slasher {
         });
 
         this.moveSpeed = 200;
-        this.moveDirection = 1; // 1 = right, -1 = left
+        this.facing = 1; // 1 = right, -1 = left
         this.velocity = new Vector(0, 0);
         this.gravity = 1000; // Enable gravity for falling
 
@@ -84,7 +84,7 @@ class Slasher {
     }
 
     calcMovement() {
-        this.velocity.x = this.moveDirection * this.moveSpeed;
+        this.velocity.x = this.facing * this.moveSpeed;
         this.velocity.y += this.gravity * this.game.clockTick;
 
         this.position.x += this.velocity.x * this.game.clockTick;
@@ -128,7 +128,7 @@ class Slasher {
 
                     let normal = undefined;
                     if (horizontalHit) {
-                        this.moveDirection = -1;
+                        this.facing = -1;
                         if (difference.x >= 0) {
                             normal = new Vector(-1, 0);
                         } else {
@@ -161,15 +161,15 @@ class Slasher {
     }
 
     checkPatrolBounds() {
-        if (this.position.x >= this.patrolRight && this.moveDirection === 1) {
-            this.moveDirection = -1;
-        } else if (this.position.x <= this.patrolLeft && this.moveDirection === -1) {
-            this.moveDirection = 1;
+        if (this.position.x >= this.patrolRight && this.facing === 1) {
+            this.facing = -1;
+        } else if (this.position.x <= this.patrolLeft && this.facing === -1) {
+            this.facing = 1;
         }
     }
 
     flip() {
-        this.sprite.setHorizontalFlip(this.moveDirection === -1);
+        this.sprite.setHorizontalFlip(this.facing === -1);
     }
 
     draw(ctx) {

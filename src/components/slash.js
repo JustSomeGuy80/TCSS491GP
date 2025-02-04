@@ -90,7 +90,6 @@ class Slash {
                     this.hit = true;
                 }
             }
-
         }
 
         // Play sound if it hit something

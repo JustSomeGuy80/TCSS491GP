@@ -15,7 +15,7 @@ class Slash {
      * @param {Player} player
      * @param {number} xOffset
      * @param {number} yOffset
-     * @param {vector} vect
+     * @param {Vector} vect
      */
     constructor(game, assetManager, player, xOffset, yOffset, vect) {
         this.game = game;
@@ -25,6 +25,7 @@ class Slash {
         this.xOffset = xOffset
         this.yOffset = yOffset
         this.vect = vect.normalize();
+        this.hit = false;
 
         this.debugMode = false;
 
@@ -53,14 +54,13 @@ class Slash {
     // All the logic for the slash attack happens in a single frame, which is handled by this method
     init() {
         var clanged = false; // ensures that you can't get extra momentum from hitting multiple walls at once
-        var hit = false; // set to true if the slash hits anything, wall or enemy, and plays a sound later if so
 
         // Calculate where the collision should be placed
         var slashPos = new Position(this.position.x + (this.xOffset * this.player.facing), this.position.y + this.yOffset);
         slashPos = slashPos.asVector();
-        slashPos = slashPos.add(this.player.aimVector.normalize().multiply(60));
+        slashPos.add(this.player.aimVector.normalize().multiply(60));
         // Place collision
-        var slashCol = new ColliderRect(slashPos, -25, -35, 50, 80, 4);
+        var slashCol = new ColliderRect(slashPos, -25, -35, 50, 80, 4, this);
 
         // Handle collisions
         const collisions = slashCol.getCollision();
@@ -70,21 +70,31 @@ class Slash {
             if (done) {
                 break;
             }
-        
-            if (!clanged && collision.id == 1) {
-                this.neutralize();
-                const bounce = this.vect.multiply(this.calcPush())
-                this.player.velocity = this.player.velocity.add(bounce);
-                clanged = true;
-                hit = true;
-            } else if (collision.id == 3) {
-                collision.owner.health -= 3;
-                hit = true;
+
+            if (this.player.objectID === 0) { // PLAYER IS SLASHING
+                if (!clanged && collision.id === 1) {
+                    this.neutralize();
+                    const bounce = this.vect.multiply(this.calcPush())
+                    this.player.velocity = this.player.velocity.add(bounce);
+                    clanged = true;
+                    this.hit = true;
+                } else if (collision.id === 3) {
+                    collision.owner.health -= 3;
+                    this.hit = true;
+                }
             }
+
+            else { // SLASHER IS SLASHING (TYPE FISH)
+                if (collision.id === 0) {
+                    collision.owner.health -= 50;
+                    this.hit = true;
+                }
+            }
+
         }
 
         // Play sound if it hit something
-        if (hit) {
+        if (this.hit) {
             this.assetManager.playAsset("sounds/slashHit.mp3");
         }
 
@@ -155,16 +165,5 @@ class Slash {
         this.sprite.drawSprite(this.game.clockTick, ctx);
         ctx.restore();
 
-        if (this.debugMode) {
-            const bounds = this.collider.getBounds();
-            ctx.save();
-            ctx.strokeStyle = 'yellow';
-            ctx.strokeRect(
-                bounds.xStart - this.game.camera.x,
-                bounds.yStart,
-                bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
-            ctx.restore();
-        }
     }
 } 

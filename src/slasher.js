@@ -16,10 +16,13 @@ class Slasher {
     constructor(game, assetManager, x, y) {
         this.game = game;
         this.assetManager = assetManager;
-        this.debugMode = false;
+        this.debugMode = true;
         this.active = true;
         this.health = 3;
         this.removeFromWorld = false;
+        this.objectID = 3;
+        this.lastAttack = 0;
+        this.lastSlash = null;
 
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 3, this);
@@ -39,6 +42,8 @@ class Slasher {
         this.sprite.setHorizontalFlip(false);
         this.sprite.setState("running");
 
+        this.aimVector = new Vector(1, 0);
+
         /** @type {Animator[]} */
         this.animations = [];
         this.loadAnimations(this.assetManager);
@@ -53,9 +58,20 @@ class Slasher {
             const origin = this.position.asVector();
             this.calcMovement();
             this.runCollisions(origin);
+            this.attack();
             this.checkPatrolBounds();
             this.flip();
             this.death();
+        }
+    }
+
+    attack() {
+        if (this.lastAttack < this.game.timer.gameTime) {
+            let slashObj = new Slash(this.game, this.assetManager, this, this.collider.xOffset, this.collider.yOffset, this.aimVector)
+            if (slashObj.hit) {
+                this.lastAttack = this.game.timer.gameTime + 3;
+                this.lastSlash = slashObj;
+            }
         }
     }
 

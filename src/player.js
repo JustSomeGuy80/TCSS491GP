@@ -123,7 +123,7 @@ class Player {
         this.arm.update();
 
         if (this.health <= 0) {
-            this.removeFromWorld = true;
+            // this.removeFromWorld = true;
         }
     }
 

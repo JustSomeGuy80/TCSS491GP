@@ -11,7 +11,7 @@ class Bullet {
      * @param {AssetManager} assetManager
      * @param {number} x
      * @param {number} y
-     * @param {vector} vect
+     * @param {Vector} vect
      * @param {number} speed
      * @param {int} team // 0 for player. 1 for enemy. Could add more if we want enemy friendly-fire
      */
@@ -46,7 +46,6 @@ class Bullet {
                 this.age = 0;
                 this.active = false;
                 this.sprite.setState("blueExplode");
-
                 this.removeFromWorld = true;
             }
         } else if (this.age > .3) {
@@ -63,24 +62,36 @@ class Bullet {
         //      - to test, spawn the player inside of a wall in the constructor
         const collisions = this.collider.getCollision();
 
-
         while (true) {
             const { value: collision, done } = collisions.next();
 
             if (done) {
                 break;
             }
-            
-            if (collision.id !== 0) {
-                this.age = 0;
-                this.active = false;
-                this.sprite.setState("blueExplode");
+            if (this.team === 0) { // player bullet
+                if (collision.id !== 0 && collision.id !== 4) {
 
-                this.removeFromWorld = true;
-            }
+                    if (collision.id === 3) {
+                        collision.owner.health -= 1;
+                    }
 
-            if (collision.id === 3) {
-                collision.owner.health -= 1;
+                    this.age = 0;
+                    this.active = false;
+                    this.sprite.setState("blueExplode");
+                    this.removeFromWorld = true;
+                }
+            } else { // enemy bullet
+                if (collision.id !== 3 && collision.id !== 4) {
+
+                    if (collision.id === 0) {
+                        collision.owner.health -= 10;
+                    }
+
+                    this.age = 0;
+                    this.active = false;
+                    this.sprite.setState("blueExplode");
+                    this.removeFromWorld = true;
+                }
             }
         }
 

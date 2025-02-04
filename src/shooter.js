@@ -6,7 +6,7 @@
 /** @typedef {import("./engine/assetmanager")} */
 /** @typedef {import("./primitives/vector")} */
 
-class Slasher {
+class Shooter {
     /**
      * @param {GameEngine} game
      * @param {AssetManager} assetManager
@@ -22,8 +22,8 @@ class Slasher {
         this.removeFromWorld = false;
         this.objectID = 3;
         this.lastAttack = 0;
-        this.lastSlash = null;
-        this.aimVector = new Vector(1, 0);
+        this.bulletSpeed = 750;
+        this.bullets = [];
 
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 3, this);
@@ -61,17 +61,34 @@ class Slasher {
             this.checkPatrolBounds();
             this.flip();
             this.death();
+            this.bulletUpdate();
         }
     }
 
     attack() {
-        if (this.lastAttack < this.game.timer.gameTime) {
-            let slashObj = new Slash(this.game, this.assetManager, this, this.collider.xOffset, this.collider.yOffset, this.aimVector)
-            if (slashObj.hit) {
-                this.lastAttack = this.game.timer.gameTime + 3;
-                this.lastSlash = slashObj;
-            }
+        // Fire every 3 seconds
+        if (this.game.timer.gameTime >= this.lastAttack) {
+            let aimVector = new Vector(this.facing, 0)
+            let bulPos = new Position(this.position.x + (50 * this.facing), this.position.y); // 50 is the x offset
+            bulPos = bulPos.asVector();
+            bulPos.add(aimVector.normalize().multiply(36));
+            this.bullets.push(new Bullet(this.game, this.assetManager, bulPos.x, bulPos.y, aimVector, this.bulletSpeed, 1));
+
+            // Reset cooldown
+            this.lastAttack = this.game.timer.gameTime + 3;
+
         }
+    }
+
+    bulletUpdate() {
+        let newBullets = [];
+        this.bullets.forEach(el => {
+            el.update();
+            if (!el.unload) {
+                newBullets.push(el);
+            }
+        });
+        this.bullets = newBullets;
     }
 
     death() {
@@ -173,6 +190,10 @@ class Slasher {
 
     draw(ctx) {
         this.sprite.drawSprite(this.game.clockTick, ctx);
+
+        this.bullets.forEach(el => {
+            el.draw(ctx);
+        });
 
         if (this.debugMode) {
             const bounds = this.collider.getBounds();

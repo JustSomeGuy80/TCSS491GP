@@ -112,7 +112,7 @@ class GameEngine {
         }
 
         for (let i = 0; i < colliders.length; i++) {
-            if (colliders[i].owner.removeFromWorld) {
+            if (!colliders[i].owner || colliders[i].owner.removeFromWorld) {
                 colliders.splice(i, 1);
             }
         }

@@ -4,6 +4,7 @@
 /** @typedef {import("../primitives/vector")} */
 /** @typedef {import("./position")} */
 /** @typedef {import("./bullet")} */
+/** @typedef {import("./slash")} */
 /** @typedef {import("./ColliderRect")} */
 /** @typedef {import("./sprite")} */
 
@@ -12,6 +13,10 @@
  *  rotational animation of the arm, as well as firing bullets.
  */
 class Arm {
+    
+    static #FIRED = 0;
+    static #SLASHED = 1;
+
     /**
      * @param {GameEngine} game
      * @param {AssetManager} assetManager
@@ -30,7 +35,8 @@ class Arm {
         
         this.sprite = new Sprite(this.parent.position, this.game, 3, -48, -48, {
             blade: new Animator(assetManager.getAsset("anims/arm.png"), 0, 0, 32, 32, 1, 1),
-            bladeFire: new Animator(assetManager.getAsset("anims/arm.png"), 32, 0, 32, 32, 1, 1),
+            bladeFire: new Animator(assetManager.getAsset("anims/arm.png"), 32, 0, 32, 32, 1, .2, false),
+            slash: new Animator(assetManager.getAsset("anims/slash.png"), 0, 0, 32, 32, 3, .1, false),
         });
 
         this.sprite.setHorizontalFlip(false); // 0 = right, 1 = left
@@ -38,12 +44,20 @@ class Arm {
 
         this.bullets = [];
         this.fireRate = .75;
+        this.slashRate = this.fireRate * 1.5;
         this.fireCD = 0; // tracks when the player can shoot again
+
+        this.CDType = 0; // Tracks if cooldown is from shooting (0) or slashing (1)
+
         this.bulletSpeed = 750;
     }
 
     update() {
         if (this.fireCD > 0) this.fireCD -= this.game.clockTick;
+        if (this.CDType == Arm.#SLASHED && this.fireCD <= 0) {
+            this.assetManager.playAsset("sounds/slashReady.mp3");
+            this.CDType = Arm.#FIRED;
+        } 
         var newBullets = [];
         this.bullets.forEach(el => {
             el.update();
@@ -56,45 +70,38 @@ class Arm {
     }
 
     setState() {
-        if (this.fireCD >= (this.fireRate / 2)) this.sprite.setState("bladeFire");
-        else this.sprite.setState("blade")
+        // if (this.CDType == 0 && this.fireCD >= (this.fireRate / 2)) this.sprite.setState("bladeFire");
+        // else if (this.CDType == 1 && this.fireCD >= this.slashRate - (Arm.#SLASH_ANIM_TIME * 3)) this.sprite.setState("slash")
+        // else this.sprite.setState("blade")
+        if (this.sprite.isDone()) {
+            this.sprite.resetAnim();
+            this.sprite.setState("blade");
+        }
+
     }
 
     fire() {
         if (this.fireCD <= 0) {
+            this.CDType = Arm.#FIRED;
             this.fireCD = this.fireRate;
             var bulPos = new Position(this.parent.position.x + (this.xOffset * this.parent.facing), this.parent.position.y + this.yOffset);
             bulPos = bulPos.asVector();
             bulPos = bulPos.add(this.parent.aimVector.normalize().multiply(36));
             this.bullets.push(new Bullet(this.game, this.assetManager, bulPos.x, bulPos.y, this.parent.aimVector, this.bulletSpeed, 0));
+            this.sprite.setState("bladeFire");
         }
     }
 
+    //TEMPORARY implementation of the slash attack for the prototype presentation
     slash() {
         if (this.fireCD <= 0) {
-            this.fireCD = 2 * this.fireRate;
-            var slashPos = new Position(this.parent.position.x + (this.xOffset * this.parent.facing), this.parent.position.y + this.yOffset);
-            slashPos = slashPos.asVector();
-            slashPos = slashPos.add(this.parent.aimVector.normalize().multiply(60));
+            this.CDType = Arm.#SLASHED;
+            this.fireCD = this.slashRate;
 
-            var slashCol = new ColliderRect(slashPos, -25, -25, 50, 70, 4);
-            this.game.addEntity(slashCol);
-            
-            const collisions = slashCol.getCollision();
-            while (true) {
-                const { value: collision, done } = collisions.next();
+            this.bullets.push(new Slash(this.game, this.assetManager, this.parent, this.xOffset, this.yOffset, this.parent.aimVector));
 
-                if (done) {
-                    break;
-                }
-            
-                if (collision.id == 1) {
-                    const bounce = this.parent.aimVector.normalize().multiply(-150)
-                    this.parent.velocity = this.parent.velocity.add(bounce);
-                }
-            }
+            this.sprite.setState("slash");
 
-            slashCol.removeFromWorld = true;
         }
     }
 

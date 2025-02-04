@@ -21,6 +21,7 @@ class Player {
         this.tempGrounded = 1000;
         this.jumpHeight = 550;
         this.debugMode = false;
+        this.removeFromWorld = false;
 
         this.position = new Position(525, 500);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 0, this);
@@ -139,7 +140,7 @@ class Player {
         } else {
             if (grounded) this.jumped = 0;
             else if (this.velocity.y < 0 && this.jumped == 1)
-                this.velocity.y -= this.velocity.y * 8 * this.game.clockTick;
+                this.velocity.y -= this.velocity.y * 32 * this.game.clockTick;
             this.jumpBuffer = 0;
         }
 
@@ -176,7 +177,7 @@ class Player {
         }
 
         if (this.game.buttons[0]) this.arm.fire();
-        if (this.game.keys["Shift"] || this.game.buttons[3]) this.arm.slash();
+        if (this.game.keys["e"] || this.game.buttons[3]) this.arm.slash();
 
         // Do we apply ground friction to the player?
         var traction =

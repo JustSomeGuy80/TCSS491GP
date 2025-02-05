@@ -25,7 +25,7 @@ class ColliderRect {
         this.id = id;
         this.owner = owner;
 
-        this.debugMode = true;
+        this.debugMode = false;
 
         colliders.push(this);
     }
@@ -46,14 +46,17 @@ class ColliderRect {
         return null;
     }
 
-    expand(percent) {
+    expandW(percent) {
         let newW = this.w * percent;
-        let newH = this.h * percent;
         let newX = this.xOffset - (newW - this.w) / 2;
-        let newY = this.yOffset - (newH - this.h) / 2;
         this.w = newW;
-        this.h = newH;
         this.xOffset = newX;
+    }
+
+    expandH(percent) {
+        let newH = this.h * percent;
+        let newY = this.yOffset - (newH - this.h) / 2;
+        this.h = newH;
         this.yOffset = newY;
     }
 

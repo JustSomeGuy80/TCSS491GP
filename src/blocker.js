@@ -79,7 +79,7 @@ class Blocker {
 
                 if (collision.id === 0) {
 
-                    const gridSize = 7;
+                    const gridSize = 5;
                     const blockSize = 50;
 
                     const offset = (gridSize / 2) * blockSize;
@@ -96,10 +96,6 @@ class Blocker {
                             this.game.addEntity(new Block(this.game, this.assetManager, x, y));
                         }
                     }
-
-
-
-
                 }
                 this.lastAttack = this.game.timer.gameTime + 6;
             }

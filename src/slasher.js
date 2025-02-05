@@ -24,6 +24,7 @@ class Slasher {
         this.lastAttack = 0;
         this.lastSlash = null;
         this.aimVector = new Vector(1, 0);
+        this.drawSlash = false;
 
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 3, this);
@@ -70,6 +71,7 @@ class Slasher {
             if (slashObj.hit) {
                 this.lastAttack = this.game.timer.gameTime + 3;
                 this.lastSlash = slashObj;
+                this.drawSlash = true;
             }
         }
     }
@@ -173,6 +175,10 @@ class Slasher {
 
     draw(ctx) {
         this.sprite.drawSprite(this.game.clockTick, ctx);
+
+        if (this.drawSlash) {
+            this.lastSlash.draw(ctx);
+        }
 
         if (this.debugMode) {
             const bounds = this.collider.getBounds();

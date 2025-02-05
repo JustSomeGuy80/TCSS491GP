@@ -20,11 +20,7 @@ class Slasher {
         this.active = true;
         this.health = 3;
         this.removeFromWorld = false;
-        this.objectID = 3;
         this.lastAttack = 0;
-        this.lastSlash = null;
-        this.aimVector = new Vector(1, 0);
-        this.drawSlash = false;
 
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 3, this);
@@ -67,11 +63,23 @@ class Slasher {
 
     attack() {
         if (this.lastAttack < this.game.timer.gameTime) {
-            let slashObj = new Slash(this.game, this.assetManager, this, this.collider.xOffset, this.collider.yOffset, this.aimVector)
-            if (slashObj.hit) {
+
+            let attackRect = new ColliderRect(this.position, -28, -48, 56, 96, 4, this);
+            attackRect.expandW(5);
+            attackRect.expandH(2);
+
+            const collisions = attackRect.getCollision();
+
+            while (true) {
+                const {value: collision, done} = collisions.next();
+                if (done) break;
+
+                const {xStart, xEnd, yStart, yEnd} = collision.getBounds();
+
+                if (collision.id === 0) {
+                    collision.owner.health -= 50;
+                }
                 this.lastAttack = this.game.timer.gameTime + 3;
-                this.lastSlash = slashObj;
-                this.drawSlash = true;
             }
         }
     }
@@ -189,15 +197,16 @@ class Slasher {
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
 
-            if (this.lastSlash) {
-                const slashBounds = this.lastSlash.collider.getBounds();
-                ctx.strokeStyle = 'yellow';
-                ctx.strokeRect(
-                    slashBounds.xStart - this.game.camera.x,
-                    slashBounds.yStart,
-                    slashBounds.xEnd - slashBounds.xStart,
-                    slashBounds.yEnd - slashBounds.yStart);
-            }
+            let attackRect = new ColliderRect(this.position, -28, -48, 56, 96, 4, this);
+            attackRect.expandW(5);
+            attackRect.expandH(2);
+            const attackBounds = attackRect.getBounds();
+            ctx.strokeStyle = 'lightblue';
+            ctx.strokeRect(
+                attackBounds.xStart - this.game.camera.x,
+                attackBounds.yStart,
+                attackBounds.xEnd - attackBounds.xStart,
+                attackBounds.yEnd - attackBounds.yStart);
         }
     }
 }

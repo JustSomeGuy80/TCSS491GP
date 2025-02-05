@@ -15,7 +15,7 @@ class Slash {
      * @param {Player} player
      * @param {number} xOffset
      * @param {number} yOffset
-     * @param {Vector} vect
+     * @param {vector} vect
      */
     constructor(game, assetManager, player, xOffset, yOffset, vect) {
         this.game = game;
@@ -25,9 +25,8 @@ class Slash {
         this.xOffset = xOffset
         this.yOffset = yOffset
         this.vect = vect.normalize();
-        this.hit = false;
 
-        this.debugMode = true;
+        this.debugMode = false;
 
         this.flip = this.vect.x < 0
 
@@ -41,7 +40,7 @@ class Slash {
         if (this.flip) {
             this.sprite.setHorizontalFlip(true)
         }
-    
+
         this.sprite.setState("slash");
 
         this.unload = false;
@@ -54,6 +53,7 @@ class Slash {
     // All the logic for the slash attack happens in a single frame, which is handled by this method
     init() {
         var clanged = false; // ensures that you can't get extra momentum from hitting multiple walls at once
+        var hit = false; // set to true if the slash hits anything, wall or enemy, and plays a sound later if so
 
         // Calculate where the collision should be placed
         var slashPos = new Position(this.position.x + (this.xOffset * this.player.facing), this.position.y + this.yOffset);
@@ -71,29 +71,21 @@ class Slash {
                 break;
             }
 
-            if (this.player.objectID === 0) { // PLAYER IS SLASHING
-                if (!clanged && collision.id === 1) {
-                    this.neutralize();
-                    const bounce = this.vect.multiply(this.calcPush())
-                    this.player.velocity = this.player.velocity.add(bounce);
-                    clanged = true;
-                    this.hit = true;
-                } else if (collision.id === 3) {
-                    collision.owner.health -= 3;
-                    this.hit = true;
-                }
-                // Play sound if it hit something
-                if (this.hit) {
-                    this.assetManager.playAsset("sounds/slashHit.mp3");
-                }
+            if (!clanged && collision.id == 1) {
+                this.neutralize();
+                const bounce = this.vect.multiply(this.calcPush())
+                this.player.velocity = this.player.velocity.add(bounce);
+                clanged = true;
+                hit = true;
+            } else if (collision.id == 3) {
+                collision.owner.health -= 3;
+                hit = true;
             }
+        }
 
-            else { // SLASHER IS SLASHING (TYPE FISH)
-                if (collision.id === 0) {
-                    collision.owner.health -= 50;
-                    this.hit = true;
-                }
-            }
+        // Play sound if it hit something
+        if (hit) {
+            this.assetManager.playAsset("sounds/slashHit.mp3");
         }
 
         // Remove the collision box from the world
@@ -103,7 +95,7 @@ class Slash {
         this.collider = slashCol;
     }
 
-    // Calculates how hard the player gets pushed by the slash hitting terrain, 
+    // Calculates how hard the player gets pushed by the slash hitting terrain,
     // based on the angle and magnitude of their momentum and the angle of the slash.
     // Maximum of 350 velocity, minimum of 150.
     calcPush() {
@@ -154,7 +146,7 @@ class Slash {
         } else {
             xTranslate = this.position.x - this.game.camera.x - this.xOffset;
             angle += Math.PI;
-        } 
+        }
 
         ctx.save();
         ctx.translate(xTranslate, (this.position.y + this.yOffset));
@@ -173,7 +165,6 @@ class Slash {
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
             ctx.restore();
-
         }
     }
 } 

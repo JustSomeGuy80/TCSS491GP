@@ -23,10 +23,10 @@ class Slasher {
         this.lastAttack = 0;
 
         this.position = new Position(x, y);
-        this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 3, this);
-        this.sprite = new Sprite(this.position, this.game,3, -48, -48, {
-            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2),
-            death: new Animator(this.assetManager.getAsset("anims/run.png"), 1000, 0, 32, 32, 4, 0.2)
+        this.collider = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 3, this);
+        this.sprite = new Sprite(this.position, this.game, 3, -43, -48, {
+            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.2),
+            death: new Animator(this.assetManager.getAsset("anims/run.png"), 1000, 0, 32, 32, 4, 0.2),
         });
 
         this.moveSpeed = 200;
@@ -46,7 +46,7 @@ class Slasher {
     }
 
     loadAnimations(assetManager) {
-        this.animations.push(new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2));
+        this.animations.push(new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43 * 8, 48 * 8, 7, 0.2));
     }
 
     update() {
@@ -63,22 +63,25 @@ class Slasher {
 
     attack() {
         if (this.lastAttack < this.game.timer.gameTime) {
-
-            let attackRect = new ColliderRect(this.position, -28, -48, 56, 96, 4, this);
-            attackRect.expandW(5);
+            let hitPlayer = false;
+            const attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
+            attackRect.expandW(3);
             attackRect.expandH(2);
 
             const collisions = attackRect.getCollision();
-
             while (true) {
-                const {value: collision, done} = collisions.next();
+                const { value: collision, done } = collisions.next();
                 if (done) break;
-
-                const {xStart, xEnd, yStart, yEnd} = collision.getBounds();
-
-                if (collision.id === 0) {
+                if (collision.id === 0) { // Player
                     collision.owner.health -= 50;
+                    hitPlayer = true;
                 }
+            }
+
+            if (hitPlayer) {
+                const slash = new SlashEffect(this.game, this.assetManager, this.position.x, this.position.y, this.facing, this);
+                this.game.addEntity(slash);
+                this.moveSpeed = 0;
                 this.lastAttack = this.game.timer.gameTime + 3;
             }
         }
@@ -120,10 +123,10 @@ class Slasher {
 
                 // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
                 if (difference.getMagnitude() >= 0.0) {
-                    let nearX = (xStart - this.collider.w / 2 - origin.x) / difference.x;
-                    let farX = (xEnd + this.collider.w / 2 - origin.x) / difference.x;
-                    let nearY = (yStart - this.collider.h / 2 - origin.y) / difference.y;
-                    let farY = (yEnd + this.collider.h / 2 - origin.y) / difference.y;
+                    let nearX = (xStart - this.collider.w / 1.5 - origin.x) / difference.x;
+                    let farX = (xEnd + this.collider.w / 1.5 - origin.x) / difference.x;
+                    let nearY = (yStart - this.collider.h / 1.5 - origin.y) / difference.y;
+                    let farY = (yEnd + this.collider.h / 1.5 - origin.y) / difference.y;
 
                     if (nearX > farX) {
                         [farX, nearX] = [nearX, farX];
@@ -158,8 +161,6 @@ class Slasher {
                             this.velocity.x = 0;
                             this.position.set(x, this.position.y);
                         } else {
-                            // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
-                            this.groundOverride = 4;
                             this.velocity.y = 0;
                             this.position.set(this.position.x, y);
                         }
@@ -184,10 +185,6 @@ class Slasher {
     draw(ctx) {
         this.sprite.drawSprite(this.game.clockTick, ctx);
 
-        if (this.drawSlash) {
-            this.lastSlash.draw(ctx);
-        }
-
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
             ctx.strokeStyle = 'yellow';
@@ -197,8 +194,8 @@ class Slasher {
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
 
-            let attackRect = new ColliderRect(this.position, -28, -48, 56, 96, 4, this);
-            attackRect.expandW(5);
+            let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
+            attackRect.expandW(3);
             attackRect.expandH(2);
             const attackBounds = attackRect.getBounds();
             ctx.strokeStyle = 'lightblue';
@@ -208,5 +205,37 @@ class Slasher {
                 attackBounds.xEnd - attackBounds.xStart,
                 attackBounds.yEnd - attackBounds.yStart);
         }
+    }
+}
+
+class SlashEffect {
+    constructor(game, assetManager, x, y, facing, parent) {
+        this.game = game;
+        this.assetManager = assetManager;
+        this.x = x;
+        this.y = y;
+        this.removeFromWorld = false;
+        this.duration = 0.4; // 0.1s per frame * 4 frames
+        this.timer = 0;
+        this.parent = parent;
+
+        this.position = new Position(this.x, this.y);
+        this.sprite = new Sprite(this.position, game, 7, -43 * 4, -48 * 2, {
+            slash: new Animator(this.assetManager.getAsset("anims/slasherslash.png"), 0, 0, 56, 32, 4, 0.1, false)
+        });
+        this.sprite.setHorizontalFlip(facing === -1);
+        this.sprite.setState("slash");
+    }
+
+    update() {
+        this.timer += this.game.clockTick;
+        if (this.timer >= this.duration) {
+            this.removeFromWorld = true;
+            this.parent.moveSpeed = 200;
+        }
+    }
+
+    draw(ctx) {
+        this.sprite.drawSprite(this.game.clockTick, ctx);
     }
 }

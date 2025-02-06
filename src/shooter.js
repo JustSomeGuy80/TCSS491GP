@@ -26,9 +26,9 @@ class Shooter {
         this.bullets = [];
 
         this.position = new Position(x, y);
-        this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 3, this);
-        this.sprite = new Sprite(this.position, this.game,3, -48, -48, {
-            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2),
+        this.collider = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 3, this);
+        this.sprite = new Sprite(this.position, this.game, 3, -43, -48, {
+            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.2),
             death: new Animator(this.assetManager.getAsset("anims/run.png"), 1000, 0, 32, 32, 4, 0.2)
         });
 
@@ -49,7 +49,7 @@ class Shooter {
     }
 
     loadAnimations(assetManager) {
-        this.animations.push(new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2));
+        this.animations.push(new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.2));
     }
 
     update() {
@@ -127,10 +127,10 @@ class Shooter {
 
                 // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
                 if (difference.getMagnitude() >= 0.0) {
-                    let nearX = (xStart - this.collider.w / 2 - origin.x) / difference.x;
-                    let farX = (xEnd + this.collider.w / 2 - origin.x) / difference.x;
-                    let nearY = (yStart - this.collider.h / 2 - origin.y) / difference.y;
-                    let farY = (yEnd + this.collider.h / 2 - origin.y) / difference.y;
+                    let nearX = (xStart - this.collider.w / 1.5 - origin.x) / difference.x;
+                    let farX = (xEnd + this.collider.w / 1.5 - origin.x) / difference.x;
+                    let nearY = (yStart - this.collider.h / 1.5 - origin.y) / difference.y;
+                    let farY = (yEnd + this.collider.h / 1.5 - origin.y) / difference.y;
 
                     if (nearX > farX) {
                         [farX, nearX] = [nearX, farX];

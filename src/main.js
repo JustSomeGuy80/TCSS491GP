@@ -20,6 +20,7 @@ function main() {
     ASSET_MANAGER.queueDownload("anims/slashEffect.png");
     ASSET_MANAGER.queueDownload("anims/slasher.png");
     ASSET_MANAGER.queueDownload("anims/block.png");
+    ASSET_MANAGER.queueDownload("anims/slasherslash.png")
 
     ASSET_MANAGER.queueDownload("sounds/music.mp3");
     ASSET_MANAGER.queueDownload("sounds/jump.mp3");

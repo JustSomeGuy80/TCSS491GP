@@ -66,7 +66,7 @@ class Slasher {
             let hitPlayer = false;
             const attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
             attackRect.expandW(3);
-            attackRect.expandH(2);
+            attackRect.expandH(1.5);
 
             const collisions = attackRect.getCollision();
             while (true) {
@@ -196,7 +196,7 @@ class Slasher {
 
             let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
             attackRect.expandW(3);
-            attackRect.expandH(2);
+            attackRect.expandH(1.5);
             const attackBounds = attackRect.getBounds();
             ctx.strokeStyle = 'lightblue';
             ctx.strokeRect(

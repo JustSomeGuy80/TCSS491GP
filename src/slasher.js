@@ -25,7 +25,7 @@ class Slasher {
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 3, this);
         this.sprite = new Sprite(this.position, this.game, 3, -43, -48, {
-            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.2),
+            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.1),
             death: new Animator(this.assetManager.getAsset("anims/run.png"), 1000, 0, 32, 32, 4, 0.2),
         });
 
@@ -46,7 +46,7 @@ class Slasher {
     }
 
     loadAnimations(assetManager) {
-        this.animations.push(new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43 * 8, 48 * 8, 7, 0.2));
+        this.animations.push(new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43 * 8, 48 * 8, 7, 0.1));
     }
 
     update() {

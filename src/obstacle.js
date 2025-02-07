@@ -12,20 +12,23 @@ class Obstacle {
         this.removeFromWorld = false;
 
         this.collision = new ColliderRect(this.position, 0, 0, width, height, 1, this);
+        this.game.addEntity(this.collision);
     }
 
-    update() {}
+    update() {
+
+    }
 
     draw(ctx) {
         // camera offset
         const camX = this.position.x - this.game.camera.x;
         const camY = this.position.y - this.game.camera.y;
-
+        
         // draws if on screen
         if (camX + this.width < 0 || camX > ctx.canvas.width) return;
         if (camY + this.height < 0 || camY > ctx.canvas.height) return;
 
         ctx.fillStyle = this.type === "spike" ? "red" : "gray";
-        ctx.fillRect(camX, this.position.y, this.width, this.height);
+        ctx.fillRect(camX, camY, this.width, this.height);
     }
-}
+} 

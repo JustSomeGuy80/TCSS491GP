@@ -2,6 +2,7 @@
 /** @typedef {import("./components/ColliderRect")} */
 /** @typedef {import("./components/position")} */
 /** @typedef {import("./components/arm")} */
+/** @typedef {import("./components/teleoprt")} */
 /** @typedef {import("./components/sprite")} */
 /** @typedef {import("./engine/gameengine")} */
 /** @typedef {import("./engine/assetmanager")} */
@@ -18,13 +19,16 @@ class Player {
     constructor(game, assetManager) {
         this.game = game;
         this.assetManager = assetManager;
-        this.tempGrounded = 1000;
         this.jumpHeight = 550;
         this.debugMode = false;
         this.removeFromWorld = false;
 
+        const height = 96;
+        const width = 56;
+
         this.position = new Position(525, 500);
-        this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 0, this);
+        this.collider = new ColliderRect(this.position, -width/2, -height/2, width, height, 0, this);
+        this.teleport = new Teleport(game, assetManager, this, -width/2, -height/2, width, height)
         this.arm = new Arm(game, this.assetManager, this, 6, -4, "bladed");
         this.sprite = new Sprite(this.position, this.game, 3, -48, -48, {
             idle: new Animator(this.assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
@@ -121,6 +125,7 @@ class Player {
         this.setState();
 
         this.arm.update();
+        this.teleport.update();
     }
 
     checkInput() {
@@ -177,7 +182,8 @@ class Player {
         }
 
         if (this.game.buttons[0]) this.arm.fire();
-        if (this.game.keys["e"] || this.game.buttons[3]) this.arm.slash();
+        if (this.game.keys["s"] || this.game.buttons[3]) this.arm.slash();
+        if (this.game.keys["w"]) this.teleport.teleport();
 
         // Do we apply ground friction to the player?
         var traction =
@@ -199,7 +205,6 @@ class Player {
         const gravity = 1000;
         this.position.x += this.velocity.x * this.game.clockTick;
         this.position.y += this.velocity.y * this.game.clockTick;
-        if (this.position.y > this.tempGrounded) this.position.y = this.tempGrounded;
 
         // player needs to be put into the ground anyways for game to detect ground collision
         // if (!this.isGrounded()) this.velocity.y += gravity * this.game.clockTick;
@@ -299,11 +304,12 @@ class Player {
 
     isGrounded() {
         //TEMPORARY
-        return this.groundOverride > 0 || this.position.y >= this.tempGrounded;
+        return this.groundOverride > 0;
     }
 
     draw(ctx) {
         this.arm.draw(ctx);
+        this.teleport.draw(ctx);
         this.sprite.drawSprite(this.game.clockTick, ctx);
 
         if (this.debugMode) {

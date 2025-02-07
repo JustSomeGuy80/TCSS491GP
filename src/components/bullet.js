@@ -57,10 +57,6 @@ class Bullet {
     }
 
     runCollisions() {
-        // TEMPORARY IMPLEMENTATION OF HITBOXES
-        // bugs:
-        // - (sort of a bug) when you are in the left side of a wall and go left, you tp to the right of wall
-        //      - to test, spawn the player inside of a wall in the constructor
         const collisions = this.collider.getCollision();
 
 
@@ -71,7 +67,7 @@ class Bullet {
                 break;
             }
             
-            if (collision.id !== 0) {
+            if (collision.id === 1 || collision.id === 3) {
                 this.age = 0;
                 this.active = false;
                 this.sprite.setState("blueExplode");
@@ -95,7 +91,7 @@ class Bullet {
             ctx.strokeStyle = 'yellow';
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
-                bounds.yStart,
+                bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
             ctx.restore();

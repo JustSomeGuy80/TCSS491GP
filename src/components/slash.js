@@ -149,9 +149,9 @@ class Slash {
         } 
 
         ctx.save();
-        ctx.translate(xTranslate, (this.position.y + this.yOffset));
+        ctx.translate(xTranslate, (this.position.y + this.yOffset - this.game.camera.y));
         ctx.rotate(angle);
-        ctx.translate(-xTranslate, -(this.position.y + this.yOffset));
+        ctx.translate(-xTranslate, -(this.position.y + this.yOffset - this.game.camera.y));
         this.sprite.drawSprite(this.game.clockTick, ctx);
         ctx.restore();
 
@@ -161,7 +161,7 @@ class Slash {
             ctx.strokeStyle = 'yellow';
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
-                bounds.yStart,
+                bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
             ctx.restore();

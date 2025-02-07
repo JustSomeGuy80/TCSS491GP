@@ -14,11 +14,13 @@ class SceneManager {
         
         // map dimensions
         this.mapWidth = 3000;
-        this.mapHeight = 768;
+        this.mapHeight = 2000;
         
         // camera bounds
         this.cameraBoundLeft = 500;
         this.cameraBoundRight = 550;
+        this.cameraBoundTop = 400;
+        this.cameraBoundBottom = 450;
 
         // Editor mode properties
         this.isEditMode = false;
@@ -56,6 +58,16 @@ class SceneManager {
         this.addObstacle(1200, 600, 800, 20, "platform");
         this.addObstacle(2200, 600, 800, 20, "platform");
 
+        this.addObstacle(400, 900, 1000, 20, "platform");
+        this.addObstacle(1100, 750, 100, 20, "platform");
+        this.addObstacle(1550, 1100, 500, 20, "platform");
+        this.addObstacle(900, 1300, 800, 20, "platform");
+        this.addObstacle(0, 1600, 1000, 20, "platform");
+        this.addObstacle(600, 1450, 100, 20, "platform");
+        this.addObstacle(1100, 1700, 1000, 20, "platform");
+        this.addObstacle(1800, 1500, 100, 20, "platform");
+        this.addObstacle(2100, 1400, 1000, 20, "platform");
+
         // platform tests
         this.addObstacle(1050, 450, 100, 20, "platform");
         this.addObstacle(1400, 400, 100, 20, "platform");
@@ -85,15 +97,50 @@ class SceneManager {
     updateCamera() {
         // only moves camera when player moves past bounds
         if (this.player.position.x - this.x > this.cameraBoundRight) {
-            this.x = this.player.position.x - this.cameraBoundRight;
+            // Adjust camera steadily to the right if the player is past the right bound
+            this.x += (this.player.velocity.x + 250) * this.game.clockTick;
+
+            // Fix camera jitter by hard locking the camera to the player if they are close to the bound
+            if ((this.player.position.x - this.cameraBoundRight) - this.x < 5) {
+                this.x = this.player.position.x - this.cameraBoundRight;
+            }
         } else if (this.player.position.x - this.x < this.cameraBoundLeft) {
-            this.x = this.player.position.x - this.cameraBoundLeft;
+            // Adjust camera steadily to the left if the player is past the left bound
+            this.x += (this.player.velocity.x - 250) * this.game.clockTick;
+
+            // Fix camera jitter by hard locking the camera to the player if they are close to the bound
+            if ((this.x - (this.player.position.x - this.cameraBoundLeft)) < 5) {
+                this.x = (this.player.position.x - this.cameraBoundLeft)
+            }
+        }
+
+        if (this.player.position.y - this.y > this.cameraBoundBottom) {
+            // Adjust camera steadily to the bottom if the player is past the bottom bound
+            this.y += (this.player.velocity.y + 250) * this.game.clockTick;
+
+            // Fix camera jitter by hard locking the camera to the player if they are close to the bound
+            if ((this.player.position.y - this.cameraBoundBottom) - this.y < 5) {
+                this.y = this.player.position.y - this.cameraBoundBottom;
+            }
+        } else if (this.player.position.y - this.y < this.cameraBoundTop) {
+            // Adjust camera steadily to the top if the player is past the top bound
+            this.y += (this.player.velocity.y - 250) * this.game.clockTick;
+
+            // Fix camera jitter by hard locking the camera to the player if they are close to the bound
+            if ((this.y - (this.player.position.y - this.cameraBoundTop)) < 5) {
+                this.y = (this.player.position.y - this.cameraBoundTop)
+            }
         }
 
         // camera bounds
         if (this.x < 0) this.x = 0;
         if (this.x > this.mapWidth - this.game.ctx.canvas.width) {
             this.x = this.mapWidth - this.game.ctx.canvas.width;
+        }
+        
+        if (this.y < 0) this.y = 0;
+        if (this.y > this.mapHeight - this.game.ctx.canvas.height) {
+            this.y = this.mapHeight - this.game.ctx.canvas.height;
         }
     }
 

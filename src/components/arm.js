@@ -127,9 +127,9 @@ class Arm {
         } 
 
         ctx.save();
-        ctx.translate(xTranslate, (this.parent.position.y + this.yOffset));
+        ctx.translate(xTranslate, (this.parent.position.y + this.yOffset - this.game.camera.y));
         ctx.rotate(angle);
-        ctx.translate(-xTranslate, -(this.parent.position.y + this.yOffset));
+        ctx.translate(-xTranslate, -(this.parent.position.y + this.yOffset - this.game.camera.y));
         this.sprite.drawSprite(this.game.clockTick, ctx);
         ctx.restore();
 

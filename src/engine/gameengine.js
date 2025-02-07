@@ -110,7 +110,14 @@ class GameEngine {
                 this.entities.splice(i, 1);
             }
         }
+
+        for (let i = 0; i < colliders.length; i++) {
+            if (!colliders[i].owner || colliders[i].owner.removeFromWorld) {
+                colliders.splice(i, 1);
+            }
+        }
     }
+
 
     loop() {
         this.clockTick = this.timer.tick();

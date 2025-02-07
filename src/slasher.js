@@ -23,25 +23,9 @@ class Slasher {
 
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 3, this);
-        this.sprite = new Sprite(this.position, this.game, 3, -48, -48, {
-            running: new Animator(
-                this.assetManager.getAsset("anims/slasher.png"),
-                0,
-                0,
-                32,
-                32,
-                4,
-                0.2
-            ),
-            death: new Animator(
-                this.assetManager.getAsset("anims/run.png"),
-                1000,
-                0,
-                32,
-                32,
-                4,
-                0.2
-            ),
+        this.sprite = new Sprite(this.position, this.game,3, -48, -48, {
+            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2),
+            death: new Animator(this.assetManager.getAsset("anims/run.png"), 1000, 0, 32, 32, 4, 0.2)
         });
 
         this.moveSpeed = 200;
@@ -58,14 +42,10 @@ class Slasher {
         /** @type {Animator[]} */
         this.animations = [];
         this.loadAnimations(this.assetManager);
-
-        this.groundOverride = 0;
     }
 
     loadAnimations(assetManager) {
-        this.animations.push(
-            new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2)
-        );
+        this.animations.push(new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2));
     }
 
     update() {
@@ -87,10 +67,6 @@ class Slasher {
         }
     }
 
-    isGrounded() {
-        return this.groundOverride > 0;
-    }
-
     calcMovement() {
         this.velocity.x = this.moveDirection * this.moveSpeed;
         this.velocity.y += this.gravity * this.game.clockTick;
@@ -100,16 +76,71 @@ class Slasher {
     }
 
     runCollisions(origin) {
-        const displacement = this.position.asVector().subtract(origin);
-        const adjustment = this.collider.resolveCollisions(displacement);
+        const collisions = this.collider.getCollision();
+        let target = this.position.asVector();
 
-        this.position.add(adjustment);
+        while (true) {
+            const { value: collision, done } = collisions.next();
+            if (done) break;
 
-        if (adjustment.y < 0) {
-            this.velocity.y = 0;
-            this.groundOverride = 2;
-        } else {
-            this.groundOverride -= 1;
+            const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
+            const difference = target.subtract(origin);
+
+            if (collision.id === 0) { // player
+
+            }
+
+            else if (collision.id === 1) { // platform
+                const difference = target.subtract(origin);
+
+                // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
+                if (difference.getMagnitude() >= 0.0) {
+                    let nearX = (xStart - this.collider.w / 2 - origin.x) / difference.x;
+                    let farX = (xEnd + this.collider.w / 2 - origin.x) / difference.x;
+                    let nearY = (yStart - this.collider.h / 2 - origin.y) / difference.y;
+                    let farY = (yEnd + this.collider.h / 2 - origin.y) / difference.y;
+
+                    if (nearX > farX) {
+                        [farX, nearX] = [nearX, farX];
+                    }
+                    if (nearY > farY) {
+                        [farY, nearY] = [nearY, farY];
+                    }
+
+                    const horizontalHit = nearX > nearY;
+                    const hitNear = horizontalHit ? nearX : nearY;
+
+                    let normal = undefined;
+                    if (horizontalHit) {
+                        this.moveDirection = -1;
+                        if (difference.x >= 0) {
+                            normal = new Vector(-1, 0);
+                        } else {
+                            normal = new Vector(1, 0);
+                        }
+                    } else {
+                        if (difference.y >= 0) {
+                            normal = new Vector(0, -1);
+                        } else {
+                            normal = new Vector(0, 1);
+                        }
+                    }
+
+                    if (hitNear && isFinite(hitNear)) {
+                        const {x, y} = origin.add(difference.multiply(hitNear));
+
+                        if (horizontalHit) {
+                            this.velocity.x = 0;
+                            this.position.set(x, this.position.y);
+                        } else {
+                            // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
+                            this.groundOverride = 4;
+                            this.velocity.y = 0;
+                            this.position.set(this.position.x, y);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -130,13 +161,12 @@ class Slasher {
 
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
-            ctx.strokeStyle = "yellow";
+            ctx.strokeStyle = 'yellow';
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart
-            );
+                bounds.yEnd - bounds.yStart);
         }
     }
 }

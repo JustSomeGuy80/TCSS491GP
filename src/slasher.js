@@ -7,6 +7,8 @@
 /** @typedef {import("./primitives/vector")} */
 
 class Slasher {
+    TYPE_ID = Slasher.name;
+
     /**
      * @param {GameEngine} game
      * @param {AssetManager} assetManager
@@ -23,9 +25,25 @@ class Slasher {
 
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 3, this);
-        this.sprite = new Sprite(this.position, this.game,3, -48, -48, {
-            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2),
-            death: new Animator(this.assetManager.getAsset("anims/run.png"), 1000, 0, 32, 32, 4, 0.2)
+        this.sprite = new Sprite(this.position, this.game, 3, -48, -48, {
+            running: new Animator(
+                this.assetManager.getAsset("anims/slasher.png"),
+                0,
+                0,
+                32,
+                32,
+                4,
+                0.2
+            ),
+            death: new Animator(
+                this.assetManager.getAsset("anims/run.png"),
+                1000,
+                0,
+                32,
+                32,
+                4,
+                0.2
+            ),
         });
 
         this.moveSpeed = 200;
@@ -45,7 +63,9 @@ class Slasher {
     }
 
     loadAnimations(assetManager) {
-        this.animations.push(new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2));
+        this.animations.push(
+            new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2)
+        );
     }
 
     update() {
@@ -76,7 +96,7 @@ class Slasher {
     }
 
     runCollisions(origin) {
-        const collisions = this.collider.getCollision();
+        const collisions = this.collider.getCollisions();
         let target = this.position.asVector();
 
         while (true) {
@@ -86,11 +106,10 @@ class Slasher {
             const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
             const difference = target.subtract(origin);
 
-            if (collision.id === 0) { // player
-
-            }
-
-            else if (collision.id === 1) { // platform
+            if (collision.id === 0) {
+                // player
+            } else if (collision.id === 1) {
+                // platform
                 const difference = target.subtract(origin);
 
                 // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
@@ -127,7 +146,7 @@ class Slasher {
                     }
 
                     if (hitNear && isFinite(hitNear)) {
-                        const {x, y} = origin.add(difference.multiply(hitNear));
+                        const { x, y } = origin.add(difference.multiply(hitNear));
 
                         if (horizontalHit) {
                             this.velocity.x = 0;
@@ -161,12 +180,13 @@ class Slasher {
 
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.yEnd - bounds.yStart
+            );
         }
     }
 }

@@ -56,3 +56,26 @@ function getDistance(p1, p2) {
 function inRange(x, min, max) {
     return x >= min && x <= max;
 }
+
+/**
+ * Normalizes a number.
+ * @param {number} value
+ */
+function getDirection(value) {
+    if (value > 0) {
+        return 1;
+    } else if (value === 0) {
+        return 0;
+    }
+
+    return -1;
+}
+
+/**
+ * Returns true if the directions of a and b are not zero and are not equal
+ * @param {number} a
+ * @param {number} b
+ */
+function isDirectionalCounter(a, b) {
+    return Boolean(getDirection(a) && getDirection(b)) && getDirection(a) !== getDirection(b);
+}

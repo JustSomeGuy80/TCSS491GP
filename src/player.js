@@ -7,11 +7,15 @@
 /** @typedef {import("./engine/gameengine")} */
 /** @typedef {import("./engine/assetmanager")} */
 /** @typedef {import("./primitives/vector")} */
+/** @typedef {import("./primitives/instance-vector")} */
+/** @typedef {import("./components/falling-player-controller")} */
 
 /**
  * Player is an entity controlled by the user within the game.
  */
 class Player {
+    static TYPE_ID = Player.name;
+
     /**
      * @param {GameEngine} game
      * @param {AssetManager} assetManager
@@ -19,16 +23,42 @@ class Player {
     constructor(game, assetManager) {
         this.game = game;
         this.assetManager = assetManager;
-        this.jumpHeight = 550;
+        // this.jumpHeight = 550;
         this.debugMode = false;
         this.removeFromWorld = false;
 
         const height = 96;
         const width = 56;
 
-        this.position = new Position(525, 500);
-        this.collider = new ColliderRect(this.position, -width/2, -height/2, width, height, 0, this);
-        this.teleport = new Teleport(game, assetManager, this, -width/2, -height/2, width, height)
+        this.position = new InstanceVector(525, 500);
+        this.collider = new ColliderRect(
+            this,
+            this.position,
+            new Vector(-width / 2, -height / 2),
+            new Vector(width, height),
+            Obstacle.TYPE_ID
+        );
+        this.controller = new FallingPlayerController(
+            new Vector(350, Infinity),
+            1050,
+            1050,
+            1050,
+            1050,
+            2000,
+            1100,
+            550
+        );
+        this.lastBlockedDirections = FallingPlayerController.BLOCK_DIRECTION.NO_BLOCK;
+        this.movement = new Vector();
+        this.teleport = new Teleport(
+            game,
+            assetManager,
+            this,
+            -width / 2,
+            -height / 2,
+            width,
+            height
+        );
         this.arm = new Arm(game, this.assetManager, this, 6, -4, "bladed");
         this.sprite = new Sprite(this.position, this.game, 3, -48, -48, {
             idle: new Animator(this.assetManager.getAsset("anims/idle.png"), 0, 0, 32, 32, 2, 2),
@@ -74,91 +104,24 @@ class Player {
         this.sprite.setState("idle");
 
         this.facing = 1; // 1 = right, -1 = left, used for calculations, should never be set to 0
-        this.jumped = 0; // 0 = can jump, 1 = can vary gravity, 2 = can't vary gravity
-        this.jumpBuffer = 0;
-
-        this.velocity = new Vector(0, 0);
-        this.maxSpeed = 350;
-        this.walkAccel = 1050;
         this.aimVector = new Vector(1, 0);
-
-        /** @type {Animator[]} */
-        this.animations = [];
-        this.loadAnimations(this.assetManager);
-
-        // TEMP (standing on hitboxes is not recognized by Player.isGrounded())
-        this.groundOverride = 0;
-
         this.health = 100;
-    }
-
-    loadAnimations(assetManager) {
-        this.animations.push(
-            new Animator(assetManager.getAsset("/anims/idle.png"), 0, 0, 32, 32, 2, 2)
-        );
-        this.animations.push(
-            new Animator(assetManager.getAsset("/anims/run.png"), 0, 0, 32, 32, 4, 0.2)
-        );
-        this.animations.push(
-            new Animator(assetManager.getAsset("/anims/run.png"), 0, 0, 32, 32, 4, 0.2)
-        );
-        this.animations.push(
-            new Animator(assetManager.getAsset("/anims/jump.png"), 0, 0, 32, 32, 1, 1)
-        );
-        this.animations.push(
-            new Animator(assetManager.getAsset("/anims/jump.png"), 32, 0, 32, 32, 1, 1)
-        );
     }
 
     update() {
         this.checkInput();
-
-        let origin = this.position.asVector();
-
-        this.health -= 1 * this.game.clockTick;
         GUI.setHealth(this.health / 100);
-
         this.calcMovement();
-
-        this.runCollisions(origin);
-
         this.setState();
-
         this.arm.update();
         this.teleport.update();
     }
 
     checkInput() {
-        var move = 0;
-        var grounded = this.isGrounded();
-        if (this.game.keys["d"]) move += 1;
-        if (this.game.keys["a"]) move -= 1;
-
-        if (this.game.keys[" "]) {
-            if (grounded && (this.jumped == 0 || this.jumpBuffer <= .1)) {
-                this.velocity.y = -this.jumpHeight;
-                this.jumped = 1;
-                this.assetManager.playAsset("sounds/jump.mp3");
-
-            }
-            this.jumpBuffer += this.game.clockTick;
-        } else {
-            if (grounded) this.jumped = 0;
-            else if (this.velocity.y < 0 && this.jumped == 1)
-                this.velocity.y -= this.velocity.y * 32 * this.game.clockTick;
-            this.jumpBuffer = 0;
-        }
-
-        // Don't let the player exceed max speed
-        if (
-            !(
-                (this.velocity.x > this.maxSpeed && move == 1) ||
-                (this.velocity.x < -this.maxSpeed && move == -1)
-            )
-        ) {
-            // Accelerate the player
-            this.velocity.x += this.walkAccel * move * this.game.clockTick;
-        }
+        this.movement = new Vector();
+        if (this.game.keys["d"]) this.movement.x += 1;
+        if (this.game.keys["a"]) this.movement.x -= 1;
+        if (this.game.keys[" "]) this.movement.y = -1;
 
         if (this.game.mouse != null) {
             //Set facing direction
@@ -171,7 +134,6 @@ class Player {
                 this.arm.sprite.setHorizontalFlip(true);
                 this.facing = -1;
             }
-
             this.aimVector.x =
                 this.game.mouse.x +
                 this.game.camera.x -
@@ -180,131 +142,49 @@ class Player {
             this.aimVector.y =
                 this.game.mouse.y + this.game.camera.y - (this.position.y + this.arm.yOffset);
         }
-
         if (this.game.buttons[0]) this.arm.fire();
         if (this.game.keys["s"] || this.game.buttons[3]) this.arm.slash();
         if (this.game.keys["w"]) this.teleport.teleport();
-
-        // Do we apply ground friction to the player?
-        var traction =
-            this.isGrounded() &&
-            (move == 0 ||
-                (move == 1 && this.velocity.x < 0) ||
-                (move == -1 && this.velocity.x > 0) ||
-                (this.velocity.x > this.maxSpeed || this.velocity.x < -this.maxSpeed));
-        if (traction) {
-            // Apply ground friction
-            if (this.velocity.x < 0) this.velocity.x += this.walkAccel * this.game.clockTick;
-            else if (this.velocity.x > 0) this.velocity.x -= this.walkAccel * this.game.clockTick;
-            if (this.velocity.x < this.maxSpeed / 20 && this.velocity.x > -this.maxSpeed / 20)
-                this.velocity.x = 0;
-        }
     }
 
     calcMovement() {
-        const gravity = 1000;
-        this.position.x += this.velocity.x * this.game.clockTick;
-        this.position.y += this.velocity.y * this.game.clockTick;
+        const displacement = this.controller.updateAll(
+            this.game.clockTick,
+            this.movement,
+            this.lastBlockedDirections
+        );
+        this.position.add(displacement);
+        const readjustment = this.collider.resolveCollisions(displacement);
+        this.position.add(readjustment);
 
-        // player needs to be put into the ground anyways for game to detect ground collision
-        // if (!this.isGrounded()) this.velocity.y += gravity * this.game.clockTick;
-
-        this.velocity.y += gravity * this.game.clockTick;
-    }
-
-    runCollisions(origin) {
-        // TEMPORARY IMPLEMENTATION OF HITBOXES
-        // bugs:
-        // - (sort of a bug) when you are in the left side of a wall and go left, you tp to the right of wall
-        //      - to test, spawn the player inside of a wall in the constructor
-        const collisions = this.collider.getCollision();
-        let target = this.position.asVector();
-
-        while (true) {
-            const { value: collision, done } = collisions.next();
-
-            if (done) {
-                this.groundOverride -= 1;
-                break;
-            }
-
-            const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
-            const difference = target.subtract(origin);
-
-            // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
-            if (difference.getMagnitude() >= 0.0) {
-                let nearX = (xStart - this.collider.w / 2 - origin.x) / difference.x;
-                let farX = (xEnd + this.collider.w / 2 - origin.x) / difference.x;
-                let nearY = (yStart - this.collider.h / 2 - origin.y) / difference.y;
-                let farY = (yEnd + this.collider.h / 2 - origin.y) / difference.y;
-
-                if (nearX > farX) {
-                    [farX, nearX] = [nearX, farX];
-                }
-                if (nearY > farY) {
-                    [farY, nearY] = [nearY, farY];
-                }
-
-                const horizontalHit = nearX > nearY;
-                const hitNear = horizontalHit ? nearX : nearY;
-
-                let normal = undefined;
-                if (horizontalHit) {
-                    if (difference.x >= 0) {
-                        normal = new Vector(-1, 0);
-                    } else {
-                        normal = new Vector(1, 0);
-                    }
-                } else {
-                    if (difference.y >= 0) {
-                        normal = new Vector(0, -1);
-                    } else {
-                        normal = new Vector(0, 1);
-                    }
-                }
-
-                if (hitNear && isFinite(hitNear)) {
-                    if (collision.id === 1) {
-                        const { x, y } = origin.add(difference.multiply(hitNear));
-
-                        if (horizontalHit) {
-                            this.velocity.x = 0;
-                            this.position.set(x, this.position.y);
-                        } else {
-                            // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
-                            this.groundOverride = 4;
-                            this.velocity.y = 0;
-                            this.position.set(this.position.x, y);
-                        }
-
-                        // force player to not touch a wall anymore after collision resolution
-                        // this might get in the way of some potential features
-                        this.position.add(normal.multiply(0.01));
-                    }
-                }
-            }
-        }
+        const table = FallingPlayerController.BLOCK_DIRECTION;
+        this.lastBlockedDirections = table.NO_BLOCK;
+        this.lastBlockedDirections |= table.LEFT * (readjustment.x > 0);
+        this.lastBlockedDirections |= table.RIGHT * (readjustment.x < 0);
+        this.lastBlockedDirections |= table.ABOVE * (readjustment.y > 0);
+        this.lastBlockedDirections |= table.BELOW * (readjustment.y < 0);
     }
 
     setState() {
         if (this.isGrounded()) {
-            if (this.velocity.x == 0) this.sprite.setState("idle");
-            else if (this.velocity.x * this.facing > 0) this.sprite.setState("running");
+            if (this.controller.velocity.x == 0) this.sprite.setState("idle");
+            else if (this.controller.velocity.x * this.facing > 0) this.sprite.setState("running");
             else this.sprite.setState("bwrunning");
         } else {
-            if (this.velocity.y < 0) {
-                if (this.velocity.x * this.facing >= 0) this.sprite.setState("airLeanBack");
+            if (this.controller.velocity.y < 0) {
+                if (this.controller.velocity.x * this.facing >= 0)
+                    this.sprite.setState("airLeanBack");
                 else this.sprite.setState("airLeanFront");
             } else {
-                if (this.velocity.x * this.facing >= 0) this.sprite.setState("airLeanFront");
+                if (this.controller.velocity.x * this.facing >= 0)
+                    this.sprite.setState("airLeanFront");
                 else this.sprite.setState("airLeanBack");
             }
         }
     }
 
     isGrounded() {
-        //TEMPORARY
-        return this.groundOverride > 0;
+        return Boolean(this.lastBlockedDirections & FallingPlayerController.BLOCK_DIRECTION.BELOW);
     }
 
     draw(ctx) {

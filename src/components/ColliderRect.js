@@ -1,65 +1,77 @@
-/** @typedef {import("./position")} */
-
-/** @type {ColliderRect[]} */
-const colliders = [];
+/** @typedef {import("../types/vector")} */
+/** @typedef {import("../types/instance-vector")} */
+/** @typedef {import("../types/boundary")} */
+/** @typedef {import("../types/game-object")} */
+/** @typedef {import("../types/component")} */
 
 /**
- * ColliderRect exists only to detect (not resolve) collisions between 2 rectangles.
- * Currently, if there are 3 or more collisions then they will be ignored (only first counts)
+ * ColliderRect exists to detect and resolve collisions between 2 or more rectangles
+ *
+ * NOTE: for "perfect fit" scenarios, ensure there is between [1, 0) unit of space (things will appear to be a perfect fit)
  */
 class ColliderRect {
+    static #nextColliderID = 0;
+
+    #colliderID;
+    /** @type {{[key: string]: ColliderRect}} */
+    static #colliders = {};
+
     /**
-     * @param {Position} parent
-     * @param {number} xOffset
-     * @param {number} yOffset
-     * @param {number} w width
-     * @param {number} h height
-     * @param {number} id identification. 0 = player, 1 = block, 2 = bullet, 3 = enemy
+     * @param {GameObject} parent
+     * @param {InstanceVector} position
+     * @param {Vector} offset
+     * @param {Vector} shape
+     * @param {...Symbol} collisionTargets
      */
-    constructor(parent, xOffset, yOffset, w, h, id, owner) {
+    constructor(parent, position, offset, shape, ...collisionTargets) {
         this.parent = parent;
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
-        this.w = w;
-        this.h = h;
-        this.id = id;
-        this.owner = owner;
+        this.position = position;
+        this.offset = offset;
+        this.shape = shape;
+        this.collisionTargets = new Set(collisionTargets);
 
-        this.debugMode = false;
-
-        colliders.push(this);
+        this.#colliderID = ColliderRect.#nextColliderID++;
+        ColliderRect.#colliders[this.#colliderID] = this;
     }
 
-    update() {}
+    delete() {
+        delete ColliderRect.#colliders[this.#colliderID];
+    }
 
     /**
      * Finds the first colliding rectangle and returns it.
      * @returns The ColliderRect object which collides with this one
      */
-    *getCollision() {
-        for (const collider of colliders) {
-            if (this !== collider && this.collidesWith(collider)) {
+    *getCollisions() {
+        for (const collider of Object.values(ColliderRect.#colliders)) {
+            if (collider.parent.removeFromWorld) {
+                collider.delete();
+                continue;
+            }
+
+            if (collider.parent.constructor.TYPE_ID === undefined) {
+                continue;
+            }
+
+            if (
+                this !== collider &&
+                this.collisionTargets.has(collider.parent.constructor.TYPE_ID) &&
+                this.collidesWith(collider)
+            ) {
                 yield collider;
             }
         }
-
-        return null;
     }
 
     /**
      * Gets the x and y starts and ends of this ColliderRect.
      * @returns The bounds of this ColliderRect
      */
-    getBounds() {
-        const xStart = this.parent.x + this.xOffset;
-        const yStart = this.parent.y + this.yOffset;
+    getBoundary() {
+        const start = this.position.asVector().add(this.offset);
+        const end = start.add(this.shape);
 
-        return {
-            xStart,
-            xEnd: xStart + this.w,
-            yStart,
-            yEnd: yStart + this.h,
-        };
+        return new Boundary(start.x, end.x, start.y, end.y);
     }
 
     /**
@@ -68,25 +80,98 @@ class ColliderRect {
      * @returns true if there is a collision and false otherwise
      */
     collidesWith(other) {
-        const selfBounds = this.getBounds();
-        const otherBounds = other.getBounds();
-
-        return !(
-            selfBounds.xStart > otherBounds.xEnd ||
-            otherBounds.xStart > selfBounds.xEnd ||
-            selfBounds.yStart > otherBounds.yEnd ||
-            otherBounds.yStart > selfBounds.yEnd
-        );
+        return this.getBoundary().containsBoundary(other.getBoundary());
     }
 
     /**
-     * Draws this ColliderRect as a empty black rectangle on the canvas
+     *
      * @param {CanvasRenderingContext2D} ctx
+     * @param {Vector} offset
      */
-    draw(ctx) {
-        if (this.debugMode) {
-            const bounds = this.getBounds();
-            ctx.strokeRect(bounds.xStart, bounds.yStart, this.w, this.h);
+    drawCollider(ctx, offset) {
+        const position = this.position.asVector().add(this.offset).subtract(offset);
+
+        ctx.strokeRect(position.x, position.y, this.shape.x, this.shape.y);
+    }
+
+    /**
+     * Resolves the collision of this ColliderRect with the other (other ColliderRect treated as immovable)
+     * @param {Vector} displacement
+     * @param {ColliderRect} other
+     * @returns the displacement this ColliderRect needs to not be in collision
+     */
+    resolveCollision(displacement, other) {
+        const ERROR = 0.01;
+
+        const otherBounds = other.getBoundary();
+        const selfBounds = this.getBoundary();
+
+        const horizontalDifference = Math.max(
+            0,
+            displacement.x > 0
+                ? selfBounds.right - otherBounds.left
+                : displacement.x < 0
+                ? otherBounds.right - selfBounds.left
+                : 0
+        );
+        const verticalDifference = Math.max(
+            0,
+            displacement.y > 0
+                ? selfBounds.bottom - otherBounds.top
+                : displacement.y < 0
+                ? otherBounds.bottom - selfBounds.top
+                : 0
+        );
+
+        const direction = displacement.normalize().negate();
+        const tHorizontal = Math.abs(horizontalDifference / direction.x);
+        const tVertical = Math.abs(verticalDifference / direction.y);
+
+        const state = isNaN(tHorizontal) * 0b10 + isNaN(tVertical) * 0b1;
+        switch (state) {
+            case 0b00: {
+                const newDisplacement = direction.multiply(
+                    Math.min(tHorizontal, tVertical) + ERROR
+                );
+
+                if (tHorizontal < tVertical) {
+                    return new Vector(newDisplacement.x, 0);
+                } else if (tVertical < tHorizontal) {
+                    return new Vector(0, newDisplacement.y);
+                }
+
+                return new Vector();
+            }
+            case 0b10:
+                return direction.multiply(tVertical + ERROR);
+            case 0b01:
+                return direction.multiply(tHorizontal + ERROR);
+            default:
+                return new Vector();
         }
+    }
+
+    /**
+     * Resolves all collisions currently happening with this ColliderRect
+     * @param {Vector} displacement
+     * @returns the displacement this ColliderRect needs to not be in collision
+     */
+    resolveCollisions(displacement) {
+        const collisions = this.getCollisions();
+        let neededDisplacement = new Vector();
+
+        while (true) {
+            const { value: collider, done } = collisions.next();
+
+            if (done) {
+                break;
+            }
+
+            neededDisplacement = neededDisplacement.add(
+                this.resolveCollision(displacement, collider)
+            );
+        }
+
+        return neededDisplacement;
     }
 }

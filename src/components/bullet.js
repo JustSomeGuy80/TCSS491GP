@@ -3,6 +3,7 @@
 /** @typedef {import("../engine/gameengine")} */
 /** @typedef {import("../primitives/vector")} */
 /** @typedef {import("../engine/assetmanager")} */
+/** @typedef {import("../slasher")} */
 /** @typedef {import("./sprite")} */
 
 class Bullet {
@@ -17,19 +18,35 @@ class Bullet {
      */
     constructor(game, assetManager, x, y, vect, speed, team) {
         this.game = game;
-        this.position = new Position(x, y);
+        this.position = new InstanceVector(x, y);
         this.vect = vect.normalize().multiply(speed);
         this.team = team;
         this.debugMode = false;
 
         this.sprite = new Sprite(this.position, this.game, 3, -10.5, -10.5, {
-            blue: new Animator(assetManager.getAsset("anims/bullet.png"), 0, 0, 7, 7, 2, .25),
-            blueExplode: new Animator(assetManager.getAsset("anims/bullet.png"), 14, 0, 7, 7, 6, .05),
+            blue: new Animator(assetManager.getAsset("anims/bullet.png"), 0, 0, 7, 7, 2, 0.25),
+            blueExplode: new Animator(
+                assetManager.getAsset("anims/bullet.png"),
+                14,
+                0,
+                7,
+                7,
+                6,
+                0.05
+            ),
         });
-    
+
         this.sprite.setState("blue");
 
-        this.collider = new ColliderRect(this.position, -7.5, -7.5, 15, 15, 2, this);
+        // this.collider = new ColliderRect(this.position, -7.5, -7.5, 15, 15, 2, this);
+        this.collider = new ColliderRect(
+            this,
+            this.position,
+            new Vector(-7.5, -7.5),
+            new Vector(15, 15),
+            Obstacle.TYPE_ID,
+            Slasher.TYPE_ID
+        );
 
         this.age = 0;
         this.active = true;
@@ -40,7 +57,7 @@ class Bullet {
 
     update() {
         if (this.active) {
-            this.position.add(this.vect.multiply(this.game.clockTick))
+            this.position.add(this.vect.multiply(this.game.clockTick));
             this.runCollisions();
             if (this.age >= 4) {
                 this.age = 0;
@@ -48,38 +65,35 @@ class Bullet {
                 this.sprite.setState("blueExplode");
 
                 this.removeFromWorld = true;
+                this.collider.delete();
             }
-        } else if (this.age > .3) {
-            this.collider.removeFromWorld = true;
+        } else if (this.age > 0.3) {
             this.unload = true;
         }
         this.age += this.game.clockTick;
     }
 
     runCollisions() {
-        const collisions = this.collider.getCollision();
-
+        const collisions = this.collider.getCollisions();
 
         while (true) {
-            const { value: collision, done } = collisions.next();
+            const { value: collider, done } = collisions.next();
 
             if (done) {
                 break;
             }
-            
-            if (collision.id === 1 || collision.id === 3) {
-                this.age = 0;
-                this.active = false;
-                this.sprite.setState("blueExplode");
 
-                this.removeFromWorld = true;
-            }
+            this.age = 0;
+            this.active = false;
+            this.sprite.setState("blueExplode");
 
-            if (collision.id === 3) {
-                collision.owner.health -= 1;
+            this.removeFromWorld = true;
+            this.collider.delete();
+
+            if (collider.parent.constructor.TYPE_ID === Slasher.TYPE_ID) {
+                collider.parent.health -= 1;
             }
         }
-
     }
 
     draw(ctx) {
@@ -88,13 +102,14 @@ class Bullet {
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
             ctx.save();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.yEnd - bounds.yStart
+            );
             ctx.restore();
         }
     }
-} 
+}

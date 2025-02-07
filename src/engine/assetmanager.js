@@ -78,9 +78,12 @@ class AssetManager {
     }
 
     playAsset(path) {
+        /** @type {HTMLAudioElement} */
         let aud = this.cache[path];
         aud.currentTime = 0;
-        aud.play();
+        aud.play().catch(() =>
+            console.log("Audio could not be played (probably due to browser not allowing autoplay)")
+        );
     }
 
     muteAudio(mute) {

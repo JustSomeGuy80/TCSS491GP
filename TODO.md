@@ -1,0 +1,1 @@
+-   add slasher back in scenemanager ln 80

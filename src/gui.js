@@ -3,7 +3,7 @@ class GUI {
         const menu = document.getElementById("menu");
         const game = document.getElementById("gameWorld");
 
-        menu.style.display = "none";
+        if (menu) menu.style.display = "none";
         game.focus();
 
         main();

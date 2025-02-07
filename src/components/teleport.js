@@ -27,9 +27,15 @@ class Teleport {
 
         this.debugMode = true;
 
-        this.position = new Position(player.position.x, player.position.y);
-        this.collider = new ColliderRect(this.position, -28, -48, 56, 96, -1, this);
-        this.warpTime = 1/3;
+        this.position = new InstanceVector(player.position.x, player.position.y);
+        this.collider = new ColliderRect(
+            this,
+            this.position,
+            new Vector(-28, -48),
+            new Vector(56, 96),
+            Obstacle.TYPE_ID
+        );
+        this.warpTime = 1 / 3;
 
         this.cdMax = 2;
         this.cd = 0;
@@ -40,11 +46,11 @@ class Teleport {
 
     update() {
         if (this.cd > 0) this.cd -= this.game.clockTick;
-
-        this.position.set(0, 0);
-        this.position.add(this.player.position.asVector());
-        this.position.add(this.player.velocity.multiply(this.warpTime));
-
+        this.position.set(
+            this.player.position
+                .asVector()
+                .add(this.player.controller.velocity.asVector().multiply(this.warpTime))
+        );
         this.grounded = this.player.isGrounded();
         this.colliding = this.runCollisions();
     }
@@ -52,50 +58,35 @@ class Teleport {
     teleport() {
         if (this.cd <= 0) {
             if (!this.colliding && !this.grounded) {
-                this.player.position.set(0, 0);
-                this.player.position.add(this.position.asVector());
+                this.player.position.set(this.position);
                 this.cd = this.cdMax;
             } else {
-                this.cd = this.cdMax/10;
+                this.cd = this.cdMax / 10;
             }
         }
     }
 
     runCollisions() {
-        const collisions = this.collider.getCollision();
-
-
-        while (true) {
-            const { value: collision, done } = collisions.next();
-
-            if (done) {
-                break;
-            }
-            
-            if (collision.id === 1) {
-                return true;
-            }
-        }
-        return false;
+        const { value: collider, done } = this.collider.getCollisions().next();
+        return collider !== undefined;
     }
 
     draw(ctx) {
-        //this.sprite.drawSprite(this.game.clockTick, ctx);
-
         if (this.debugMode) {
-            const bounds = this.collider.getBounds();
+            const bounds = this.collider.getBoundary();
             ctx.save();
             if (!this.colliding && !this.grounded) {
-                ctx.strokeStyle = 'green';
+                ctx.strokeStyle = "green";
             } else {
-                ctx.strokeStyle = 'red';
+                ctx.strokeStyle = "red";
             }
             ctx.strokeRect(
-                bounds.xStart - this.game.camera.x,
-                bounds.yStart - this.game.camera.y,
-                bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.left - this.game.camera.x,
+                bounds.top - this.game.camera.y,
+                bounds.right - bounds.left,
+                bounds.bottom - bounds.top
+            );
             ctx.restore();
         }
     }
-} 
+}

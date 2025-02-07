@@ -11,11 +11,11 @@ class SceneManager {
         this.game.camera = this;
         this.x = 0;
         this.y = 0;
-        
+
         // map dimensions
         this.mapWidth = 3000;
         this.mapHeight = 2000;
-        
+
         // camera bounds
         this.cameraBoundLeft = 500;
         this.cameraBoundRight = 550;
@@ -35,8 +35,8 @@ class SceneManager {
         this.debug = true;
 
         // Add keyboard shortcut for editor toggle
-        document.addEventListener('keydown', (e) => {
-            if (e.key === '`' || e.key === '~') {
+        document.addEventListener("keydown", e => {
+            if (e.key === "`" || e.key === "~") {
                 this.toggleEditMode();
             }
         });
@@ -77,7 +77,7 @@ class SceneManager {
         this.addObstacle(1000, 550, 50, 50, "spike");
         this.addObstacle(1600, 550, 50, 50, "spike");
 
-        this.game.addEntity(new Slasher(this.game, this.assetManager, 350, 0));
+        // this.game.addEntity(new Slasher(this.game, this.assetManager, 350, 0));
     }
 
     addObstacle(x, y, width, height, type) {
@@ -98,37 +98,37 @@ class SceneManager {
         // only moves camera when player moves past bounds
         if (this.player.position.x - this.x > this.cameraBoundRight) {
             // Adjust camera steadily to the right if the player is past the right bound
-            this.x += (this.player.velocity.x + 250) * this.game.clockTick;
+            this.x += (this.player.controller.velocity.x + 250) * this.game.clockTick;
 
             // Fix camera jitter by hard locking the camera to the player if they are close to the bound
-            if ((this.player.position.x - this.cameraBoundRight) - this.x < 5) {
+            if (this.player.position.x - this.cameraBoundRight - this.x < 5) {
                 this.x = this.player.position.x - this.cameraBoundRight;
             }
         } else if (this.player.position.x - this.x < this.cameraBoundLeft) {
             // Adjust camera steadily to the left if the player is past the left bound
-            this.x += (this.player.velocity.x - 250) * this.game.clockTick;
+            this.x += (this.player.controller.velocity.x - 250) * this.game.clockTick;
 
             // Fix camera jitter by hard locking the camera to the player if they are close to the bound
-            if ((this.x - (this.player.position.x - this.cameraBoundLeft)) < 5) {
-                this.x = (this.player.position.x - this.cameraBoundLeft)
+            if (this.x - (this.player.position.x - this.cameraBoundLeft) < 5) {
+                this.x = this.player.position.x - this.cameraBoundLeft;
             }
         }
 
         if (this.player.position.y - this.y > this.cameraBoundBottom) {
             // Adjust camera steadily to the bottom if the player is past the bottom bound
-            this.y += (this.player.velocity.y + 250) * this.game.clockTick;
+            this.y += (this.player.controller.velocity.y + 250) * this.game.clockTick;
 
             // Fix camera jitter by hard locking the camera to the player if they are close to the bound
-            if ((this.player.position.y - this.cameraBoundBottom) - this.y < 5) {
+            if (this.player.position.y - this.cameraBoundBottom - this.y < 5) {
                 this.y = this.player.position.y - this.cameraBoundBottom;
             }
         } else if (this.player.position.y - this.y < this.cameraBoundTop) {
             // Adjust camera steadily to the top if the player is past the top bound
-            this.y += (this.player.velocity.y - 250) * this.game.clockTick;
+            this.y += (this.player.controller.velocity.y - 250) * this.game.clockTick;
 
             // Fix camera jitter by hard locking the camera to the player if they are close to the bound
-            if ((this.y - (this.player.position.y - this.cameraBoundTop)) < 5) {
-                this.y = (this.player.position.y - this.cameraBoundTop)
+            if (this.y - (this.player.position.y - this.cameraBoundTop) < 5) {
+                this.y = this.player.position.y - this.cameraBoundTop;
             }
         }
 
@@ -137,7 +137,7 @@ class SceneManager {
         if (this.x > this.mapWidth - this.game.ctx.canvas.width) {
             this.x = this.mapWidth - this.game.ctx.canvas.width;
         }
-        
+
         if (this.y < 0) this.y = 0;
         if (this.y > this.mapHeight - this.game.ctx.canvas.height) {
             this.y = this.mapHeight - this.game.ctx.canvas.height;
@@ -168,10 +168,12 @@ class SceneManager {
             if (this.deleteMode) {
                 const clickedObstacle = this.game.entities.find(entity => {
                     if (entity instanceof Obstacle) {
-                        return worldX >= entity.position.x &&
-                               worldX <= entity.position.x + entity.width &&
-                               worldY >= entity.position.y && 
-                               worldY <= entity.position.y + entity.height;
+                        return (
+                            worldX >= entity.position.x &&
+                            worldX <= entity.position.x + entity.width &&
+                            worldY >= entity.position.y &&
+                            worldY <= entity.position.y + entity.height
+                        );
                     }
                     return false;
                 });
@@ -179,19 +181,23 @@ class SceneManager {
                 if (clickedObstacle) {
                     clickedObstacle.removeFromWorld = true;
                     this.undoStack.push({
-                        action: 'delete',
+                        action: "delete",
                         obstacle: clickedObstacle,
-                        collider: clickedObstacle.collision
+                        collider: clickedObstacle.collision,
                     });
-                    
-                    this.game.entities = this.game.entities.filter(e => 
-                        e !== clickedObstacle && e !== clickedObstacle.collision
+
+                    this.game.entities = this.game.entities.filter(
+                        e => e !== clickedObstacle && e !== clickedObstacle.collision
                     );
                 }
             } else {
-                const snappedX = this.showGrid ? Math.floor(worldX / this.gridSize) * this.gridSize : worldX;
-                const snappedY = this.showGrid ? Math.floor(worldY / this.gridSize) * this.gridSize : worldY;
-                
+                const snappedX = this.showGrid
+                    ? Math.floor(worldX / this.gridSize) * this.gridSize
+                    : worldX;
+                const snappedY = this.showGrid
+                    ? Math.floor(worldY / this.gridSize) * this.gridSize
+                    : worldY;
+
                 const newObstacle = this.addObstacle(
                     snappedX - this.selectedSize.width / 2,
                     snappedY - this.selectedSize.height / 2,
@@ -199,10 +205,10 @@ class SceneManager {
                     this.selectedSize.height,
                     this.selectedTool
                 );
-                
+
                 this.undoStack.push({
-                    action: 'add',
-                    obstacle: newObstacle
+                    action: "add",
+                    obstacle: newObstacle,
                 });
             }
 
@@ -219,11 +225,11 @@ class SceneManager {
     undo() {
         if (this.undoStack.length > 0) {
             const lastAction = this.undoStack.pop();
-            if (lastAction.action === 'add') {
-                this.game.entities = this.game.entities.filter(e => 
-                    e !== lastAction.obstacle && e !== lastAction.obstacle.collision
+            if (lastAction.action === "add") {
+                this.game.entities = this.game.entities.filter(
+                    e => e !== lastAction.obstacle && e !== lastAction.obstacle.collision
                 );
-            } else if (lastAction.action === 'delete') {
+            } else if (lastAction.action === "delete") {
                 this.game.addEntity(lastAction.obstacle);
                 this.game.addEntity(lastAction.collider);
             }
@@ -244,7 +250,7 @@ class SceneManager {
 
     drawGrid(ctx) {
         ctx.save();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
         ctx.lineWidth = 1;
 
         const startX = Math.floor(this.x / this.gridSize) * this.gridSize;
@@ -270,22 +276,26 @@ class SceneManager {
 
     drawEditorOverlay(ctx) {
         ctx.save();
-        
+
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(800, 10, 200, 60);
         ctx.fillStyle = "white";
         ctx.font = "16px Arial";
-        ctx.fillText(`Mode: ${this.deleteMode ? 'Delete' : 'Place'}`, 850, 30);
+        ctx.fillText(`Mode: ${this.deleteMode ? "Delete" : "Place"}`, 850, 30);
         ctx.fillText(`Tool: ${this.selectedTool}`, 850, 50);
-        
+
         if (this.game.mouse && !this.deleteMode) {
             const { x, y } = this.game.mouse;
             const worldX = x + this.x;
             const worldY = y;
-            
-            const snappedX = this.showGrid ? Math.floor(worldX / this.gridSize) * this.gridSize : worldX;
-            const snappedY = this.showGrid ? Math.floor(worldY / this.gridSize) * this.gridSize : worldY;
-            
+
+            const snappedX = this.showGrid
+                ? Math.floor(worldX / this.gridSize) * this.gridSize
+                : worldX;
+            const snappedY = this.showGrid
+                ? Math.floor(worldY / this.gridSize) * this.gridSize
+                : worldY;
+
             ctx.globalAlpha = 0.5;
             ctx.fillStyle = this.selectedTool === "platform" ? "gray" : "red";
             ctx.fillRect(
@@ -296,7 +306,7 @@ class SceneManager {
             );
             ctx.globalAlpha = 1.0;
         }
-        
+
         ctx.restore();
     }
 
@@ -304,19 +314,33 @@ class SceneManager {
         ctx.save();
         ctx.fillStyle = "black";
         ctx.font = "16px Arial";
-        
+
         ctx.fillText(`Camera: ${Math.floor(this.x)}, ${Math.floor(this.y)}`, 10, 20);
-        ctx.fillText(`Player: ${Math.floor(this.player.position.x)}, ${Math.floor(this.player.position.y)}`, 10, 40);
-        ctx.fillText(`Velocity: ${Math.floor(this.player.velocity.x)}, ${Math.floor(this.player.velocity.y)}`, 10, 60);
-        if (this.game.mouse != null) ctx.fillText(`Mouse: ${this.game.mouse.x}, ${this.game.mouse.y}`, 10, 80);
-        ctx.fillText(`ScreenPos: ${Math.floor(this.player.position.x)-Math.floor(this.x)}, ${Math.floor(this.player.position.y)-Math.floor(this.y)}`, 10, 100);
-        
-        
-        
-        
+        ctx.fillText(
+            `Player: ${Math.floor(this.player.position.x)}, ${Math.floor(this.player.position.y)}`,
+            10,
+            40
+        );
+        ctx.fillText(
+            `Velocity: ${Math.floor(this.player.controller.velocity.x)}, ${Math.floor(
+                this.player.controller.velocity.y
+            )}`,
+            10,
+            60
+        );
+        if (this.game.mouse != null)
+            ctx.fillText(`Mouse: ${this.game.mouse.x}, ${this.game.mouse.y}`, 10, 80);
+        ctx.fillText(
+            `ScreenPos: ${Math.floor(this.player.position.x) - Math.floor(this.x)}, ${
+                Math.floor(this.player.position.y) - Math.floor(this.y)
+            }`,
+            10,
+            100
+        );
+
         const boundLeft = this.cameraBoundLeft;
         const boundRight = this.cameraBoundRight;
-        
+
         ctx.strokeStyle = "rgba(255, 0, 0, 0.5)";
         ctx.setLineDash([5, 5]);
         ctx.beginPath();
@@ -325,7 +349,7 @@ class SceneManager {
         ctx.moveTo(boundRight, 0);
         ctx.lineTo(boundRight, ctx.canvas.height);
         ctx.stroke();
-        
+
         ctx.restore();
     }
 
@@ -362,36 +386,39 @@ class SceneManager {
 
         document.body.appendChild(editorUI);
 
-        document.getElementById("toolSelect").addEventListener("change", (e) => {
+        document.getElementById("toolSelect").addEventListener("change", e => {
             this.selectedTool = e.target.value;
         });
 
-        document.getElementById("widthInput").addEventListener("change", (e) => {
+        document.getElementById("widthInput").addEventListener("change", e => {
             this.selectedSize.width = parseInt(e.target.value);
         });
 
-        document.getElementById("heightInput").addEventListener("change", (e) => {
+        document.getElementById("heightInput").addEventListener("change", e => {
             this.selectedSize.height = parseInt(e.target.value);
         });
 
         document.getElementById("deleteMode").addEventListener("click", () => {
             this.deleteMode = !this.deleteMode;
-            document.getElementById("deleteMode").style.backgroundColor = 
-                this.deleteMode ? "#ff4444" : "#4CAF50";
+            document.getElementById("deleteMode").style.backgroundColor = this.deleteMode
+                ? "#ff4444"
+                : "#4CAF50";
         });
 
         document.getElementById("toggleGrid").addEventListener("click", () => {
             this.showGrid = !this.showGrid;
-            document.getElementById("toggleGrid").style.backgroundColor = 
-                this.showGrid ? "#4CAF50" : "#808080";
+            document.getElementById("toggleGrid").style.backgroundColor = this.showGrid
+                ? "#4CAF50"
+                : "#808080";
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Delete') {
+        document.addEventListener("keydown", e => {
+            if (e.key === "Delete") {
                 this.deleteMode = !this.deleteMode;
-                document.getElementById("deleteMode").style.backgroundColor = 
-                    this.deleteMode ? "#ff4444" : "#4CAF50";
+                document.getElementById("deleteMode").style.backgroundColor = this.deleteMode
+                    ? "#ff4444"
+                    : "#4CAF50";
             }
         });
     }
-} 
+}

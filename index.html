@@ -3,24 +3,10 @@
     <head>
         <meta charset="utf-8" />
         <title>Godspeed Breacher</title>
-        <link rel="stylesheet" href="./src/styles/global.css" />
+        <link rel="stylesheet" href="./src/styles/site.css" />
         <link rel="stylesheet" href="./src/styles/gui/menu.css" />
         <link rel="stylesheet" href="./src/styles/gui/game-ui.css" />
         <link rel="stylesheet" href="./src/styles/gui/ability.css" />
-        <style>
-            .controls-container {
-                padding-bottom: 20px;
-                display: flex;
-                gap: 20px;
-                align-items: center;
-                color: white;
-            }
-            .control-group {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-        </style>
     </head>
     <body>
         <div
@@ -56,7 +42,36 @@
                 <small>Ctrl+Z to undo</small>
             </div>
         </div>
-        <div class="overlay-container">
+        <div id="controls">
+            <h1>Controls</h1>
+            <div class="control">
+                <h2>Walk (a and d)</h2>
+                <p>Moves the player to the left or right respectively</p>
+            </div>
+            <div class="control">
+                <h2>Jump (space)</h2>
+                <p>Makes the player jump upwards</p>
+            </div>
+            <div class="control">
+                <h2>Fire (left click)</h2>
+                <p>
+                    The player will shoot a bullet in the direction of the mouse cursor (this move
+                    shares its cooldown with slash)
+                </p>
+            </div>
+            <div class="control">
+                <h2>slash (s)</h2>
+                <p>
+                    The player will slash in the direction of the mouse cursor (this move shares its
+                    cooldown with fire)
+                </p>
+            </div>
+            <div class="control">
+                <h2>teleport (w)</h2>
+                <p>The player will teleport in the direction of their velocity</p>
+            </div>
+        </div>
+        <div class="overlay-container" id="game">
             <canvas id="gameWorld" class="layer" width="1024" height="768" tabindex="0"></canvas>
             <div id="health"></div>
             <div
@@ -83,8 +98,7 @@
                 <button onclick="GUI.onPlayClick()">Play</button>
             </div>
         </div>
-
-        <div class="controls-container">
+        <div class="controls-container" id="audio">
             <div class="control-group">
                 <label for="mute">Mute</label>
                 <input type="checkbox" id="mute" />

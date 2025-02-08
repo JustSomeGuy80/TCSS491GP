@@ -123,7 +123,7 @@ class Slash {
         // Find the angle between the player's velocity vector and the vector of the momentum they'll recieve from the slash
         let angle =
             Math.atan2(-this.vect.y, -this.vect.x) -
-            Math.atan2(this.player.velocity.y, this.player.velocity.x);
+            Math.atan2(this.player.controller.velocity.y, this.player.controller.velocity.x);
         if (angle < -Math.PI) angle = angle + 2 * Math.PI;
         else if (angle > Math.PI) angle = angle - 2 * Math.PI;
         angle = Math.abs(angle);

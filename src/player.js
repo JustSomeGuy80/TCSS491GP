@@ -24,7 +24,7 @@ class Player {
         this.removeFromWorld = false;
 
         const height = 96;
-        const width = 56;
+        const width = 36;
 
         this.position = new Position(525, 500);
         this.collider = new ColliderRect(

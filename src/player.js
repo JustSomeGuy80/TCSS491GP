@@ -183,7 +183,7 @@ class Player {
 
         if (this.game.buttons[0]) this.arm.fire();
         if (this.game.keys["s"] || this.game.buttons[3]) this.arm.slash();
-        if (this.game.keys["w"]) this.teleport.teleport();
+        this.teleport.teleport(this.game.keys["w"]);
 
         // Do we apply ground friction to the player?
         var traction =
@@ -308,8 +308,8 @@ class Player {
     }
 
     draw(ctx) {
-        this.arm.draw(ctx);
         this.teleport.draw(ctx);
+        this.arm.draw(ctx);
         this.sprite.drawSprite(this.game.clockTick, ctx);
 
         if (this.debugMode) {

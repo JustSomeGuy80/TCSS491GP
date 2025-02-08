@@ -2,7 +2,7 @@
 /** @typedef {import("./components/ColliderRect")} */
 /** @typedef {import("./components/position")} */
 /** @typedef {import("./components/arm")} */
-/** @typedef {import("./components/teleoprt")} */
+/** @typedef {import("./components/teleport")} */
 /** @typedef {import("./components/sprite")} */
 /** @typedef {import("./engine/gameengine")} */
 /** @typedef {import("./engine/assetmanager")} */
@@ -144,7 +144,7 @@ class Player {
         }
         if (this.game.buttons[0]) this.arm.fire();
         if (this.game.keys["s"] || this.game.buttons[3]) this.arm.slash();
-        if (this.game.keys["w"]) this.teleport.teleport();
+        this.teleport.teleport(this.game.keys["w"]);
     }
 
     calcMovement() {

@@ -26,14 +26,14 @@ class Teleport {
         this.w = w;
         this.h = h;
 
-        this.debugMode = true;
+        this.debugMode = false;
 
         this.position = new InstanceVector(player.position.x, player.position.y);
         this.collider = new ColliderRect(
             this,
             this.position,
-            new Vector(-28, -48),
-            new Vector(56, 96),
+            new Vector(xOffset, yOffset),
+            new Vector(w, h),
             Obstacle.TYPE_ID
         );
         this.warpTime = 1 / 3;

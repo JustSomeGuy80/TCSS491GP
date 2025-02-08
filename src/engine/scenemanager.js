@@ -99,7 +99,7 @@ class SceneManager {
         // only moves camera when player moves past bounds
         if (this.player.position.x - this.x > this.cameraBoundRight) {
             // Adjust camera steadily to the right if the player is past the right bound
-            this.x += (this.player.velocity.x + this.scrollSpeed) * this.game.clockTick;
+            this.x += (this.player.controller.velocity.x + this.scrollSpeed) * this.game.clockTick;
 
             // Fix camera jitter by hard locking the camera to the player if they are close to the bound
             if (this.player.position.x - this.cameraBoundRight - this.x < 5) {
@@ -107,7 +107,7 @@ class SceneManager {
             }
         } else if (this.player.position.x - this.x < this.cameraBoundLeft) {
             // Adjust camera steadily to the left if the player is past the left bound
-            this.x += (this.player.velocity.x - this.scrollSpeed) * this.game.clockTick;
+            this.x += (this.player.controller.velocity.x - this.scrollSpeed) * this.game.clockTick;
 
             // Fix camera jitter by hard locking the camera to the player if they are close to the bound
             if (this.x - (this.player.position.x - this.cameraBoundLeft) < 5) {
@@ -117,7 +117,7 @@ class SceneManager {
 
         if (this.player.position.y - this.y > this.cameraBoundBottom) {
             // Adjust camera steadily to the bottom if the player is past the bottom bound
-            this.y += (this.player.velocity.y + this.scrollSpeed) * this.game.clockTick;
+            this.y += (this.player.controller.velocity.y + this.scrollSpeed) * this.game.clockTick;
 
             // Fix camera jitter by hard locking the camera to the player if they are close to the bound
             if (this.player.position.y - this.cameraBoundBottom - this.y < 5) {
@@ -125,7 +125,7 @@ class SceneManager {
             }
         } else if (this.player.position.y - this.y < this.cameraBoundTop) {
             // Adjust camera steadily to the top if the player is past the top bound
-            this.y += (this.player.velocity.y - this.scrollSpeed) * this.game.clockTick;
+            this.y += (this.player.controller.velocity.y - this.scrollSpeed) * this.game.clockTick;
 
             // Fix camera jitter by hard locking the camera to the player if they are close to the bound
             if (this.y - (this.player.position.y - this.cameraBoundTop) < 5) {

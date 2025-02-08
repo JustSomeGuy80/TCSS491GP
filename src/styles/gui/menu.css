@@ -4,6 +4,7 @@
     color: white;
     grid-template-rows: repeat(2, 1fr);
     place-items: center;
+    z-index: 0;
 
     & button {
         border: none;

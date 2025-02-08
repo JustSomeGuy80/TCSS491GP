@@ -131,7 +131,6 @@ class Player {
 
         let origin = this.position.asVector();
 
-        this.health -= 1 * this.game.clockTick;
         GUI.setHealth(this.health / 100);
 
         this.calcMovement();

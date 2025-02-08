@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="./src/styles/global.css" />
         <link rel="stylesheet" href="./src/styles/gui/menu.css" />
         <link rel="stylesheet" href="./src/styles/gui/game-ui.css" />
+        <link rel="stylesheet" href="./src/styles/gui/ability.css" />
         <style>
             .controls-container {
                 padding-bottom: 20px;
@@ -22,29 +23,59 @@
         </style>
     </head>
     <body>
+        <div
+            id="editorUI"
+            style="
+                display: none;
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                background: rgba(255, 255, 255, 0.9);
+                padding: 10px;
+                border-radius: 5px;
+            "
+        >
+            <div style="margin-bottom: 10px">
+                <label for="toolSelect">Tool:</label>
+                <select id="toolSelect">
+                    <option value="platform">Platform</option>
+                    <option value="spike">Spike</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 10px">
+                <label>Size:</label><br />
+                <input type="number" id="widthInput" value="100" style="width: 60px" /> x
+                <input type="number" id="heightInput" value="20" style="width: 60px" />
+            </div>
+            <div>
+                <button id="deleteMode">Delete Mode (Del)</button>
+                <button id="toggleGrid">Toggle Grid</button>
+            </div>
+            <div style="margin-top: 10px">
+                <small>Press ` to toggle editor</small><br />
+                <small>Ctrl+Z to undo</small>
+            </div>
+        </div>
         <div class="overlay-container">
             <canvas id="gameWorld" class="layer" width="1024" height="768" tabindex="0"></canvas>
-            <div id="game-ui"><div id="health"></div></div>
-            <div id="editorUI" style="display: none; position: absolute; right: 10px; top: 10px; background: rgba(255, 255, 255, 0.9); padding: 10px; border-radius: 5px;">
-                <div style="margin-bottom: 10px;">
-                    <label for="toolSelect">Tool:</label>
-                    <select id="toolSelect">
-                        <option value="platform">Platform</option>
-                        <option value="spike">Spike</option>
-                    </select>
+            <div id="health"></div>
+            <div
+                style="
+                    display: flex;
+                    gap: 1rem;
+                    margin-top: auto;
+                    margin-inline: auto;
+                    margin-bottom: 1rem;
+                "
+            >
+                <div class="ability overlay-container" id="bullet-ability">
+                    <p style="font-size: 1.5rem; margin: 0">M1</p>
                 </div>
-                <div style="margin-bottom: 10px;">
-                    <label>Size:</label><br>
-                    <input type="number" id="widthInput" value="100" style="width: 60px;"> x 
-                    <input type="number" id="heightInput" value="20" style="width: 60px;">
+                <div class="ability overlay-container" id="slash-ability">
+                    <p style="font-size: 1.5rem; margin: 0">S</p>
                 </div>
-                <div>
-                    <button id="deleteMode">Delete Mode (Del)</button>
-                    <button id="toggleGrid">Toggle Grid</button>
-                </div>
-                <div style="margin-top: 10px;">
-                    <small>Press ` to toggle editor</small><br>
-                    <small>Ctrl+Z to undo</small>
+                <div class="ability overlay-container" id="teleport-ability">
+                    <p style="font-size: 1.5rem; margin: 0">W</p>
                 </div>
             </div>
             <div id="menu">

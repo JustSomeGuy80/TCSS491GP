@@ -109,6 +109,7 @@ class Teleport {
 
         // Stop animating the portal sprites if they're done playing their animations
         if (this.enterSprite.isDone() && this.exitSprite.isDone()) this.animate = false;
+        GUI.setCooldown("teleport-ability", this.cd / this.cdMax);
     }
 
     /**

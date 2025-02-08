@@ -60,7 +60,7 @@ class Arm {
         this.sprite.setState("blade"); // 0 = bladed
 
         this.bullets = [];
-        this.fireRate = 0.75;
+        this.fireRate = 0.6;
         this.slashRate = this.fireRate * 1.5;
         this.fireCD = 0; // tracks when the player can shoot again
 

@@ -188,8 +188,8 @@ class Player {
     }
 
     draw(ctx) {
-        this.arm.draw(ctx);
         this.teleport.draw(ctx);
+        this.arm.draw(ctx);
         this.sprite.drawSprite(this.game.clockTick, ctx);
 
         if (this.debugMode) {

@@ -65,9 +65,9 @@ class SceneManager {
         this.addObstacle(1000, 550, 50, 50, "spike");
         this.addObstacle(1600, 550, 50, 50, "spike");
 
-        // this.game.addEntity(new Slasher(this.game, this.assetManager, 350, 0));
-        // this.game.addEntity(new Blocker(this.game, this.assetManager, 1400, 550));
-        // this.game.addEntity(new Shooter(this.game, this.assetManager, 2500, 550));
+        this.game.addEntity(new Slasher(this.game, this.assetManager, 350, 0));
+        this.game.addEntity(new Blocker(this.game, this.assetManager, 1400, 550));
+        this.game.addEntity(new Shooter(this.game, this.assetManager, 2500, 550));
 
         this.game.addEntity(new Pickup(this.game, this.assetManager, 450, 350, 'health'))
         this.game.addEntity(new Pickup(this.game, this.assetManager, 550, 350, 'shoot'))

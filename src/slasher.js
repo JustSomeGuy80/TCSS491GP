@@ -92,6 +92,9 @@ class Slasher {
             this.sprite.setState("death");
             this.active = false;
             this.removeFromWorld = true;
+            if (Math.random() < 0.25) {
+                this.game.addEntity(new Pickup(this.game, this.assetManager, this.position.x, this.position.y, 'health'))
+            }
         }
     }
 

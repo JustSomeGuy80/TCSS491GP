@@ -86,6 +86,9 @@ class Player {
         this.groundOverride = 0;
 
         this.health = 100;
+        this.canShoot = false;
+        this.canSlash = false;
+        this.canTeleport = false;
     }
 
     loadAnimations(assetManager) {
@@ -179,8 +182,8 @@ class Player {
                 this.game.mouse.y + this.game.camera.y - (this.position.y + this.arm.yOffset);
         }
 
-        if (this.game.buttons[0]) this.arm.fire();
-        if (this.game.keys["e"] || this.game.buttons[3]) this.arm.slash();
+        if (this.canShoot && (this.game.buttons[0])) this.arm.fire();
+        if (this.canSlash && (this.game.keys["e"] || this.game.buttons[3])) this.arm.slash();
 
         // Do we apply ground friction to the player?
         var traction =

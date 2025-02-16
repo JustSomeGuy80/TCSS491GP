@@ -13,13 +13,6 @@
  *  rotational animation of the arm, as well as firing bullets.
  */
 class Arm {
-<<<<<<< Updated upstream
-    
-    static #FIRED = 0;
-    static #SLASHED = 1;
-
-=======
->>>>>>> Stashed changes
     /**
      * @param {GameEngine} game
      * @param {AssetManager} assetManager
@@ -35,26 +28,38 @@ class Arm {
         this.xOffset = xOffset;
         this.yOffset = yOffset;
         this.state = state;
-        
+
         this.sprite = new Sprite(this.parent.position, this.game, 3, -48, -48, {
             blade: new Animator(assetManager.getAsset("anims/arm.png"), 0, 0, 32, 32, 1, 1),
-            bladeFire: new Animator(assetManager.getAsset("anims/arm.png"), 32, 0, 32, 32, 1, .2, false),
-            slash: new Animator(assetManager.getAsset("anims/slash.png"), 0, 0, 32, 32, 3, .1, false),
+            bladeFire: new Animator(
+                assetManager.getAsset("anims/arm.png"),
+                32,
+                0,
+                32,
+                32,
+                1,
+                0.2,
+                false
+            ),
+            slash: new Animator(
+                assetManager.getAsset("anims/slash.png"),
+                0,
+                0,
+                32,
+                32,
+                3,
+                0.1,
+                false
+            ),
         });
 
         this.sprite.setHorizontalFlip(false); // 0 = right, 1 = left
         this.sprite.setState("blade"); // 0 = bladed
 
         this.bullets = [];
-<<<<<<< Updated upstream
-        this.fireRate = .75;
-        this.slashRate = this.fireRate * 1.5;
-        this.fireCD = 0; // tracks when the player can shoot again
-=======
         this.fireRate = 0.6;
         this.slashRate = 0.9;
         this.grappleRate = 1.0;
->>>>>>> Stashed changes
 
         this.fireCD = 0; // tracks when the player can shoot again
         this.slashCD = 0; // tracks when the player can slash again
@@ -67,16 +72,9 @@ class Arm {
 
     update() {
         if (this.fireCD > 0) this.fireCD -= this.game.clockTick;
-<<<<<<< Updated upstream
-        if (this.CDType == Arm.#SLASHED && this.fireCD <= 0) {
-            this.assetManager.playAsset("sounds/slashReady.mp3");
-            this.CDType = Arm.#FIRED;
-        } 
-=======
         if (this.slashCD > 0) this.slashCD -= this.game.clockTick;
         if (this.grappleCD > 0) this.grappleCD -= this.game.clockTick;
 
->>>>>>> Stashed changes
         var newBullets = [];
         this.bullets.forEach(el => {
             el.update();
@@ -90,12 +88,9 @@ class Arm {
         }
 
         this.setState();
-<<<<<<< Updated upstream
-=======
 
         GUI.setCooldown("bullet-ability", this.fireCD / this.fireRate);
         GUI.setCooldown("slash-ability", this.slashCD / this.slashRate);
->>>>>>> Stashed changes
     }
 
     setState() {
@@ -106,16 +101,28 @@ class Arm {
             this.sprite.resetAnim();
             this.sprite.setState("blade");
         }
-
     }
 
     fire() {
         if (this.fireCD <= 0) {
             this.fireCD = this.fireRate;
-            var bulPos = new Position(this.parent.position.x + (this.xOffset * this.parent.facing), this.parent.position.y + this.yOffset);
+            var bulPos = new Position(
+                this.parent.position.x + this.xOffset * this.parent.facing,
+                this.parent.position.y + this.yOffset
+            );
             bulPos = bulPos.asVector();
             bulPos = bulPos.add(this.parent.aimVector.normalize().multiply(36));
-            this.bullets.push(new Bullet(this.game, this.assetManager, bulPos.x, bulPos.y, this.parent.aimVector, this.bulletSpeed, 0));
+            this.bullets.push(
+                new Bullet(
+                    this.game,
+                    this.assetManager,
+                    bulPos.x,
+                    bulPos.y,
+                    this.parent.aimVector,
+                    this.bulletSpeed,
+                    0
+                )
+            );
             this.sprite.setState("bladeFire");
         }
     }
@@ -154,10 +161,18 @@ class Arm {
         if (this.slashCD <= 0) {
             this.slashCD = this.slashRate;
 
-            this.bullets.push(new Slash(this.game, this.assetManager, this.parent, this.xOffset, this.yOffset, this.parent.aimVector));
+            this.bullets.push(
+                new Slash(
+                    this.game,
+                    this.assetManager,
+                    this.parent,
+                    this.xOffset,
+                    this.yOffset,
+                    this.parent.aimVector
+                )
+            );
 
             this.sprite.setState("slash");
-
         }
     }
 
@@ -170,14 +185,10 @@ class Arm {
         this.bullets.forEach(el => {
             el.draw(ctx);
         });
-<<<<<<< Updated upstream
-        
-=======
         if (this.hook != null) {
             this.hook.draw(ctx);
         }
 
->>>>>>> Stashed changes
         let angle = Math.atan2(this.parent.aimVector.y, this.parent.aimVector.x);
         if (angle < 0) angle += Math.PI * 2;
 
@@ -187,14 +198,13 @@ class Arm {
         } else {
             xTranslate = this.parent.position.x - this.game.camera.x - this.xOffset;
             angle += Math.PI;
-        } 
+        }
 
         ctx.save();
-        ctx.translate(xTranslate, (this.parent.position.y + this.yOffset - this.game.camera.y));
+        ctx.translate(xTranslate, this.parent.position.y + this.yOffset - this.game.camera.y);
         ctx.rotate(angle);
         ctx.translate(-xTranslate, -(this.parent.position.y + this.yOffset - this.game.camera.y));
         this.sprite.drawSprite(this.game.clockTick, ctx);
         ctx.restore();
-
     }
-} 
+}

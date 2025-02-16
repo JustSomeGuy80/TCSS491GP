@@ -44,8 +44,87 @@ class ColliderRect {
                 yield collider;
             }
         }
+    }
 
-        return null;
+    /**
+     * Returns the displacement needed to move the owner of this collider out of collision
+     * @param {Vector} displacement the owner's displacement between the last "frame" and now
+     * @param {ColliderRect} other the other collider which should be in collision with this
+     * @returns needed displacement
+     */
+    resolveCollision(displacement, other) {
+        const ERROR = 0.01;
+
+        const otherBounds = other.getBounds();
+        const selfBounds = this.getBounds();
+
+        const horizontalDifference = Math.max(
+            0,
+            displacement.x > 0
+                ? selfBounds.xEnd - otherBounds.xStart
+                : displacement.x < 0
+                ? otherBounds.xEnd - selfBounds.xStart
+                : 0
+        );
+        const verticalDifference = Math.max(
+            0,
+            displacement.y > 0
+                ? selfBounds.yEnd - otherBounds.yStart
+                : displacement.y < 0
+                ? otherBounds.yEnd - selfBounds.yStart
+                : 0
+        );
+
+        const direction = displacement.normalize().negate();
+        const tHorizontal = Math.abs(horizontalDifference / direction.x);
+        const tVertical = Math.abs(verticalDifference / direction.y);
+
+        const state = isNaN(tHorizontal) * 0b10 + isNaN(tVertical) * 0b1;
+        switch (state) {
+            case 0b00: {
+                const newDisplacement = direction.multiply(
+                    Math.min(tHorizontal, tVertical) + ERROR
+                );
+
+                if (tHorizontal < tVertical) {
+                    return new Vector(newDisplacement.x, 0);
+                } else if (tVertical < tHorizontal) {
+                    return new Vector(0, newDisplacement.y);
+                }
+
+                return new Vector();
+            }
+            case 0b10:
+                return direction.multiply(tVertical + ERROR);
+            case 0b01:
+                return direction.multiply(tHorizontal + ERROR);
+        }
+
+        return new Vector(0, 0);
+    }
+
+    /**
+     * Resolves all current collisions with this collider
+     * @param {*} displacement the owner's displacement between the last "frame" and now
+     * @param  {...any} validIDs the valid ids which this collider may collide with
+     * @returns the needed displacement to move this collider out of all collisions
+     */
+    resolveCollisions(displacement, ...validIDs) {
+        let neededDisplacement = new Vector(0, 0);
+
+        const collisions = this.getCollision();
+        while (true) {
+            const { value: collider, done } = collisions.next();
+
+            if (done) break;
+            if (!validIDs.includes(collider.id)) continue;
+
+            neededDisplacement = neededDisplacement.add(
+                this.resolveCollision(displacement, collider)
+            );
+        }
+
+        return neededDisplacement;
     }
 
     /**

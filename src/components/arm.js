@@ -13,10 +13,13 @@
  *  rotational animation of the arm, as well as firing bullets.
  */
 class Arm {
+<<<<<<< Updated upstream
     
     static #FIRED = 0;
     static #SLASHED = 1;
 
+=======
+>>>>>>> Stashed changes
     /**
      * @param {GameEngine} game
      * @param {AssetManager} assetManager
@@ -43,21 +46,37 @@ class Arm {
         this.sprite.setState("blade"); // 0 = bladed
 
         this.bullets = [];
+<<<<<<< Updated upstream
         this.fireRate = .75;
         this.slashRate = this.fireRate * 1.5;
         this.fireCD = 0; // tracks when the player can shoot again
+=======
+        this.fireRate = 0.6;
+        this.slashRate = 0.9;
+        this.grappleRate = 1.0;
+>>>>>>> Stashed changes
 
-        this.CDType = 0; // Tracks if cooldown is from shooting (0) or slashing (1)
+        this.fireCD = 0; // tracks when the player can shoot again
+        this.slashCD = 0; // tracks when the player can slash again
+        this.grappleCD = 0; // tracks when the player can grapple again
 
         this.bulletSpeed = 750;
+
+        this.hook = null;
     }
 
     update() {
         if (this.fireCD > 0) this.fireCD -= this.game.clockTick;
+<<<<<<< Updated upstream
         if (this.CDType == Arm.#SLASHED && this.fireCD <= 0) {
             this.assetManager.playAsset("sounds/slashReady.mp3");
             this.CDType = Arm.#FIRED;
         } 
+=======
+        if (this.slashCD > 0) this.slashCD -= this.game.clockTick;
+        if (this.grappleCD > 0) this.grappleCD -= this.game.clockTick;
+
+>>>>>>> Stashed changes
         var newBullets = [];
         this.bullets.forEach(el => {
             el.update();
@@ -66,7 +85,17 @@ class Arm {
             }
         });
         this.bullets = newBullets;
+        if (this.hook != null) {
+            this.hook.update();
+        }
+
         this.setState();
+<<<<<<< Updated upstream
+=======
+
+        GUI.setCooldown("bullet-ability", this.fireCD / this.fireRate);
+        GUI.setCooldown("slash-ability", this.slashCD / this.slashRate);
+>>>>>>> Stashed changes
     }
 
     setState() {
@@ -82,7 +111,6 @@ class Arm {
 
     fire() {
         if (this.fireCD <= 0) {
-            this.CDType = Arm.#FIRED;
             this.fireCD = this.fireRate;
             var bulPos = new Position(this.parent.position.x + (this.xOffset * this.parent.facing), this.parent.position.y + this.yOffset);
             bulPos = bulPos.asVector();
@@ -92,11 +120,39 @@ class Arm {
         }
     }
 
+    grapple(bool) {
+        if (bool) {
+            if (this.grappleCD <= 0 && this.hook == null) {
+                this.grappleCD = this.grappleRate;
+
+                var graPos = new Position(this.parent.position.x, this.parent.position.y);
+                var graVect = this.parent.aimVector.normalize().multiply(350);
+                var mag = ColliderRect.lineCollide(graPos, graVect, [1]);
+
+                if (mag != null) {
+                    graPos.add(graVect.normalize().multiply(mag));
+
+                    this.hook = new Grapple(
+                        this.game,
+                        this.assetManager,
+                        this.parent,
+                        this.parent.position,
+                        this.xOffset,
+                        this.yOffset,
+                        graPos,
+                        mag + 5
+                    );
+                }
+            }
+        } else {
+            this.hook = null;
+        }
+    }
+
     //TEMPORARY implementation of the slash attack for the prototype presentation
     slash() {
-        if (this.fireCD <= 0) {
-            this.CDType = Arm.#SLASHED;
-            this.fireCD = this.slashRate;
+        if (this.slashCD <= 0) {
+            this.slashCD = this.slashRate;
 
             this.bullets.push(new Slash(this.game, this.assetManager, this.parent, this.xOffset, this.yOffset, this.parent.aimVector));
 
@@ -114,7 +170,14 @@ class Arm {
         this.bullets.forEach(el => {
             el.draw(ctx);
         });
+<<<<<<< Updated upstream
         
+=======
+        if (this.hook != null) {
+            this.hook.draw(ctx);
+        }
+
+>>>>>>> Stashed changes
         let angle = Math.atan2(this.parent.aimVector.y, this.parent.aimVector.x);
         if (angle < 0) angle += Math.PI * 2;
 

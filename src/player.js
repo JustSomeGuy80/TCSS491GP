@@ -2,7 +2,7 @@
 /** @typedef {import("./components/ColliderRect")} */
 /** @typedef {import("./components/position")} */
 /** @typedef {import("./components/arm")} */
-/** @typedef {import("./components/teleoprt")} */
+/** @typedef {import("./components/teleport")} */
 /** @typedef {import("./components/sprite")} */
 /** @typedef {import("./engine/gameengine")} */
 /** @typedef {import("./engine/assetmanager")} */
@@ -120,12 +120,12 @@ class Player {
 
         this.calcMovement();
 
+        this.arm.update();
+        this.teleport.update();
+
         this.runCollisions(origin);
 
         this.setState();
-
-        this.arm.update();
-        this.teleport.update();
     }
 
     checkInput() {
@@ -183,7 +183,12 @@ class Player {
 
         if (this.game.buttons[0]) this.arm.fire();
         if (this.game.keys["s"] || this.game.buttons[3]) this.arm.slash();
+<<<<<<< Updated upstream
         if (this.game.keys["w"]) this.teleport.teleport();
+=======
+        if (this.game.buttons[2] != null) this.arm.grapple(this.game.buttons[2]);
+        this.teleport.teleport(this.game.keys["w"]);
+>>>>>>> Stashed changes
 
         // Do we apply ground friction to the player?
         var traction =

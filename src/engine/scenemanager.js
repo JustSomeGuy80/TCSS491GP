@@ -67,6 +67,8 @@ class SceneManager {
         this.addObstacle(1100, 1700, 1000, 20, "platform");
         this.addObstacle(1800, 1500, 100, 20, "platform");
         this.addObstacle(2100, 1400, 1000, 20, "platform");
+        this.addObstacle(0, 600, 20, 1000, "platform");
+        this.addObstacle(2980, 600, 20, 1000, "platform");
 
         // platform tests
         this.addObstacle(1050, 450, 100, 20, "platform");

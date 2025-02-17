@@ -41,7 +41,7 @@ class Slash {
             this.sprite.setHorizontalFlip(true)
         }
 
-        this.sprite.setState("slash");
+        //this.sprite.setState("slash");
 
         this.unload = false;
 
@@ -72,8 +72,8 @@ class Slash {
             }
 
             if (!clanged && collision.id == 1) {
-                this.neutralize();
                 const bounce = this.vect.multiply(this.calcPush())
+                this.neutralize();
                 this.player.velocity = this.player.velocity.add(bounce);
                 clanged = true;
                 hit = true;
@@ -103,9 +103,12 @@ class Slash {
 
         // Find the angle between the player's velocity vector and the vector of the momentum they'll recieve from the slash
         let angle = Math.atan2(-this.vect.y, -this.vect.x) - Math.atan2(this.player.velocity.y, this.player.velocity.x);
+        if (angle < -Math.PI) angle = angle + 2*Math.PI;
+        else if (angle > Math.PI) angle = angle - 2*Math.PI;
+        angle = Math.abs(angle)
 
         // Convert from radians to a scale of 0 to 1. 0 being 0 degrees, 1 being 180 degrees
-        angle = (angle / (Math.PI * 2)) % 1;
+        angle = (angle / (Math.PI)) % 1;
 
         // The tighter the angle, and the faster you're moving, the less momentum you recieve.
         if (angle < .5) {
@@ -149,9 +152,9 @@ class Slash {
         }
 
         ctx.save();
-        ctx.translate(xTranslate, (this.position.y + this.yOffset));
+        ctx.translate(xTranslate, (this.position.y + this.yOffset - this.game.camera.y));
         ctx.rotate(angle);
-        ctx.translate(-xTranslate, -(this.position.y + this.yOffset));
+        ctx.translate(-xTranslate, -(this.position.y + this.yOffset - this.game.camera.y));
         this.sprite.drawSprite(this.game.clockTick, ctx);
         ctx.restore();
 
@@ -161,7 +164,7 @@ class Slash {
             ctx.strokeStyle = 'yellow';
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
-                bounds.yStart,
+                bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
             ctx.restore();

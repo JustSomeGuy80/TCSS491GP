@@ -29,6 +29,6 @@ class Obstacle {
         if (camY + this.height < 0 || camY > ctx.canvas.height) return;
 
         ctx.fillStyle = this.type === "spike" ? "red" : "gray";
-        ctx.fillRect(camX, this.position.y, this.width, this.height);
+        ctx.fillRect(camX, camY, this.width, this.height);
     }
 } 

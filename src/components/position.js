@@ -24,6 +24,15 @@ class Position {
     }
 
     /**
+     * Sets this position to be equal to another.
+     * @param {Position} other the other position that this position will be set to equal
+     */
+    inherit(other) {
+        this.x = other.x;
+        this.y = other.y;
+    }
+
+    /**
      * Displaces this position by the given Vector.
      * @param {*} vector
      */

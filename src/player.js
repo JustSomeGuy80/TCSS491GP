@@ -204,7 +204,7 @@ class Player {
         }
 
         if (this.canShoot && (this.game.buttons[0])) this.arm.fire();
-        if (this.canSlash && (this.game.keys["e"] || this.game.buttons[3])) this.arm.slash();
+        if (this.canSlash && (this.game.keys["s"] || this.game.buttons[3])) this.arm.slash();
         if (this.canTeleport) this.teleport.teleport(this.game.keys["w"]);
 
         // Do we apply ground friction to the player?

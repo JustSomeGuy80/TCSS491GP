@@ -6,12 +6,12 @@ class Pickup {
         this.debugMode = false;
         this.id = id;
 
-        this.collision = new ColliderRect(this.position, 0, 0, 55, 55, 5, this);
+        this.collision = new ColliderRect(this.position, 0, 0, 30, 30, 5, this);
         this.game.addEntity(this.collision);
 
-        this.sprite = new Sprite(this.position, this.game, 5, 0, 0, {
-            new: new Animator(assetManager.getAsset("anims/block.png"), 0, 0, 11, 11, 1, .25),
-            picked_up: new Animator(assetManager.getAsset("anims/block.png"), 11, 0, 11, 11, 2, .5),
+        this.sprite = new Sprite(this.position, this.game, 3, 0, 0, {
+            new: new Animator(assetManager.getAsset("anims/pickup.png"), 0, 0, 10, 10, 1, .25),
+            picked_up: new Animator(assetManager.getAsset("anims/pickup.png"), 0, 0, 10, 10, 2, .5),
         });
 
         this.sprite.setState("new");
@@ -58,7 +58,7 @@ class Pickup {
             ctx.strokeStyle = 'yellow';
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
-                bounds.yStart,
+                bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
             ctx.restore();

@@ -204,7 +204,7 @@ class Shooter {
             ctx.strokeStyle = 'yellow';
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
-                bounds.yStart,
+                bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
         }

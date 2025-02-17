@@ -16,7 +16,7 @@ class Slasher {
     constructor(game, assetManager, x, y) {
         this.game = game;
         this.assetManager = assetManager;
-        this.debugMode = false;
+        this.debugMode = true;
         this.active = true;
         this.health = 3;
         this.removeFromWorld = false;
@@ -145,7 +145,7 @@ class Slasher {
             ctx.strokeStyle = 'yellow';
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
-                bounds.yStart,
+                bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
 
@@ -156,7 +156,7 @@ class Slasher {
             ctx.strokeStyle = 'lightblue';
             ctx.strokeRect(
                 attackBounds.xStart - this.game.camera.x,
-                attackBounds.yStart,
+                attackBounds.yStart - this.game.camera.y,
                 attackBounds.xEnd - attackBounds.xStart,
                 attackBounds.yEnd - attackBounds.yStart);
         }

@@ -211,7 +211,7 @@ class Blocker {
             ctx.strokeStyle = 'yellow';
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
-                bounds.yStart,
+                bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
                 bounds.yEnd - bounds.yStart);
 
@@ -222,7 +222,7 @@ class Blocker {
             ctx.strokeStyle = 'lightblue';
             ctx.strokeRect(
                 attackBounds.xStart - this.game.camera.x,
-                attackBounds.yStart,
+                attackBounds.yStart - this.game.camera.y,
                 attackBounds.xEnd - attackBounds.xStart,
                 attackBounds.yEnd - attackBounds.yStart);
         }

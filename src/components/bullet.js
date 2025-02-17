@@ -67,7 +67,7 @@ class Bullet {
                 break;
             }
             if (this.team === 0) { // player bullet
-                if (collision.id !== 0 && collision.id !== 4) {
+                if (collision.id !== 0 && collision.id !== 4 && collision.id !== 5 && collision.id !== -1) {
 
                     if (collision.id === 3) {
                         collision.owner.health -= 1;
@@ -79,7 +79,7 @@ class Bullet {
                     this.removeFromWorld = true;
                 }
             } else { // enemy bullet
-                if (collision.id !== 3 && collision.id !== 4) {
+                if (collision.id !== 3 && collision.id !== 4 && collision.id !== 5 && collision.id !== -1) {
 
                     if (collision.id === 0) {
                         collision.owner.health -= 10;

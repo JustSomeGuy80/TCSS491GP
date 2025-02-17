@@ -20,7 +20,7 @@ class Player {
         this.assetManager = assetManager;
         this.tempGrounded = 1000;
         this.jumpHeight = 550;
-        this.debugMode = false;
+        this.debugMode = true;
         this.removeFromWorld = false;
 
         const height = 96;
@@ -283,6 +283,16 @@ class Player {
         this.sprite.drawSprite(this.game.clockTick, ctx);
 
         if (this.debugMode) {
+            const bounds = this.collider.getBounds();
+            ctx.save();
+            ctx.strokeStyle = 'yellow';
+            ctx.strokeRect(
+                bounds.xStart - this.game.camera.x,
+                bounds.yStart - this.game.camera.y,
+                bounds.xEnd - bounds.xStart,
+                bounds.yEnd - bounds.yStart);
+            ctx.restore();
+
             this.collider.draw(ctx);
             this.position.draw(ctx);
         }

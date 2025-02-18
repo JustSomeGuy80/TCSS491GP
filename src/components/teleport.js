@@ -133,7 +133,6 @@ class Teleport {
                     // Teleports player and puts it on cooldown
                     this.player.position.inherit(this.position);
                     this.cd = this.cdMax;
-
                     return true;
                 } else {
                     this.cd = this.cdMax / 10;

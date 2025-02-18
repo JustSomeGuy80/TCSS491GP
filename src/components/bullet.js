@@ -11,7 +11,7 @@ class Bullet {
      * @param {AssetManager} assetManager
      * @param {number} x
      * @param {number} y
-     * @param {vector} vect
+     * @param {Vector} vect
      * @param {number} speed
      * @param {int} team // 0 for player. 1 for enemy. Could add more if we want enemy friendly-fire
      */
@@ -66,17 +66,30 @@ class Bullet {
             if (done) {
                 break;
             }
-            
-            if (collision.id === 1 || collision.id === 3) {
-                this.age = 0;
-                this.active = false;
-                this.sprite.setState("blueExplode");
+            if (this.team === 0) { // player bullet
+                if (collision.id !== 0 && collision.id !== 4 && collision.id !== 5 && collision.id !== -1) {
 
-                this.removeFromWorld = true;
-            }
+                    if (collision.id === 3) {
+                        collision.owner.health -= 1;
+                    }
 
-            if (collision.id === 3) {
-                collision.owner.health -= 1;
+                    this.age = 0;
+                    this.active = false;
+                    this.sprite.setState("blueExplode");
+                    this.removeFromWorld = true;
+                }
+            } else { // enemy bullet
+                if (collision.id !== 3 && collision.id !== 4 && collision.id !== 5 && collision.id !== -1) {
+
+                    if (collision.id === 0) {
+                        collision.owner.health -= 10;
+                    }
+
+                    this.age = 0;
+                    this.active = false;
+                    this.sprite.setState("blueExplode");
+                    this.removeFromWorld = true;
+                }
             }
         }
 

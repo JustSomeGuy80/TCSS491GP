@@ -40,7 +40,7 @@ class Slash {
         if (this.flip) {
             this.sprite.setHorizontalFlip(true)
         }
-    
+      
         //this.sprite.setState("slash");
 
         this.unload = false;
@@ -70,7 +70,7 @@ class Slash {
             if (done) {
                 break;
             }
-        
+
             if (!clanged && collision.id == 1) {
                 const bounce = this.vect.multiply(this.calcPush())
                 this.neutralize();
@@ -95,7 +95,7 @@ class Slash {
         this.collider = slashCol;
     }
 
-    // Calculates how hard the player gets pushed by the slash hitting terrain, 
+    // Calculates how hard the player gets pushed by the slash hitting terrain,
     // based on the angle and magnitude of their momentum and the angle of the slash.
     // Maximum of 350 velocity, minimum of 150.
     calcPush() {
@@ -149,7 +149,7 @@ class Slash {
         } else {
             xTranslate = this.position.x - this.game.camera.x - this.xOffset;
             angle += Math.PI;
-        } 
+        }
 
         ctx.save();
         ctx.translate(xTranslate, (this.position.y + this.yOffset - this.game.camera.y));

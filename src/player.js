@@ -20,7 +20,7 @@ class Player {
         this.game = game;
         this.assetManager = assetManager;
         this.jumpHeight = 550;
-        this.debugMode = false;
+        this.debugMode = true;
         this.removeFromWorld = false;
 
         const height = 96;
@@ -106,6 +106,9 @@ class Player {
         this.groundOverride = 0;
 
         this.health = 100;
+        this.canShoot = false;
+        this.canSlash = false;
+        this.canTeleport = false;
     }
 
     loadAnimations(assetManager) {
@@ -141,6 +144,10 @@ class Player {
         this.runCollisions(origin);
 
         this.setState();
+
+        if (this.health <= 0) {
+            // this.removeFromWorld = true;
+        }
     }
 
     checkInput() {
@@ -194,10 +201,9 @@ class Player {
             this.aimVector.y =
                 this.game.mouse.y + this.game.camera.y - (this.position.y + this.arm.yOffset);
         }
-
-        if (this.game.buttons[0]) this.arm.fire();
-        if (this.game.keys["s"] || this.game.buttons[3]) this.arm.slash();
-        if (this.teleport.teleport(this.game.keys["w"]) === true) {
+        if (this.canShoot &&  this.game.buttons[0]) this.arm.fire();
+        if (this.canSlash && this.game.keys["s"] || this.game.buttons[3]) this.arm.slash();
+        if ((this.canTeleport) && this.teleport.teleport(this.game.keys["w"]) === true) {
             this.arm.grapple(false);
         }
         if (this.game.buttons[2] != null) this.arm.grapple(this.game.buttons[2], move);
@@ -278,6 +284,16 @@ class Player {
         this.sprite.drawSprite(this.game.clockTick, ctx);
 
         if (this.debugMode) {
+            const bounds = this.collider.getBounds();
+            ctx.save();
+            ctx.strokeStyle = 'yellow';
+            ctx.strokeRect(
+                bounds.xStart - this.game.camera.x,
+                bounds.yStart - this.game.camera.y,
+                bounds.xEnd - bounds.xStart,
+                bounds.yEnd - bounds.yStart);
+            ctx.restore();
+
             this.collider.draw(ctx);
             this.position.draw(ctx);
         }

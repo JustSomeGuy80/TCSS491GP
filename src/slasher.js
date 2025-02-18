@@ -16,41 +16,26 @@ class Slasher {
     constructor(game, assetManager, x, y) {
         this.game = game;
         this.assetManager = assetManager;
-        this.debugMode = false;
+        this.debugMode = true;
         this.active = true;
         this.health = 3;
         this.removeFromWorld = false;
+        this.lastAttack = 0;
 
         this.position = new Position(x, y);
-        this.collider = new ColliderRect(this.position, -28, -48, 56, 96, 3, this);
-        this.sprite = new Sprite(this.position, this.game, 3, -48, -48, {
-            running: new Animator(
-                this.assetManager.getAsset("anims/slasher.png"),
-                0,
-                0,
-                32,
-                32,
-                4,
-                0.2
-            ),
-            death: new Animator(
-                this.assetManager.getAsset("anims/run.png"),
-                1000,
-                0,
-                32,
-                32,
-                4,
-                0.2
-            ),
+        this.collider = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 3, this);
+        this.sprite = new Sprite(this.position, this.game, 3, -43, -48, {
+            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.1),
+            death: new Animator(this.assetManager.getAsset("anims/run.png"), 1000, 0, 32, 32, 4, 0.2),
         });
 
         this.moveSpeed = 200;
-        this.moveDirection = 1; // 1 = right, -1 = left
+        this.facing = 1; // 1 = right, -1 = left
         this.velocity = new Vector(0, 0);
         this.gravity = 1000; // Enable gravity for falling
 
         this.patrolLeft = x - 200;
-        this.patrolRight = x + 1000;
+        this.patrolRight = x + 200;
 
         this.sprite.setHorizontalFlip(false);
         this.sprite.setState("running");
@@ -61,9 +46,7 @@ class Slasher {
     }
 
     loadAnimations(assetManager) {
-        this.animations.push(
-            new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 32, 32, 4, 0.2)
-        );
+        this.animations.push(new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43 * 8, 48 * 8, 7, 0.1));
     }
 
     update() {
@@ -71,9 +54,36 @@ class Slasher {
             const origin = this.position.asVector();
             this.calcMovement();
             this.runCollisions(origin);
+            this.attack();
             this.checkPatrolBounds();
             this.flip();
             this.death();
+        }
+    }
+
+    attack() {
+        if (this.lastAttack < this.game.timer.gameTime) {
+            let hitPlayer = false;
+            const attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
+            attackRect.expandW(3);
+            attackRect.expandH(1.5);
+
+            const collisions = attackRect.getCollision();
+            while (true) {
+                const { value: collision, done } = collisions.next();
+                if (done) break;
+                if (collision.id === 0) { // Player
+                    collision.owner.health -= 50;
+                    hitPlayer = true;
+                }
+            }
+
+            if (hitPlayer) {
+                const slash = new SlashEffect(this.game, this.assetManager, this.position.x, this.position.y, this.facing, this);
+                this.game.addEntity(slash);
+                this.moveSpeed = 0;
+                this.lastAttack = this.game.timer.gameTime + 3;
+            }
         }
     }
 
@@ -82,11 +92,14 @@ class Slasher {
             this.sprite.setState("death");
             this.active = false;
             this.removeFromWorld = true;
+            if (Math.random() < 0.25) {
+                this.game.addEntity(new Pickup(this.game, this.assetManager, this.position.x, this.position.y, 'health'))
+            }
         }
     }
 
     calcMovement() {
-        this.velocity.x = this.moveDirection * this.moveSpeed;
+        this.velocity.x = this.facing * this.moveSpeed;
         this.velocity.y += this.gravity * this.game.clockTick;
 
         this.position.x += this.velocity.x * this.game.clockTick;
@@ -113,15 +126,15 @@ class Slasher {
     }
 
     checkPatrolBounds() {
-        if (this.position.x >= this.patrolRight && this.moveDirection === 1) {
-            this.moveDirection = -1;
-        } else if (this.position.x <= this.patrolLeft && this.moveDirection === -1) {
-            this.moveDirection = 1;
+        if (this.position.x >= this.patrolRight && this.facing === 1) {
+            this.facing = -1;
+        } else if (this.position.x <= this.patrolLeft && this.facing === -1) {
+            this.facing = 1;
         }
     }
 
     flip() {
-        this.sprite.setHorizontalFlip(this.moveDirection === -1);
+        this.sprite.setHorizontalFlip(this.facing === -1);
     }
 
     draw(ctx) {
@@ -132,10 +145,52 @@ class Slasher {
             ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
-                bounds.yStart,
+                bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart
-            );
+                bounds.yEnd - bounds.yStart);
+
+            let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
+            attackRect.expandW(3);
+            attackRect.expandH(1.5);
+            const attackBounds = attackRect.getBounds();
+            ctx.strokeStyle = 'lightblue';
+            ctx.strokeRect(
+                attackBounds.xStart - this.game.camera.x,
+                attackBounds.yStart - this.game.camera.y,
+                attackBounds.xEnd - attackBounds.xStart,
+                attackBounds.yEnd - attackBounds.yStart);
         }
+    }
+}
+
+class SlashEffect {
+    constructor(game, assetManager, x, y, facing, parent) {
+        this.game = game;
+        this.assetManager = assetManager;
+        this.x = x;
+        this.y = y;
+        this.removeFromWorld = false;
+        this.duration = 0.4; // 0.1s per frame * 4 frames
+        this.timer = 0;
+        this.parent = parent;
+
+        this.position = new Position(this.x, this.y);
+        this.sprite = new Sprite(this.position, game, 7, -43 * 4, -48 * 2, {
+            slash: new Animator(this.assetManager.getAsset("anims/slasherslash.png"), 0, 0, 56, 32, 4, 0.1, false)
+        });
+        this.sprite.setHorizontalFlip(facing === -1);
+        this.sprite.setState("slash");
+    }
+
+    update() {
+        this.timer += this.game.clockTick;
+        if (this.timer >= this.duration) {
+            this.removeFromWorld = true;
+            this.parent.moveSpeed = 200;
+        }
+    }
+
+    draw(ctx) {
+        this.sprite.drawSprite(this.game.clockTick, ctx);
     }
 }

@@ -16,7 +16,7 @@ class ColliderRect {
      * @param {number} yOffset
      * @param {number} w width
      * @param {number} h height
-     * @param {number} id identification. 0 = player, 1 = block, 2 = bullet, 3 = enemy
+     * @param {number} id identification. 0 = player, 1 = block, 2 = bullet, 3 = enemy, 4 = attack hitbox, 5 = pick up
      */
     constructor(parent, xOffset, yOffset, w, h, id, owner) {
         this.parent = parent;
@@ -125,6 +125,20 @@ class ColliderRect {
         }
 
         return neededDisplacement;
+    }
+
+    expandW(percent) {
+        let newW = this.w * percent;
+        let newX = this.xOffset - (newW - this.w) / 2;
+        this.w = newW;
+        this.xOffset = newX;
+    }
+
+    expandH(percent) {
+        let newH = this.h * percent;
+        let newY = this.yOffset - (newH - this.h) / 2;
+        this.h = newH;
+        this.yOffset = newY;
     }
 
     /**

@@ -4,7 +4,6 @@
 /** @typedef {import("../primitives/vector")} */
 /** @typedef {import("./position")} */
 /** @typedef {import("./bullet")} */
-/** @typedef {import("./slash")} */
 /** @typedef {import("./ColliderRect")} */
 /** @typedef {import("./sprite")} */
 
@@ -75,7 +74,6 @@ class Arm {
         if (this.fireCD > 0) this.fireCD -= this.game.clockTick;
         if (this.slashCD > 0) this.slashCD -= this.game.clockTick;
         if (this.grappleCD > 0) this.grappleCD -= this.game.clockTick;
-
         var newBullets = [];
         this.bullets.forEach(el => {
             el.update();

@@ -99,8 +99,8 @@ class Grapple {
             // Update lastInnerPos to current position
             this.lastInnerPos = this.player.position.asVector().subtract(this.dest.asVector());
 
-            var mult;
             // Correct player's velocity
+            var mult;
             if (!this.locked && (Math.abs(angle) * 2) / Math.PI < 0.75)
                 mult = ((4 / 3) * (Math.abs(angle) * 2)) / Math.PI;
             else mult = 1 - (1 - (Math.abs(angle) * 2) / Math.PI) * this.game.clockTick;

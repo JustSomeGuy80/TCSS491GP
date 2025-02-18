@@ -36,12 +36,44 @@ class Grapple {
         this.exitPoint = new Vector(0, 0);
         this.linkVector = new Vector(0, 0);
         this.currentPos = new Vector(0, 0);
+
+        this.move = 0;
     }
 
     update() {
         var currentPos = this.player.position.asVector().subtract(this.dest.asVector());
         if (currentPos.getMagnitude() > this.mag) {
-            if (!this.player.isGrounded()) this.player.jumped = 2;
+            if (!this.player.isGrounded()) {
+                this.player.jumped = 2;
+            }
+
+            // Make sure the player swings with the proper momentum
+            // if (
+            //     currentPos.x > 0 && // This line checks if the player is in the right half of the grapple range
+            //     this.player.velocity.x <= // These two lines checks if the player moved right this frame
+            //         this.player.maxSpeed + this.player.walkAccel * this.game.clockTick &&
+            //     this.move == 1
+            // ) {
+            //     // Adjust the velocity and position
+            //     this.player.position.x -= this.player.velocity.x * this.game.clockTick;
+            //     this.player.velocity.x -=
+            //         (currentPos.x / this.mag) * this.player.walkAccel * this.game.clockTick;
+            //     this.player.position.x += this.player.velocity.x * this.game.clockTick;
+            // } else if (
+            //     currentPos.x < 0 && // This line checks if the player is in the left half of the grapple range
+            //     this.player.velocity.x >= // These two lines checks if the player moved right this frame
+            //         -this.player.maxSpeed - this.player.walkAccel * this.game.clockTick &&
+            //     this.move == -1
+            // ) {
+            //     // Adjust the velocity and position
+            //     this.player.position.x -= this.player.velocity.x * this.game.clockTick;
+            //     this.player.velocity.x +=
+            //         (Math.abs(currentPos.x) / this.mag) *
+            //         this.player.walkAccel *
+            //         this.game.clockTick;
+            //     this.player.position.x += this.player.velocity.x * this.game.clockTick;
+            // }
+
             var exitPoint = this.runCollisions(currentPos);
             // Calculate the player's current energy (Gravity * height + 1/2 * velocity^2)
             // We do this to know how much velocity the player should have after adjustment
@@ -67,8 +99,8 @@ class Grapple {
             // Update lastInnerPos to current position
             this.lastInnerPos = this.player.position.asVector().subtract(this.dest.asVector());
 
-            // Correct player's velocity
             var mult;
+            // Correct player's velocity
             if (!this.locked && (Math.abs(angle) * 2) / Math.PI < 0.75)
                 mult = ((4 / 3) * (Math.abs(angle) * 2)) / Math.PI;
             else mult = 1 - (1 - (Math.abs(angle) * 2) / Math.PI) * this.game.clockTick;
@@ -87,23 +119,7 @@ class Grapple {
                 this.player.velocity.y -=
                     (this.lastInnerPos.y / this.mag) * Grapple.#G * this.game.clockTick;
             }
-
             this.locked = true;
-
-            console.log("__________________________________________");
-            console.log("Mult: " + (Math.abs(angle) * 2) / Math.PI);
-            console.log("Exit: " + exitPoint);
-            console.log("Diff: " + diffVector);
-            console.log("Angle: " + (angle / (2 * Math.PI)) * 360);
-            console.log("Diff Angle: " + (diffAngle / (2 * Math.PI)) * 360);
-            console.log("Energy: " + energy);
-            console.log("velMag: " + velMag);
-            console.log(
-                "velMag calc: " + 2 * (energy - Grapple.#G * (this.mag + -this.lastInnerPos.y))
-            );
-            console.log("velMag piece: " + Grapple.#G * (this.mag + -this.lastInnerPos.y));
-            console.log("Velocity: " + this.player.velocity);
-            console.log("Position: " + this.player.position);
         } else {
             if (this.currentPos.getMagnitude() <= this.mag * 0.99) this.locked = false;
             this.lastInnerPos = currentPos;
@@ -155,7 +171,6 @@ class Grapple {
 
         this.currentPos = currentPos;
         this.exitPoint = exitPoint;
-        console.log("Slope " + m);
 
         return exitPoint;
     }

@@ -59,7 +59,7 @@ class Arm {
         this.bullets = [];
         this.fireRate = 0.6;
         this.slashRate = 0.9;
-        this.grappleRate = 1.0;
+        this.grappleRate = 0.5;
 
         this.fireCD = 0; // tracks when the player can shoot again
         this.slashCD = 0; // tracks when the player can slash again
@@ -68,6 +68,7 @@ class Arm {
         this.bulletSpeed = 750;
 
         this.hook = null;
+        this.hookErrorPos = null;
     }
 
     update() {
@@ -94,9 +95,6 @@ class Arm {
     }
 
     setState() {
-        // if (this.CDType == 0 && this.fireCD >= (this.fireRate / 2)) this.sprite.setState("bladeFire");
-        // else if (this.CDType == 1 && this.fireCD >= this.slashRate - (Arm.#SLASH_ANIM_TIME * 3)) this.sprite.setState("slash")
-        // else this.sprite.setState("blade")
         if (this.sprite.isDone()) {
             this.sprite.resetAnim();
             this.sprite.setState("blade");
@@ -127,7 +125,7 @@ class Arm {
         }
     }
 
-    grapple(bool) {
+    grapple(bool, move = 0) {
         if (bool) {
             if (this.grappleCD <= 0 && this.hook == null) {
                 this.grappleCD = this.grappleRate;
@@ -149,10 +147,19 @@ class Arm {
                         graPos,
                         mag + 5
                     );
+                } else {
+                    this.hookErrorPos = graPos.asVector().add(graVect);
                 }
             }
         } else {
-            this.hook = null;
+            if (this.hook != null) {
+                this.grappleCD = this.grappleRate;
+                this.hook = null;
+            }
+        }
+
+        if (this.hook != null) {
+            this.hook.move = move;
         }
     }
 
@@ -198,6 +205,25 @@ class Arm {
         } else {
             xTranslate = this.parent.position.x - this.game.camera.x - this.xOffset;
             angle += Math.PI;
+        }
+
+        if (this.hookErrorPos != null) {
+            ctx.save();
+            ctx.strokeStyle = "rgb(250, 110, 110)";
+            ctx.beginPath();
+            ctx.moveTo(
+                this.parent.position.x - this.game.camera.x,
+                this.parent.position.y - this.game.camera.y
+            );
+            ctx.lineTo(
+                this.hookErrorPos.x - this.game.camera.x,
+                this.hookErrorPos.y - this.game.camera.y
+            );
+            ctx.stroke();
+            ctx.restore();
+            if (this.grappleCD < this.grappleRate / 2) {
+                this.hookErrorPos = null;
+            }
         }
 
         ctx.save();

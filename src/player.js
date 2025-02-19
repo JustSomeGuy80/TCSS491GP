@@ -18,12 +18,13 @@ class Player {
     constructor(game, assetManager) {
         this.game = game;
         this.assetManager = assetManager;
+        this.map = null;
         this.tempGrounded = 1000;
         this.jumpHeight = 550;
         this.debugMode = true;
         this.removeFromWorld = false;
 
-        const height = 96;
+        const height = 96 - 0.1;
         const width = 36;
 
         this.position = new Position(525, 500);
@@ -203,7 +204,7 @@ class Player {
                 this.game.mouse.y + this.game.camera.y - (this.position.y + this.arm.yOffset);
         }
 
-        if (this.canShoot && (this.game.buttons[0])) this.arm.fire();
+        if (this.canShoot && this.game.buttons[0]) this.arm.fire();
         if (this.canSlash && (this.game.keys["s"] || this.game.buttons[3])) this.arm.slash();
         if (this.canTeleport) this.teleport.teleport(this.game.keys["w"]);
 
@@ -228,9 +229,6 @@ class Player {
         const gravity = 1000;
         this.position.x += this.velocity.x * this.game.clockTick;
         this.position.y += this.velocity.y * this.game.clockTick;
-
-        // player needs to be put into the ground anyways for game to detect ground collision
-        // if (!this.isGrounded()) this.velocity.y += gravity * this.game.clockTick;
 
         this.velocity.y += gravity * this.game.clockTick;
     }
@@ -273,7 +271,6 @@ class Player {
     }
 
     isGrounded() {
-        //TEMPORARY
         return this.groundOverride > 0;
     }
 
@@ -285,12 +282,13 @@ class Player {
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
             ctx.save();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.yEnd - bounds.yStart
+            );
             ctx.restore();
 
             this.collider.draw(ctx);

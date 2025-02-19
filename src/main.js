@@ -9,6 +9,7 @@ function main() {
     const gameEngine = new GameEngine();
 
     const ASSET_MANAGER = new AssetManager();
+    Tile.AssetManager = ASSET_MANAGER;
 
     ASSET_MANAGER.queueDownload("anims/jump.png");
     ASSET_MANAGER.queueDownload("anims/idle.png");
@@ -22,13 +23,19 @@ function main() {
     ASSET_MANAGER.queueDownload("anims/teleIndicator.png");
     ASSET_MANAGER.queueDownload("anims/slasher.png");
     ASSET_MANAGER.queueDownload("anims/block.png");
-    ASSET_MANAGER.queueDownload("anims/slasherslash.png")
-    ASSET_MANAGER.queueDownload("anims/pickup.png")
+    ASSET_MANAGER.queueDownload("anims/slasherslash.png");
+    ASSET_MANAGER.queueDownload("anims/pickup.png");
 
     ASSET_MANAGER.queueDownload("sounds/music.mp3");
     ASSET_MANAGER.queueDownload("sounds/jump.mp3");
     ASSET_MANAGER.queueDownload("sounds/slashHit.mp3");
     ASSET_MANAGER.queueDownload("sounds/slashReady.mp3");
+
+    ASSET_MANAGER.queueDownload("images/dirt.png");
+    ASSET_MANAGER.queueDownload("images/dirt_stair_BL.png");
+    ASSET_MANAGER.queueDownload("images/dirt_stair_BR.png");
+    ASSET_MANAGER.queueDownload("images/dirt_stair_TL.png");
+    ASSET_MANAGER.queueDownload("images/dirt_stair_TR.png");
 
     ASSET_MANAGER.downloadAll(() => {
         /** @type {HTMLCanvasElement} */
@@ -42,7 +49,6 @@ function main() {
 
         const sceneManager = new SceneManager(gameEngine, ASSET_MANAGER);
         gameEngine.addEntity(sceneManager);
-        // gameEngine.addEntity(new Player(gameEngine, ASSET_MANAGER));
 
         gameEngine.init(ctx);
 

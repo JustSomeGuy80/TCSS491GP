@@ -2,6 +2,7 @@
 /** @typedef {import("./components/ColliderRect")} */
 /** @typedef {import("./components/position")} */
 /** @typedef {import("./components/arm")} */
+/** @typedef {import("./components/teleport")} */
 /** @typedef {import("./components/sprite")} */
 /** @typedef {import("./engine/gameengine")} */
 /** @typedef {import("./engine/assetmanager")} */
@@ -18,12 +19,14 @@ class Player {
     constructor(game, assetManager) {
         this.game = game;
         this.assetManager = assetManager;
+        this.map = null;
         this.tempGrounded = 1000;
         this.jumpHeight = 550;
         this.debugMode = true;
         this.removeFromWorld = false;
 
-        const height = 96;
+        // make height slightly lower so that player can fit through 96px areas
+        const height = 96 - 0.1;
         const width = 36;
 
         this.position = new Position(525, 500);
@@ -90,7 +93,7 @@ class Player {
         this.sprite.setState("idle");
 
         this.facing = 1; // 1 = right, -1 = left, used for calculations, should never be set to 0
-        this.jumped = 0; // 0 = can jump, 1 = can vary gravity, 2 = can't vary gravity
+        this.jumped = 0; // 0 = can jump, 1 = can vary gravity, 2 = can't vary gravity 3 = grappling
         this.jumpBuffer = 0;
 
         this.velocity = new Vector(0, 0);
@@ -138,13 +141,12 @@ class Player {
 
         this.calcMovement();
 
+        this.arm.update();
+        this.teleport.update();
+
         this.runCollisions(origin);
 
         this.setState();
-
-        this.arm.update();
-
-        this.teleport.update();
 
         if (this.health <= 0) {
             // this.removeFromWorld = true;
@@ -202,10 +204,12 @@ class Player {
             this.aimVector.y =
                 this.game.mouse.y + this.game.camera.y - (this.position.y + this.arm.yOffset);
         }
-
-        if (this.canShoot && (this.game.buttons[0])) this.arm.fire();
-        if (this.canSlash && (this.game.keys["s"] || this.game.buttons[3])) this.arm.slash();
-        if (this.canTeleport) this.teleport.teleport(this.game.keys["w"]);
+        if (this.canShoot && this.game.buttons[0]) this.arm.fire();
+        if ((this.canSlash && this.game.keys["s"]) || this.game.buttons[3]) this.arm.slash();
+        if (this.canTeleport && this.teleport.teleport(this.game.keys["w"]) === true) {
+            this.arm.grapple(false);
+        }
+        if (this.game.buttons[2] != null) this.arm.grapple(this.game.buttons[2], move);
 
         // Do we apply ground friction to the player?
         var traction =
@@ -228,9 +232,6 @@ class Player {
         const gravity = 1000;
         this.position.x += this.velocity.x * this.game.clockTick;
         this.position.y += this.velocity.y * this.game.clockTick;
-
-        // player needs to be put into the ground anyways for game to detect ground collision
-        // if (!this.isGrounded()) this.velocity.y += gravity * this.game.clockTick;
 
         this.velocity.y += gravity * this.game.clockTick;
     }
@@ -262,18 +263,17 @@ class Player {
             else if (this.velocity.x * this.facing > 0) this.sprite.setState("running");
             else this.sprite.setState("bwrunning");
         } else {
-            if (this.velocity.y < 0) {
-                if (this.velocity.x * this.facing >= 0) this.sprite.setState("airLeanBack");
+            if (this.velocity.y <= 10) {
+                if (this.velocity.x * this.facing >= 1) this.sprite.setState("airLeanBack");
                 else this.sprite.setState("airLeanFront");
             } else {
-                if (this.velocity.x * this.facing >= 0) this.sprite.setState("airLeanFront");
+                if (this.velocity.x * this.facing >= 1) this.sprite.setState("airLeanFront");
                 else this.sprite.setState("airLeanBack");
             }
         }
     }
 
     isGrounded() {
-        //TEMPORARY
         return this.groundOverride > 0;
     }
 
@@ -285,12 +285,13 @@ class Player {
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
             ctx.save();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.yEnd - bounds.yStart
+            );
             ctx.restore();
 
             this.collider.draw(ctx);

@@ -1,9 +1,18 @@
 class AssetManager {
+    /** @type {AssetManager} meant for compatibility with Hai's stuff dw */
+    static #instance = null;
+
+    static getImage(path) {
+        return AssetManager.#instance.getAsset(path);
+    }
+
     constructor() {
         this.successCount = 0;
         this.errorCount = 0;
         this.cache = [];
         this.downloadQueue = [];
+
+        AssetManager.#instance = this;
     }
 
     queueDownload(path) {

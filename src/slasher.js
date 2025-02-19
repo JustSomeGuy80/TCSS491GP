@@ -161,7 +161,7 @@ class Slasher {
 
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart - this.game.camera.y,

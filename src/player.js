@@ -24,6 +24,7 @@ class Player {
         this.debugMode = true;
         this.removeFromWorld = false;
 
+        // make height slightly lower so that player can fit through 96px areas
         const height = 96 - 0.1;
         const width = 36;
 

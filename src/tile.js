@@ -4,6 +4,7 @@ class Tile {
     static SIZE = 48;
 
     static PLAYER = -1;
+    static SLASHER = -2;
 
     static AIR = 0;
     static DIRT = 1;
@@ -26,6 +27,8 @@ class Tile {
         const args = [position.x, position.y, 48.5, 48.5];
         switch (tile) {
             case Tile.PLAYER: // DO NOT DRAW PLAYER SPAWN
+                break;
+            case Tile.SLASHER: // DO NOT DRAW SLASHER SPAWN
                 break;
             case Tile.AIR:
                 break;

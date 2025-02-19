@@ -64,6 +64,10 @@ class SceneManager {
                         this.player.position.x = x;
                         this.player.position.y = y;
                         break;
+                    case Tile.SLASHER:
+                        const slasher = new Slasher(this.game, this.assetManager, x, y);
+                        this.game.addEntity(slasher);
+                        break;
                 }
             }
         }

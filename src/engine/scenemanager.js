@@ -65,8 +65,33 @@ class SceneManager {
                         this.player.position.y = y;
                         break;
                     case Tile.SLASHER:
-                        const slasher = new Slasher(this.game, this.assetManager, x, y);
-                        this.game.addEntity(slasher);
+                        this.game.addEntity(new Slasher(this.game, this.assetManager, x, y));
+                        break;
+                    case Tile.SHOOTER:
+                        this.game.addEntity(new Shooter(this.game, this.assetManager, x, y));
+                        break;
+                    case Tile.BLOCKER:
+                        this.game.addEntity(new Blocker(this.game, this.assetManager, x, y));
+                        break;
+                    case Tile.SHOOT_PICKUP:
+                        this.game.addEntity(
+                            new Pickup(this.game, this.assetManager, x, y, "shoot")
+                        );
+                        break;
+                    case Tile.SLASH_PICKUP:
+                        this.game.addEntity(
+                            new Pickup(this.game, this.assetManager, x, y, "slash")
+                        );
+                        break;
+                    case Tile.TELEPORT_PICKUP:
+                        this.game.addEntity(
+                            new Pickup(this.game, this.assetManager, x, y, "teleport")
+                        );
+                        break;
+                    case Tile.HEALTH_PICKUP:
+                        this.game.addEntity(
+                            new Pickup(this.game, this.assetManager, x, y, "health")
+                        );
                         break;
                 }
             }

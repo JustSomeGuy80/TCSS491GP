@@ -5,6 +5,14 @@ class Tile {
 
     static PLAYER = -1;
     static SLASHER = -2;
+    static SHOOTER = -3;
+    static BLOCKER = -4;
+
+    static SHOOT_PICKUP = -5;
+    static SLASH_PICKUP = -6;
+    static TELEPORT_PICKUP = -7;
+
+    static HEALTH_PICKUP = -8;
 
     static AIR = 0;
     static DIRT = 1;
@@ -26,12 +34,6 @@ class Tile {
         // the tiles are size 48 but we do 48.5 to avoid the "grid lines" in between tiles
         const args = [position.x, position.y, 48.5, 48.5];
         switch (tile) {
-            case Tile.PLAYER: // DO NOT DRAW PLAYER SPAWN
-                break;
-            case Tile.SLASHER: // DO NOT DRAW SLASHER SPAWN
-                break;
-            case Tile.AIR:
-                break;
             case Tile.DIRT:
                 ctx.drawImage(this.AssetManager.getAsset("images/dirt.png"), ...args);
                 break;
@@ -47,8 +49,6 @@ class Tile {
             case Tile.DIRT_STAIR_TR:
                 ctx.drawImage(this.AssetManager.getAsset("images/dirt_stair_TR.png"), ...args);
                 break;
-            default:
-                throw new Error(`Received unrecognized tile: ${tile}`);
         }
     }
 }

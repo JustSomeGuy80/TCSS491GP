@@ -40,7 +40,7 @@ class Slash {
         if (this.flip) {
             this.sprite.setHorizontalFlip(true)
         }
-
+      
         //this.sprite.setState("slash");
 
         this.unload = false;

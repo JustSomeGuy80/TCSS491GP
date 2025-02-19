@@ -12,9 +12,6 @@
  *  rotational animation of the arm, as well as firing bullets.
  */
 class Arm {
-    static #FIRED = 0;
-    static #SLASHED = 1;
-
     /**
      * @param {GameEngine} game
      * @param {AssetManager} assetManager
@@ -60,20 +57,23 @@ class Arm {
 
         this.bullets = [];
         this.fireRate = 0.6;
-        this.slashRate = this.fireRate * 1.5;
-        this.fireCD = 0; // tracks when the player can shoot again
+        this.slashRate = 0.9;
+        this.grappleRate = 0.5;
 
-        this.CDType = 0; // Tracks if cooldown is from shooting (0) or slashing (1)
+        this.fireCD = 0; // tracks when the player can shoot again
+        this.slashCD = 0; // tracks when the player can slash again
+        this.grappleCD = 0; // tracks when the player can grapple again
 
         this.bulletSpeed = 750;
+
+        this.hook = null;
+        this.hookErrorPos = null;
     }
 
     update() {
         if (this.fireCD > 0) this.fireCD -= this.game.clockTick;
-        if (this.CDType == Arm.#SLASHED && this.fireCD <= 0) {
-            this.assetManager.playAsset("sounds/slashReady.mp3");
-            this.CDType = Arm.#FIRED;
-        }
+        if (this.slashCD > 0) this.slashCD -= this.game.clockTick;
+        if (this.grappleCD > 0) this.grappleCD -= this.game.clockTick;
         var newBullets = [];
         this.bullets.forEach(el => {
             el.update();
@@ -82,16 +82,17 @@ class Arm {
             }
         });
         this.bullets = newBullets;
+        if (this.hook != null) {
+            this.hook.update();
+        }
+
         this.setState();
 
         GUI.setCooldown("bullet-ability", this.fireCD / this.fireRate);
-        GUI.setCooldown("slash-ability", this.fireCD / this.fireRate);
+        GUI.setCooldown("slash-ability", this.slashCD / this.slashRate);
     }
 
     setState() {
-        // if (this.CDType == 0 && this.fireCD >= (this.fireRate / 2)) this.sprite.setState("bladeFire");
-        // else if (this.CDType == 1 && this.fireCD >= this.slashRate - (Arm.#SLASH_ANIM_TIME * 3)) this.sprite.setState("slash")
-        // else this.sprite.setState("blade")
         if (this.sprite.isDone()) {
             this.sprite.resetAnim();
             this.sprite.setState("blade");
@@ -100,7 +101,6 @@ class Arm {
 
     fire() {
         if (this.fireCD <= 0) {
-            this.CDType = Arm.#FIRED;
             this.fireCD = this.fireRate;
             var bulPos = new Position(
                 this.parent.position.x + this.xOffset * this.parent.facing,
@@ -123,11 +123,48 @@ class Arm {
         }
     }
 
+    grapple(bool, move = 0) {
+        if (bool) {
+            if (this.grappleCD <= 0 && this.hook == null) {
+                this.grappleCD = this.grappleRate;
+
+                var graPos = new Position(this.parent.position.x, this.parent.position.y);
+                var graVect = this.parent.aimVector.normalize().multiply(350);
+                var mag = ColliderRect.lineCollide(graPos, graVect, [1]);
+
+                if (mag != null) {
+                    graPos.add(graVect.normalize().multiply(mag));
+
+                    this.hook = new Grapple(
+                        this.game,
+                        this.assetManager,
+                        this.parent,
+                        this.parent.position,
+                        this.xOffset,
+                        this.yOffset,
+                        graPos,
+                        mag + 5
+                    );
+                } else {
+                    this.hookErrorPos = graPos.asVector().add(graVect);
+                }
+            }
+        } else {
+            if (this.hook != null) {
+                this.grappleCD = this.grappleRate;
+                this.hook = null;
+            }
+        }
+
+        if (this.hook != null) {
+            this.hook.move = move;
+        }
+    }
+
     //TEMPORARY implementation of the slash attack for the prototype presentation
     slash() {
-        if (this.fireCD <= 0) {
-            this.CDType = Arm.#SLASHED;
-            this.fireCD = this.slashRate;
+        if (this.slashCD <= 0) {
+            this.slashCD = this.slashRate;
 
             this.bullets.push(
                 new Slash(
@@ -153,7 +190,10 @@ class Arm {
         this.bullets.forEach(el => {
             el.draw(ctx);
         });
-        
+        if (this.hook != null) {
+            this.hook.draw(ctx);
+        }
+
         let angle = Math.atan2(this.parent.aimVector.y, this.parent.aimVector.x);
         if (angle < 0) angle += Math.PI * 2;
 
@@ -163,6 +203,25 @@ class Arm {
         } else {
             xTranslate = this.parent.position.x - this.game.camera.x - this.xOffset;
             angle += Math.PI;
+        }
+
+        if (this.hookErrorPos != null) {
+            ctx.save();
+            ctx.strokeStyle = "rgb(250, 110, 110)";
+            ctx.beginPath();
+            ctx.moveTo(
+                this.parent.position.x - this.game.camera.x,
+                this.parent.position.y - this.game.camera.y
+            );
+            ctx.lineTo(
+                this.hookErrorPos.x - this.game.camera.x,
+                this.hookErrorPos.y - this.game.camera.y
+            );
+            ctx.stroke();
+            ctx.restore();
+            if (this.grappleCD < this.grappleRate / 2) {
+                this.hookErrorPos = null;
+            }
         }
 
         ctx.save();

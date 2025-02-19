@@ -1,11 +1,3 @@
-/** @typedef {import("./engine/animator")} */
-/** @typedef {import("./components/ColliderRect")} */
-/** @typedef {import("./components/position")} */
-/** @typedef {import("./components/sprite")} */
-/** @typedef {import("./engine/gameengine")} */
-/** @typedef {import("./engine/assetmanager")} */
-/** @typedef {import("./primitives/vector")} */
-
 class Slasher {
     /**
      * @param {GameEngine} game
@@ -21,6 +13,10 @@ class Slasher {
         this.health = 3;
         this.removeFromWorld = false;
         this.lastAttack = 0;
+
+        this.windupDuration = 1;
+        this.windupTimer = 0;
+        this.inWindup = false;
 
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 3, this);
@@ -62,26 +58,49 @@ class Slasher {
     }
 
     attack() {
-        if (this.lastAttack < this.game.timer.gameTime) {
-            let hitPlayer = false;
-            const attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
-            attackRect.expandW(3);
-            attackRect.expandH(1.5);
+        let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
+        attackRect.expandW(3);
+        attackRect.expandH(1.5);
 
+        if (!this.inWindup && this.lastAttack < this.game.timer.gameTime) {
+
+            let playerDetected = false;
             const collisions = attackRect.getCollision();
             while (true) {
                 const { value: collision, done } = collisions.next();
                 if (done) break;
                 if (collision.id === 0) { // Player
-                    collision.owner.health -= 50;
-                    hitPlayer = true;
+                    playerDetected = true;
+                    break;
                 }
             }
 
-            if (hitPlayer) {
-                const slash = new SlashEffect(this.game, this.assetManager, this.position.x, this.position.y, this.facing, this);
-                this.game.addEntity(slash);
-                this.moveSpeed = 0;
+            if (playerDetected) {
+                this.inWindup = true;
+                this.windupTimer = this.windupDuration;
+                // TODO WINDUP ANIMATION
+            }
+        }
+
+        if (this.inWindup) {
+            this.windupTimer -= this.game.clockTick;
+            if (this.windupTimer <= 0) {
+                let hitPlayer = false;
+                const collisions = attackRect.getCollision();
+                while (true) {
+                    const { value: collision, done } = collisions.next();
+                    if (done) break;
+                    if (collision.id === 0) {
+                        collision.owner.health -= 50;
+                        hitPlayer = true;
+                    }
+                }
+                if (hitPlayer) {
+                    const slash = new SlashEffect(this.game, this.assetManager, this.position.x, this.position.y, this.facing, this);
+                    this.game.addEntity(slash);
+                    this.moveSpeed = 0;
+                }
+                this.inWindup = false;
                 this.lastAttack = this.game.timer.gameTime + 3;
             }
         }

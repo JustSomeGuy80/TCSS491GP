@@ -72,35 +72,57 @@ class Blocker {
             const collisions = attackRect.getCollision();
 
             while (true) {
-                const {value: collision, done} = collisions.next();
+                const { value: collision, done } = collisions.next();
                 if (done) break;
 
-                const {xStart, xEnd, yStart, yEnd} = collision.getBounds();
-
                 if (collision.id === 0) {
-
                     const gridSize = 5;
                     const blockSize = 50;
-
                     const offset = (gridSize / 2) * blockSize;
 
-                    for (let row = 0; row < gridSize; row++) {
-                        for (let col = 0; col < gridSize; col++) {
-                            if (row > 0 && row < gridSize - 1 && col > 0 && col < gridSize - 1) {
-                                continue;
+                    const side = Math.floor(Math.random() * 4);
+
+                    let row = 0;
+                    let col = 0;
+
+                    switch(side) {
+                        case 0: // up
+                            for (let col = 0; col < gridSize; col++) {
+                                let x = collision.owner.position.x - offset + (col * blockSize);
+                                let y = collision.owner.position.y - offset + (row * blockSize);
+                                this.game.addEntity(new Block(this.game, this.assetManager, x, y));
                             }
-
-                            let x = collision.owner.position.x - offset + (col * blockSize);
-                            let y = collision.owner.position.y - offset + (row * blockSize);
-
-                            this.game.addEntity(new Block(this.game, this.assetManager, x, y));
-                        }
+                            break;
+                        case 1: // down
+                            row = gridSize - 1;
+                            for (let col = 0; col < gridSize; col++) {
+                                let x = collision.owner.position.x - offset + (col * blockSize);
+                                let y = collision.owner.position.y - offset + (row * blockSize);
+                                this.game.addEntity(new Block(this.game, this.assetManager, x, y));
+                            }
+                            break;
+                        case 2: // left
+                            for (let row = 0; row < gridSize; row++) {
+                                let x = collision.owner.position.x - offset + (col * blockSize);
+                                let y = collision.owner.position.y - offset + (row * blockSize);
+                                this.game.addEntity(new Block(this.game, this.assetManager, x, y));
+                            }
+                            break;
+                        case 3: // right
+                            col = gridSize - 1;
+                            for (let row = 0; row < gridSize; row++) {
+                                let x = collision.owner.position.x - offset + (col * blockSize);
+                                let y = collision.owner.position.y - offset + (row * blockSize);
+                                this.game.addEntity(new Block(this.game, this.assetManager, x, y));
+                            }
+                            break;
                     }
                 }
                 this.lastAttack = this.game.timer.gameTime + 6;
             }
         }
     }
+
 
     death() {
         if (this.health <= 0) {

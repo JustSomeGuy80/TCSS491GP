@@ -13,7 +13,7 @@ class Block {
         this.age = 0;
         this.debugMode = false;
 
-        this.collision = new ColliderRect(this.position, 0, 0, 55, 55, 1, this);
+        this.collision = new ColliderRect(this.position, 0, 0, 55, 55, 6, this);
         this.game.addEntity(this.collision);
 
         this.sprite = new Sprite(this.position, this.game, 5, 0, 0, {

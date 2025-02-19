@@ -13,7 +13,7 @@ class Shooter {
      * @param {number} x Initial X position
      * @param {number} y Initial Y position
      */
-    constructor(game, assetManager, x, y) {
+    constructor(game, assetManager, x, y, player) {
         this.game = game;
         this.assetManager = assetManager;
         this.debugMode = true;
@@ -24,6 +24,7 @@ class Shooter {
         this.lastAttack = 0;
         this.bulletSpeed = 750;
         this.bullets = [];
+        this.player = player
 
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 3, this);
@@ -68,17 +69,28 @@ class Shooter {
     attack() {
         // Fire every 3 seconds
         if (this.game.timer.gameTime >= this.lastAttack) {
-            let aimVector = new Vector(this.facing, 0)
-            let bulPos = new Position(this.position.x + (50 * this.facing), this.position.y); // 50 is the x offset
-            bulPos = bulPos.asVector();
-            bulPos.add(aimVector.normalize().multiply(36));
-            this.bullets.push(new Bullet(this.game, this.assetManager, bulPos.x, bulPos.y, aimVector, this.bulletSpeed, 1));
+            // Calculate the vector from shooter to player
+            const shooterPos = this.position.asVector();
+            const playerPos = this.player.position.asVector();
+            const aimVector = playerPos.subtract(shooterPos).normalize();
 
-            // Reset cooldown
+            const bulPos = shooterPos.add(aimVector.multiply(10));
+
+            this.bullets.push(new Bullet(
+                this.game,
+                this.assetManager,
+                bulPos.x,
+                bulPos.y,
+                aimVector,
+                this.bulletSpeed,
+                1
+            ));
+
+            // Reset the attack cooldown
             this.lastAttack = this.game.timer.gameTime + 3;
-
         }
     }
+
 
     bulletUpdate() {
         let newBullets = [];

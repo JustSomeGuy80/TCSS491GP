@@ -25,9 +25,17 @@ class Bullet {
         this.sprite = new Sprite(this.position, this.game, 3, -10.5, -10.5, {
             blue: new Animator(assetManager.getAsset("anims/bullet.png"), 0, 0, 7, 7, 2, .25),
             blueExplode: new Animator(assetManager.getAsset("anims/bullet.png"), 14, 0, 7, 7, 6, .05),
+            red: new Animator(assetManager.getAsset("anims/enemy_bullet.png"), 0, 0, 7, 7, 2, .25),
+            redExplode: new Animator(assetManager.getAsset("anims/enemy_bullet.png"), 14, 0, 7, 7, 6, .05),
         });
-    
-        this.sprite.setState("blue");
+
+
+        if (this.team === 0) {
+            this.sprite.setState("blue");
+        }
+        else {
+            this.sprite.setState("red");
+        }
 
         this.collider = new ColliderRect(this.position, -7.5, -7.5, 15, 15, 2, this);
 
@@ -45,7 +53,13 @@ class Bullet {
             if (this.age >= 4) {
                 this.age = 0;
                 this.active = false;
-                this.sprite.setState("blueExplode");
+
+                if (this.team === 0) {
+                    this.sprite.setState("blueExplode");
+                }
+                else {
+                    this.sprite.setState("redExplode");
+                }
 
                 this.removeFromWorld = true;
             }
@@ -87,7 +101,7 @@ class Bullet {
 
                     this.age = 0;
                     this.active = false;
-                    this.sprite.setState("blueExplode");
+                    this.sprite.setState("redExplode");
                     this.removeFromWorld = true;
                 }
             }

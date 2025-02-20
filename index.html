@@ -76,24 +76,18 @@
         </div>
         <div class="overlay-container" id="game">
             <canvas id="gameWorld" class="layer" width="1024" height="768" tabindex="0"></canvas>
-            <div id="health"></div>
-            <div
-                style="
-                    display: flex;
-                    gap: 1rem;
-                    margin-top: auto;
-                    margin-inline: auto;
-                    margin-bottom: 1rem;
-                "
-            >
-                <div class="ability overlay-container" id="bullet-ability">
-                    <p style="font-size: 1.5rem; margin: 0">M1</p>
-                </div>
-                <div class="ability overlay-container" id="slash-ability">
-                    <p style="font-size: 1.5rem; margin: 0">S</p>
-                </div>
-                <div class="ability overlay-container" id="teleport-ability">
-                    <p style="font-size: 1.5rem; margin: 0">W</p>
+            <div id="gui">
+                <div id="health"></div>
+                <div id="ability-group">
+                    <div class="ability overlay-container" id="bullet-ability">
+                        <p style="font-size: 1.5rem; margin: 0">M1</p>
+                    </div>
+                    <div class="ability overlay-container" id="slash-ability">
+                        <p style="font-size: 1.5rem; margin: 0">S</p>
+                    </div>
+                    <div class="ability overlay-container" id="teleport-ability">
+                        <p style="font-size: 1.5rem; margin: 0">W</p>
+                    </div>
                 </div>
             </div>
             <div id="menu">
@@ -143,5 +137,10 @@
 
         <script type="text/javascript" src="./src/main.js"></script>
         <script type="text/javascript" src="./src/gui.js"></script>
+
+        <!-- REMOVE IF NOT TESTING -->
+        <script type="text/javascript">
+            GUI.onPlayClick();
+        </script>
     </body>
 </html>

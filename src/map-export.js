@@ -25,13 +25,6 @@ class MapExport {
 
     init(game) {
         this.game = game;
-        for (const { x, y, tile } of this.#getTiles()) {
-            switch (tile) {
-                case Tile.DIRT:
-                    new ColliderRect(new Vector(x, y), 0, 0, Tile.SIZE, Tile.SIZE, 1, this);
-                    break;
-            }
-        }
     }
 
     update() {}

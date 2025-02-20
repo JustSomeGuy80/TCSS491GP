@@ -239,7 +239,11 @@ class Player {
 
     runCollisions(origin) {
         const displacement = this.position.asVector().subtract(origin);
-        const readjustment = this.collider.resolveCollisions(displacement, 1, 6);
+        // const readjustment = this.collider.resolveCollisions(displacement, 1, 6);
+        const boundary = this.collider.getBoundary();
+        const readjustment = boundary.resolveCollisions(displacement, [
+            ...this.map.getColliders(boundary),
+        ]);
         this.position.add(readjustment);
 
         // horizontal collision

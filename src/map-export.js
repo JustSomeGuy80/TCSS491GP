@@ -1,4 +1,5 @@
-/** @typedef {./engine/types/boundary.js} */
+/** @typedef {import("./engine/types/boundary")} */
+/** @typedef {import("./tile")} */
 
 class MapExport {
     /** @type {MapExport} */
@@ -39,7 +40,29 @@ class MapExport {
      *
      * @param {Boundary} boundary
      */
-    *getColliders(boundary) {}
+    *getColliders(boundary) {
+        const left = Math.floor(boundary.left / Tile.SIZE);
+        const right = Math.min(Math.ceil(boundary.right / Tile.SIZE), this.tiles.length - 1);
+        const top = Math.floor(boundary.top / Tile.SIZE);
+        const bottom = Math.min(Math.ceil(boundary.bottom / Tile.SIZE), this.tiles[0].length - 1);
+
+        for (let xIndex = left; xIndex <= right; xIndex++) {
+            for (let yIndex = top; yIndex <= bottom; yIndex++) {
+                const x = xIndex * Tile.SIZE;
+                const y = yIndex * Tile.SIZE;
+                const tile = this.tiles[xIndex][yIndex];
+
+                if (!boundary.containsBoundary(new Boundary(x, x + Tile.SIZE, y, y + Tile.SIZE))) {
+                    continue;
+                }
+
+                for (const tileBoundary of Tile.getBoundaries(tile)) {
+                    tileBoundary.move(new Vector(x, y));
+                    yield tileBoundary;
+                }
+            }
+        }
+    }
 
     draw(ctx) {
         for (const { x, y, tile } of this.#getTiles()) {

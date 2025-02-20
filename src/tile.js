@@ -2,6 +2,7 @@ class Tile {
     static AssetManager = null;
 
     static SIZE = 48;
+    static STEP_SIZE = Tile.SIZE / 4;
 
     static PLAYER = -1;
     static SLASHER = -2;
@@ -48,6 +49,29 @@ class Tile {
                 break;
             case Tile.DIRT_STAIR_TR:
                 ctx.drawImage(this.AssetManager.getAsset("images/dirt_stair_TR.png"), ...args);
+                break;
+        }
+    }
+
+    static *getBoundaries(tile) {
+        switch (tile) {
+            case Tile.DIRT:
+                yield new Boundary(0, Tile.SIZE, 0, Tile.SIZE);
+                break;
+            case Tile.DIRT_STAIR_BR:
+                for (let i = 1; i <= 4; i++) {
+                    yield new Boundary(
+                        Tile.SIZE - i * Tile.STEP_SIZE,
+                        Tile.SIZE,
+                        (i - 1) * Tile.STEP_SIZE,
+                        Tile.SIZE
+                    );
+                }
+                break;
+            case Tile.DIRT_STAIR_BL:
+                for (let i = 1; i <= 4; i++) {
+                    yield new Boundary(0, Tile.STEP_SIZE * i, (i - 1) * Tile.STEP_SIZE, Tile.SIZE);
+                }
                 break;
         }
     }

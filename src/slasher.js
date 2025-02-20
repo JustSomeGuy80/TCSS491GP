@@ -84,7 +84,7 @@ class Slasher {
     }
 
     attack() {
-        let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
+        let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this, true);
         attackRect.expandW(3);
         attackRect.expandH(1.5);
 
@@ -209,7 +209,16 @@ class Slasher {
                 bounds.yEnd - bounds.yStart
             );
 
-            let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
+            let attackRect = new ColliderRect(
+                this.position,
+                -43,
+                -48,
+                43 * 3,
+                48 * 3,
+                4,
+                this,
+                true
+            );
             attackRect.expandW(3);
             attackRect.expandH(1.5);
             const attackBounds = attackRect.getBounds();

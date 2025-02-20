@@ -130,7 +130,11 @@ class Arm {
 
                 var graPos = new Position(this.parent.position.x, this.parent.position.y);
                 var graVect = this.parent.aimVector.normalize().multiply(350);
-                var mag = ColliderRect.lineCollide(graPos, graVect, [1]);
+                var mag = ColliderRect.lineCollide(graPos, graVect, [
+                    1,
+                    ColliderRect.TYPE.STAIR_BL,
+                    ColliderRect.TYPE.STAIR_BR,
+                ]);
 
                 if (mag != null) {
                     graPos.add(graVect.normalize().multiply(mag));

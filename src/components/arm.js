@@ -123,7 +123,7 @@ class Arm {
         }
     }
 
-    grapple(bool, move = 0) {
+    grapple(bool) {
         if (bool) {
             if (this.grappleCD <= 0 && this.hook == null) {
                 this.grappleCD = this.grappleRate;
@@ -151,13 +151,19 @@ class Arm {
             }
         } else {
             if (this.hook != null) {
+                if (this.parent.jumped == 3) this.parent.jumped = 2;
                 this.grappleCD = this.grappleRate;
                 this.hook = null;
             }
         }
+    }
 
+    grappleCheck(move) {
         if (this.hook != null) {
-            this.hook.move = move;
+            return this.hook.grappleCheck(move);
+        } else {
+            this.parent.jumped = 2;
+            return true;
         }
     }
 

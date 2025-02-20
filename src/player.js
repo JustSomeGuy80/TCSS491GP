@@ -23,6 +23,7 @@ class Player {
         this.tempGrounded = 1000;
         this.jumpHeight = 550;
         this.debugMode = true;
+        this.debugMode = false;
         this.removeFromWorld = false;
 
         // make height slightly lower so that player can fit through 96px areas
@@ -175,6 +176,7 @@ class Player {
 
         // Don't let the player exceed max speed
         if (
+            (this.jumped < 3 || this.arm.grappleCheck(move)) &&
             !(
                 (this.velocity.x > this.maxSpeed && move == 1) ||
                 (this.velocity.x < -this.maxSpeed && move == -1)
@@ -204,12 +206,13 @@ class Player {
             this.aimVector.y =
                 this.game.mouse.y + this.game.camera.y - (this.position.y + this.arm.yOffset);
         }
-        if (this.canShoot && this.game.buttons[0]) this.arm.fire();
-        if ((this.canSlash && this.game.keys["s"]) || this.game.buttons[3]) this.arm.slash();
+        if (this.game.buttons[0]) this.arm.fire();
+        if (this.canSlash && (this.game.keys["s"] || this.game.buttons[3])) this.arm.slash();
         if (this.canTeleport && this.teleport.teleport(this.game.keys["w"]) === true) {
             this.arm.grapple(false);
         }
-        if (this.game.buttons[2] != null) this.arm.grapple(this.game.buttons[2], move);
+        if (this.canShoot && this.game.buttons[2] != null)
+            this.arm.grapple(this.game.buttons[2], move);
 
         // Do we apply ground friction to the player?
         var traction =
@@ -232,7 +235,6 @@ class Player {
         const gravity = 1000;
         this.position.x += this.velocity.x * this.game.clockTick;
         this.position.y += this.velocity.y * this.game.clockTick;
-
         this.velocity.y += gravity * this.game.clockTick;
     }
 
@@ -264,10 +266,10 @@ class Player {
             else this.sprite.setState("bwrunning");
         } else {
             if (this.velocity.y <= 10) {
-                if (this.velocity.x * this.facing >= 1) this.sprite.setState("airLeanBack");
+                if (this.velocity.x * this.facing >= -1) this.sprite.setState("airLeanBack");
                 else this.sprite.setState("airLeanFront");
             } else {
-                if (this.velocity.x * this.facing >= 1) this.sprite.setState("airLeanFront");
+                if (this.velocity.x * this.facing >= -1) this.sprite.setState("airLeanFront");
                 else this.sprite.setState("airLeanBack");
             }
         }

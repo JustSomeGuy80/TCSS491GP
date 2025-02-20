@@ -23,14 +23,16 @@ function main() {
     ASSET_MANAGER.queueDownload("anims/teleIndicator.png");
     ASSET_MANAGER.queueDownload("anims/slasher.png");
     ASSET_MANAGER.queueDownload("anims/block.png");
-    ASSET_MANAGER.queueDownload("anims/slasherslash.png")
-    ASSET_MANAGER.queueDownload("anims/pickup.png")
-    ASSET_MANAGER.queueDownload("anims/enemy_bullet.png")
+    ASSET_MANAGER.queueDownload("anims/slasherslash.png");
+    ASSET_MANAGER.queueDownload("anims/pickup.png");
+    ASSET_MANAGER.queueDownload("anims/enemy_bullet.png");
 
     ASSET_MANAGER.queueDownload("sounds/music.mp3");
     ASSET_MANAGER.queueDownload("sounds/jump.mp3");
     ASSET_MANAGER.queueDownload("sounds/slashHit.mp3");
     ASSET_MANAGER.queueDownload("sounds/slashReady.mp3");
+
+    ASSET_MANAGER.queueDownload("images/bg.png");
 
     ASSET_MANAGER.queueDownload("images/dirt.png");
     ASSET_MANAGER.queueDownload("images/dirt_stair_BL.png");

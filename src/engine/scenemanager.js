@@ -13,8 +13,8 @@ class SceneManager {
         this.y = 0;
 
         // map dimensions
-        this.mapWidth = 3000;
-        this.mapHeight = 2000;
+        this.mapWidth = Infinity;
+        this.mapHeight = Infinity;
 
         // EDIT WHEN YOU CHANGE CANVAS SIZE OR FIND AUTOMATIC WAY
         const CANVAS_WIDTH = 1024;
@@ -36,9 +36,13 @@ class SceneManager {
         this.gridSize = 16;
 
         // testing (delete later)
-        this.debug = true;
+        this.debug = false;
 
         this.loadLevel();
+
+        this.sprite = new Sprite(new Position(0, 0), this.game, 3, 0, 0, {
+            new: new Animator(assetManager.getAsset("images/bg.png"), 0, 0, 1024, 768, 1, 1),
+        });
     }
 
     loadLevel() {
@@ -63,12 +67,16 @@ class SceneManager {
                     case Tile.PLAYER:
                         this.player.position.x = x;
                         this.player.position.y = y;
+                        this.x = x - 1024 / 2;
+                        this.y = y - 768 / 2;
                         break;
                     case Tile.SLASHER:
                         this.game.addEntity(new Slasher(this.game, this.assetManager, x, y));
                         break;
                     case Tile.SHOOTER:
-                        this.game.addEntity(new Shooter(this.game, this.assetManager, x, y, this.player));
+                        this.game.addEntity(
+                            new Shooter(this.game, this.assetManager, x, y, this.player)
+                        );
                         break;
                     case Tile.BLOCKER:
                         this.game.addEntity(new Blocker(this.game, this.assetManager, x, y));
@@ -163,6 +171,7 @@ class SceneManager {
     }
 
     draw(ctx) {
+        this.sprite.drawSprite(this.game.clockTick, ctx, 0);
         if (this.debug) {
             this.drawDebugInfo(ctx);
         }

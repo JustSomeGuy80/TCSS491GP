@@ -119,6 +119,7 @@ class Slasher {
                     if (collision.id === 0) {
                         collision.owner.health -= 20;
                         hitPlayer = true;
+                        break;
                     }
                 }
                 if (hitPlayer) {

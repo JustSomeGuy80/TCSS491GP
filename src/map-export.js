@@ -34,6 +34,21 @@ class MapExport {
      * @param {Boundary} boundary
      */
     *getColliders(boundary) {
+        for (const { x, y, tile } of this.getTilesInBoundary(boundary)) {
+            for (const tileBoundary of Tile.getBoundaries(tile)) {
+                tileBoundary.move(new Vector(x, y));
+                if (boundary.containsBoundary(tileBoundary)) {
+                    yield tileBoundary;
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * @param {Boundary} boundary
+     */
+    *getTilesInBoundary(boundary) {
         const left = Math.floor(boundary.left / Tile.SIZE);
         const right = Math.min(Math.ceil(boundary.right / Tile.SIZE), this.tiles.length - 1);
         const top = Math.floor(boundary.top / Tile.SIZE);
@@ -45,14 +60,7 @@ class MapExport {
                 const y = yIndex * Tile.SIZE;
                 const tile = this.tiles[xIndex][yIndex];
 
-                if (!boundary.containsBoundary(new Boundary(x, x + Tile.SIZE, y, y + Tile.SIZE))) {
-                    continue;
-                }
-
-                for (const tileBoundary of Tile.getBoundaries(tile)) {
-                    tileBoundary.move(new Vector(x, y));
-                    yield tileBoundary;
-                }
+                yield { x, y, tile };
             }
         }
     }

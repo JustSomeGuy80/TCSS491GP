@@ -1,5 +1,5 @@
 /** @typedef {import("./position")} */
-
+/** @typedef {import("../tile")} */
 /** @type {ColliderRect[]} */
 const colliders = [];
 
@@ -10,16 +10,23 @@ const colliders = [];
  * Currently, if there are 3 or more collisions then they will be ignored (only first counts)
  */
 class ColliderRect {
+    static TYPE = {
+        STAIR_BR: Symbol("staircase ascending towards right"),
+        STAIR_BL: Symbol("staircase ascending towards left"),
+    };
+
     /**
      * @param {Position} parent
      * @param {number} xOffset
      * @param {number} yOffset
      * @param {number} w width
      * @param {number} h height
-     * @param {number} id identification. 0 = player, 1 = block, 2 = bullet, 3 = enemy, 4 = attack hitbox, 5 = pick up
+     * @param {number | Symbol} id identification. 0 = player, 1 = block, 2 = bullet, 3 = enemy, 4 = attack hitbox, 5 = pick up
+     * @param {boolean} dontCache
      */
-    constructor(parent, xOffset, yOffset, w, h, id, owner) {
+    constructor(parent, xOffset, yOffset, w, h, id, owner, dontCache) {
         this.parent = parent;
+        this.position = parent; // FOR COMPATIBILITY (with hais gameengine) REASONS
         this.xOffset = xOffset;
         this.yOffset = yOffset;
         this.w = w;
@@ -29,7 +36,20 @@ class ColliderRect {
 
         this.debugMode = false;
 
-        colliders.push(this);
+        if (!dontCache) {
+            colliders.push(this);
+        }
+    }
+
+    static fromTile(tile) {
+        switch (tile) {
+            case Tile.DIRT_STAIR_BL:
+                return ColliderRect.TYPE.STAIR_BL;
+            case Tile.DIRT_STAIR_BR:
+                return ColliderRect.TYPE.STAIR_BR;
+            default:
+                return 1;
+        }
     }
 
     update() {}
@@ -42,6 +62,27 @@ class ColliderRect {
         for (const collider of colliders) {
             if (this !== collider && this.collidesWith(collider)) {
                 yield collider;
+            }
+        }
+        const boundary = this.getBoundary();
+        for (const { x, y, tile } of MapExport.TEST_STAGE.getTilesInBoundary(boundary)) {
+            for (const tileBoundary of Tile.getBoundaries(tile)) {
+                tileBoundary.move(new Vector(x, y));
+                if (boundary.containsBoundary(tileBoundary)) {
+                    const { left: x, top: y } = tileBoundary;
+                    const { x: w, y: h } = tileBoundary.asShape();
+
+                    yield new ColliderRect(
+                        new Vector(x, y),
+                        0,
+                        0,
+                        w,
+                        h,
+                        ColliderRect.fromTile(tile),
+                        null,
+                        true
+                    );
+                }
             }
         }
     }

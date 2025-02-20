@@ -30,14 +30,47 @@ class Player {
         const width = 36;
 
         this.position = new Position(525, 500);
-        this.collider = new ColliderRect(
+        // this.collider = new ColliderRect(
+        //     this.position,
+        //     -width / 2,
+        //     -height / 2,
+        //     width,
+        //     height,
+        //     0,
+        //     this
+        // );
+        this.topCollider = new ColliderRect(
             this.position,
             -width / 2,
             -height / 2,
             width,
-            height,
+            height - Tile.STEP_SIZE - 0.5,
             0,
             this
+        );
+        this.middleCollider = new ColliderRect(
+            this.position,
+            -width / 2,
+            -height / 2 + height - Tile.STEP_SIZE - 0.5,
+            width,
+            Tile.STEP_SIZE + 0.5,
+            0,
+            this
+        );
+        this.bottomCollider = new ColliderRect(
+            this.position,
+            -width / 2,
+            -height / 2 + height + 0.5,
+            width,
+            Tile.STEP_SIZE + 0.5,
+            0,
+            this,
+            true
+        );
+        this.stairController = new StairController(
+            this.middleCollider,
+            this.bottomCollider,
+            Infinity
         );
         this.teleport = new Teleport(
             game,
@@ -239,25 +272,24 @@ class Player {
 
     runCollisions(origin) {
         const displacement = this.position.asVector().subtract(origin);
-        // const readjustment = this.collider.resolveCollisions(displacement, 1, 6);
-        const boundary = this.collider.getBoundary();
-        const readjustment = boundary.resolveCollisions(displacement, [
-            ...this.map.getColliders(boundary),
-        ]);
-        this.position.add(readjustment);
+        const topReadjustment = this.topCollider.resolveCollisions(displacement, 1, 6);
+        this.position.add(topReadjustment);
+
+        const stairAdjustment = this.stairController.updateState(displacement);
+        this.position.add(stairAdjustment);
 
         // horizontal collision
-        if (readjustment.x !== 0) {
+        if (topReadjustment.x !== 0 || stairAdjustment.x !== 0) {
             this.velocity.x = 0;
         }
         // vertical collision
-        if (readjustment.y !== 0) {
+        if (topReadjustment.y !== 0 || stairAdjustment.y !== 0) {
             // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
             this.groundOverride = 2;
             this.velocity.y = 0;
         }
         // no collision
-        if (readjustment.y === 0 && readjustment.x === 0) {
+        if (topReadjustment.y === 0 && topReadjustment.x === 0 && stairAdjustment.isZero()) {
             this.groundOverride -= 1;
         }
     }
@@ -288,19 +320,23 @@ class Player {
         this.sprite.drawSprite(this.game.clockTick, ctx);
 
         if (this.debugMode) {
-            const bounds = this.collider.getBounds();
             ctx.save();
             ctx.strokeStyle = "yellow";
-            ctx.strokeRect(
-                bounds.xStart - this.game.camera.x,
-                bounds.yStart - this.game.camera.y,
-                bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart
-            );
+
+            for (const collider of [this.topCollider, this.middleCollider, this.bottomCollider]) {
+                const bounds = collider.getBounds();
+                ctx.strokeRect(
+                    bounds.xStart - this.game.camera.x,
+                    bounds.yStart - this.game.camera.y,
+                    bounds.xEnd - bounds.xStart,
+                    bounds.yEnd - bounds.yStart
+                );
+            }
+
             ctx.restore();
 
-            this.collider.draw(ctx);
-            this.position.draw(ctx);
+            // this.collider.draw(ctx);
+            // this.position.draw(ctx);
         }
     }
 }

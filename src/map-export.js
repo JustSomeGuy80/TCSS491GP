@@ -1,3 +1,5 @@
+/** @typedef {./engine/types/boundary.js} */
+
 class MapExport {
     /** @type {MapExport} */
     static TEST_STAGE = new MapExport(
@@ -32,6 +34,12 @@ class MapExport {
     }
 
     update() {}
+
+    /**
+     *
+     * @param {Boundary} boundary
+     */
+    *getColliders(boundary) {}
 
     draw(ctx) {
         for (const { x, y, tile } of this.#getTiles()) {

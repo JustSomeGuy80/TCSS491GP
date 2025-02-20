@@ -22,7 +22,6 @@ class Player {
         this.map = null;
         this.tempGrounded = 1000;
         this.jumpHeight = 550;
-        this.debugMode = true;
         this.debugMode = false;
         this.removeFromWorld = false;
 

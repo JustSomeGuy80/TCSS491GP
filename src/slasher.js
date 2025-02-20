@@ -8,7 +8,7 @@ class Slasher {
     constructor(game, assetManager, x, y) {
         this.game = game;
         this.assetManager = assetManager;
-        this.debugMode = true;
+        this.debugMode = false;
         this.active = true;
         this.health = 3;
         this.removeFromWorld = false;
@@ -117,7 +117,7 @@ class Slasher {
                     const { value: collision, done } = collisions.next();
                     if (done) break;
                     if (collision.id === 0) {
-                        collision.owner.health -= 50;
+                        collision.owner.health -= 20;
                         hitPlayer = true;
                     }
                 }
@@ -141,20 +141,19 @@ class Slasher {
 
     death() {
         if (this.health <= 0) {
-            this.sprite.setState("death");
             this.active = false;
             this.removeFromWorld = true;
-            if (Math.random() < 0.25) {
-                this.game.addEntity(
-                    new Pickup(
-                        this.game,
-                        this.assetManager,
-                        this.position.x,
-                        this.position.y,
-                        "health"
-                    )
-                );
-            }
+            // if (Math.random() < 0.25) {
+            //     this.game.addEntity(
+            //         new Pickup(
+            //             this.game,
+            //             this.assetManager,
+            //             this.position.x,
+            //             this.position.y,
+            //             "health"
+            //         )
+            //     );
+            // }
         }
     }
 
@@ -198,7 +197,7 @@ class Slasher {
     }
 
     draw(ctx) {
-        this.sprite.drawSprite(this.game.clockTick, ctx);
+        if (this.active) this.sprite.drawSprite(this.game.clockTick, ctx);
 
         if (this.debugMode) {
             const bounds = this.collider.getBounds();

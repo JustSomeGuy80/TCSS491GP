@@ -97,6 +97,20 @@ class GameEngine {
     }
 
     update() {
+        for (let i = this.entities.length - 1; i >= 0; --i) {
+            if (this.entities[i].removeFromWorld) {
+                var temp = this.entities.pop();
+                if (i < this.entities.length) this.entities[i] = this.entities.pop();
+                this.entities.push(temp);
+            }
+        }
+
+        for (let i = 0; i < colliders.length; i++) {
+            if (!colliders[i].owner || colliders[i].owner.removeFromWorld) {
+                var temp = colliders.pop();
+                if (i < colliders.length) colliders[i] = temp;
+            }
+        }
         for (let i = 0; i < this.entities.length; i++) {
             let entity = this.entities[i];
 
@@ -104,20 +118,7 @@ class GameEngine {
                 entity.update();
             }
         }
-
-        for (let i = this.entities.length - 1; i >= 0; --i) {
-            if (this.entities[i].removeFromWorld) {
-                this.entities.splice(i, 1);
-            }
-        }
-
-        for (let i = 0; i < colliders.length; i++) {
-            if (!colliders[i].owner || colliders[i].owner.removeFromWorld) {
-                colliders.splice(i, 1);
-            }
-        }
     }
-
 
     loop() {
         this.clockTick = this.timer.tick();

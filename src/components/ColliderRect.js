@@ -189,25 +189,42 @@ class ColliderRect {
      */
     static lineCollide(pos, vect, ids) {
         var magnitudes = [];
+
+        var xStart = pos.x;
+        var xEnd = pos.x + vect.x;
+        if (xEnd < xStart) {
+            const temp = xEnd;
+            xEnd = xStart;
+            xStart = temp;
+        }
+        var yStart = pos.y;
+        var yEnd = pos.y + vect.y;
+        if (yEnd < yStart) {
+            const temp = yEnd;
+            yEnd = yStart;
+            yStart = temp;
+        }
+        var lineRect = new ColliderRect(
+            new Position(xStart, yStart),
+            0,
+            0,
+            Math.abs(vect.x),
+            Math.abs(vect.y),
+            -1
+        );
+        const collisions = lineRect.getCollision();
+
         if (vect.x === 0 && vect.y === 0) {
             // if the line has a magnitude of zero,
         } else if (vect.x === 0 || vect.y === 0) {
             // if the line is perfectly horizontal or vertical, account for parallel lines;
-            var xStart = pos.x;
-            var xEnd = pos.x + vect.x;
-            if (xEnd < xStart) {
-                const temp = xEnd;
-                xEnd = xStart;
-                xStart = temp;
-            }
-            var yStart = pos.y;
-            var yEnd = pos.y + vect.y;
-            if (yEnd < yStart) {
-                const temp = yEnd;
-                yEnd = yStart;
-                yStart = temp;
-            }
-            for (const collider of colliders) {
+            while (true) {
+                const { value: collider, done } = collisions.next();
+
+                if (done) {
+                    break;
+                }
+
                 if (ids.includes(collider.id)) {
                     bounds = collider.getBounds();
                     if (
@@ -228,6 +245,9 @@ class ColliderRect {
                     }
                 }
             }
+
+            for (const collider of colliders) {
+            }
         } else {
             // else, find where the line and each bound meet, and check if it's within the collider
             const m = vect.y / vect.x;
@@ -243,7 +263,13 @@ class ColliderRect {
 
             var bounds;
             var coord;
-            for (const collider of colliders) {
+
+            while (true) {
+                const { value: collider, done } = collisions.next();
+
+                if (done) {
+                    break;
+                }
                 if (ids.includes(collider.id)) {
                     bounds = collider.getBounds();
                     // Left bound
@@ -283,6 +309,8 @@ class ColliderRect {
                         magnitudes.push(getMag(coord, bounds.yEnd));
                     }
                 }
+            }
+            for (const collider of colliders) {
             }
         }
         if (magnitudes.length < 1 || Math.min.apply(Math, magnitudes) > vect.getMagnitude())

@@ -93,7 +93,7 @@ class StairController {
                 if (StairController.checkDirectionalCounter(collider, displacement)) {
                     return this.#resolveCollisions(displacement, collisions);
                 } else {
-                    return new Vector(0, collider.position.y - selfY);
+                    return new Vector(0, collider.position.y - selfY - 0.1);
                 }
             }
         }

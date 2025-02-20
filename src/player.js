@@ -44,25 +44,25 @@ class Player {
             -width / 2,
             -height / 2,
             width,
-            height - Tile.STEP_SIZE - 0.5,
+            height - Tile.STEP_SIZE,
             0,
             this
         );
         this.middleCollider = new ColliderRect(
             this.position,
             -width / 2,
-            -height / 2 + height - Tile.STEP_SIZE - 0.5,
+            -height / 2 + height - Tile.STEP_SIZE,
             width,
-            Tile.STEP_SIZE + 0.5,
+            Tile.STEP_SIZE,
             0,
             this
         );
         this.bottomCollider = new ColliderRect(
             this.position,
             -width / 2,
-            -height / 2 + height + 0.5,
+            -height / 2 + height,
             width,
-            Tile.STEP_SIZE + 0.5,
+            Tile.STEP_SIZE,
             0,
             this,
             true

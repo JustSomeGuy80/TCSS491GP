@@ -73,6 +73,21 @@ class Tile {
                     yield new Boundary(0, Tile.STEP_SIZE * i, (i - 1) * Tile.STEP_SIZE, Tile.SIZE);
                 }
                 break;
+            case Tile.DIRT_STAIR_TR:
+                for (let i = 4; i >= 1; i--) {
+                    yield new Boundary(
+                        Tile.SIZE - i * Tile.STEP_SIZE,
+                        Tile.SIZE,
+                        0,
+                        (4 - (i - 1)) * Tile.STEP_SIZE
+                    );
+                }
+                break;
+            case Tile.DIRT_STAIR_TL:
+                for (let i = 4; i >= 1; i--) {
+                    yield new Boundary(0, i * Tile.STEP_SIZE, 0, (4 - (i - 1)) * Tile.STEP_SIZE);
+                }
+                break;
         }
     }
 }

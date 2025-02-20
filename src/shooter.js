@@ -16,7 +16,7 @@ class Shooter {
     constructor(game, assetManager, x, y, player) {
         this.game = game;
         this.assetManager = assetManager;
-        this.debugMode = true;
+        this.debugMode = false;
         this.active = true;
         this.health = 3;
         this.removeFromWorld = false;

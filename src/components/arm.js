@@ -58,7 +58,7 @@ class Arm {
         this.bullets = [];
         this.fireRate = 0.6;
         this.slashRate = 0.9;
-        this.grappleRate = 0.5;
+        this.grappleRate = 0.75;
 
         this.fireCD = 0; // tracks when the player can shoot again
         this.slashCD = 0; // tracks when the player can slash again

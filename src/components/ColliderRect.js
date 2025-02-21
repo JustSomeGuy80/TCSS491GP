@@ -44,8 +44,10 @@ class ColliderRect {
     static fromTile(tile) {
         switch (tile) {
             case Tile.DIRT_STAIR_BL:
+            case Tile.BRICK_BL:
                 return ColliderRect.TYPE.STAIR_BL;
             case Tile.DIRT_STAIR_BR:
+            case Tile.BRICK_BR:
                 return ColliderRect.TYPE.STAIR_BR;
             default:
                 return 1;

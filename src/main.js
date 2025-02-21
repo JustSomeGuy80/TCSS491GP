@@ -41,6 +41,13 @@ function main() {
     ASSET_MANAGER.queueDownload("images/dirt_stair_TL.png");
     ASSET_MANAGER.queueDownload("images/dirt_stair_TR.png");
 
+    ASSET_MANAGER.queueDownload("images/brick.png");
+    ASSET_MANAGER.queueDownload("images/brick_bg.png");
+    ASSET_MANAGER.queueDownload("images/brick_bl.png");
+    ASSET_MANAGER.queueDownload("images/brick_br.png");
+    ASSET_MANAGER.queueDownload("images/brick_tl.png");
+    ASSET_MANAGER.queueDownload("images/brick_tr.png");
+
     ASSET_MANAGER.downloadAll(() => {
         /** @type {HTMLCanvasElement} */
 
@@ -52,7 +59,7 @@ function main() {
         ctx.imageSmoothingEnabled = false;
 
         const sceneManager = new SceneManager(gameEngine, ASSET_MANAGER);
-        gameEngine.addEntity(sceneManager);
+        gameEngine.sceneManager = sceneManager;
 
         gameEngine.init(ctx);
 

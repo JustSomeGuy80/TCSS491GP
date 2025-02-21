@@ -42,7 +42,7 @@ class Pickup {
             if (collision.id === 0) {
                 switch (this.id) {
                     case "health":
-                        collision.owner.health += 25;
+                        collision.owner.health += 20;
                         break;
                     case "shoot":
                         collision.owner.canShoot = true;

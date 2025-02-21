@@ -21,6 +21,12 @@ class Tile {
     static DIRT_STAIR_BR = 3;
     static DIRT_STAIR_TL = 4;
     static DIRT_STAIR_TR = 5;
+    static BRICK = 6;
+    static BRICK_BG = 7;
+    static BRICK_BL = 8;
+    static BRICK_BR = 9;
+    static BRICK_TL = 10;
+    static BRICK_TR = 11;
 
     constructor() {
         throw new Error("Tile is a static class and should not have any instances");
@@ -50,15 +56,35 @@ class Tile {
             case Tile.DIRT_STAIR_TR:
                 ctx.drawImage(this.AssetManager.getAsset("images/dirt_stair_TR.png"), ...args);
                 break;
+            case Tile.BRICK:
+                ctx.drawImage(this.AssetManager.getAsset("images/brick.png"), ...args);
+                break;
+            case Tile.BRICK_BG:
+                ctx.drawImage(this.AssetManager.getAsset("images/brick_bg.png"), ...args);
+                break;
+            case Tile.BRICK_BL:
+                ctx.drawImage(this.AssetManager.getAsset("images/brick_bl.png"), ...args);
+                break;
+            case Tile.BRICK_BR:
+                ctx.drawImage(this.AssetManager.getAsset("images/brick_br.png"), ...args);
+                break;
+            case Tile.BRICK_TL:
+                ctx.drawImage(this.AssetManager.getAsset("images/brick_tl.png"), ...args);
+                break;
+            case Tile.BRICK_TR:
+                ctx.drawImage(this.AssetManager.getAsset("images/brick_tr.png"), ...args);
+                break;
         }
     }
 
     static *getBoundaries(tile) {
         switch (tile) {
             case Tile.DIRT:
+            case Tile.BRICK:
                 yield new Boundary(0, Tile.SIZE, 0, Tile.SIZE);
                 break;
             case Tile.DIRT_STAIR_BR:
+            case Tile.BRICK_BR:
                 for (let i = 1; i <= 4; i++) {
                     yield new Boundary(
                         Tile.SIZE - i * Tile.STEP_SIZE,
@@ -69,11 +95,13 @@ class Tile {
                 }
                 break;
             case Tile.DIRT_STAIR_BL:
+            case Tile.BRICK_BL:
                 for (let i = 1; i <= 4; i++) {
                     yield new Boundary(0, Tile.STEP_SIZE * i, (i - 1) * Tile.STEP_SIZE, Tile.SIZE);
                 }
                 break;
             case Tile.DIRT_STAIR_TR:
+            case Tile.BRICK_TR:
                 for (let i = 4; i >= 1; i--) {
                     yield new Boundary(
                         Tile.SIZE - i * Tile.STEP_SIZE,
@@ -84,6 +112,7 @@ class Tile {
                 }
                 break;
             case Tile.DIRT_STAIR_TL:
+            case Tile.BRICK_TL:
                 for (let i = 4; i >= 1; i--) {
                     yield new Boundary(0, i * Tile.STEP_SIZE, 0, (4 - (i - 1)) * Tile.STEP_SIZE);
                 }

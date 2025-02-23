@@ -16,6 +16,7 @@ class GameEngine {
         this.wheel = null;
         this.keys = {};
         this.buttons = {};
+        this.sceneManager = null;
 
         // Options and the Details
         this.options = options || {
@@ -91,6 +92,9 @@ class GameEngine {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
         // Draw latest things first
+        if (this.sceneManager != null) {
+            this.sceneManager.draw(this.ctx, this);
+        }
         for (let i = this.entities.length - 1; i >= 0; i--) {
             this.entities[i].draw(this.ctx, this);
         }
@@ -99,9 +103,8 @@ class GameEngine {
     update() {
         for (let i = this.entities.length - 1; i >= 0; --i) {
             if (this.entities[i].removeFromWorld) {
-                var temp = this.entities.pop();
-                if (i < this.entities.length) this.entities[i] = this.entities.pop();
-                this.entities.push(temp);
+                if (i < this.entities.length - 1) this.entities[i] = this.entities.pop();
+                else this.entities.pop();
             }
         }
 
@@ -111,12 +114,16 @@ class GameEngine {
                 if (i < colliders.length) colliders[i] = temp;
             }
         }
+
         for (let i = 0; i < this.entities.length; i++) {
             let entity = this.entities[i];
 
             if (!entity.removeFromWorld) {
                 entity.update();
             }
+        }
+        if (this.sceneManager != null) {
+            this.sceneManager.update();
         }
     }
 

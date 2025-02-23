@@ -43,6 +43,13 @@ function main() {
     ASSET_MANAGER.queueDownload("images/dirt_stair_TL.png");
     ASSET_MANAGER.queueDownload("images/dirt_stair_TR.png");
 
+    ASSET_MANAGER.queueDownload("images/brick.png");
+    ASSET_MANAGER.queueDownload("images/brick_bg.png");
+    ASSET_MANAGER.queueDownload("images/brick_bl.png");
+    ASSET_MANAGER.queueDownload("images/brick_br.png");
+    ASSET_MANAGER.queueDownload("images/brick_tl.png");
+    ASSET_MANAGER.queueDownload("images/brick_tr.png");
+
     ASSET_MANAGER.downloadAll(() => {
         const canvas = document.getElementById("gameWorld");
         const ctx = canvas.getContext("2d");
@@ -54,7 +61,7 @@ function main() {
         ASSET_MANAGER.playAsset("sounds/music.mp3");
 
         const sceneManager = new SceneManager(gameEngine, ASSET_MANAGER);
-        gameEngine.addEntity(sceneManager);
+        gameEngine.sceneManager = sceneManager;
 
         gameEngine.init(ctx);
         gameEngine.start();

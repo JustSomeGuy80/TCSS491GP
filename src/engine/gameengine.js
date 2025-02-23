@@ -9,6 +9,7 @@ class GameEngine {
 
         // Everything that will be updated and drawn each frame
         this.entities = [];
+        this.map = MapExport.TEST_STAGE;
 
         // Information on the input
         this.click = [null];
@@ -86,6 +87,9 @@ class GameEngine {
     addEntity(entity) {
         this.entities.push(entity);
     }
+    addTile(tile) {
+        this.tiles.push(tile);
+    }
 
     draw() {
         // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
@@ -95,6 +99,7 @@ class GameEngine {
         if (this.sceneManager != null) {
             this.sceneManager.draw(this.ctx, this);
         }
+        this.map.draw(this.ctx, this);
         for (let i = this.entities.length - 1; i >= 0; i--) {
             this.entities[i].draw(this.ctx, this);
         }

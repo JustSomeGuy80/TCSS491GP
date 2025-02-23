@@ -19,9 +19,11 @@ class GUI {
 
     static onRestartClick() {
         const deathScreen = document.getElementById("death-screen");
+        const winScreen = document.getElementById("win-screen");
         const game = document.getElementById("gameWorld");
 
         deathScreen.style.display = "none";
+        winScreen.style.display = "none";
         game.focus();
 
         // Clear any existing game state
@@ -41,6 +43,11 @@ class GUI {
     static showDeathScreen() {
         const deathScreen = document.getElementById("death-screen");
         deathScreen.style.display = "flex";
+    }
+
+    static showWinScreen() {
+        const winScreen = document.getElementById("win-screen");
+        winScreen.style.display = "flex";
     }
 
     /**

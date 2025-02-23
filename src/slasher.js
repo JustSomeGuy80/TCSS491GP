@@ -117,7 +117,7 @@ class Slasher {
                     const { value: collision, done } = collisions.next();
                     if (done) break;
                     if (collision.id === 0) {
-                        collision.owner.health -= 20;
+                        collision.owner.health -= 35;
                         hitPlayer = true;
                         break;
                     }

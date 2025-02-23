@@ -26,6 +26,7 @@ class Pickup {
 
         this.sprite.setState("upgrade");
         if (this.id == "health") this.sprite.setState("health");
+        if (this.id == "ending") this.sprite.setState("ending");
     }
 
     update() {
@@ -52,6 +53,10 @@ class Pickup {
                         break;
                     case "teleport":
                         collision.owner.canTeleport = true;
+                        break;
+                    case "ending":
+                        GUI.showWinScreen();
+                        collision.owner.removeFromWorld = true;
                         break;
                 }
                 this.removeFromWorld = true;

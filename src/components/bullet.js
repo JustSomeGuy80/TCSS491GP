@@ -118,7 +118,7 @@ class Bullet {
                     collision.id !== -1
                 ) {
                     if (collision.id === 0) {
-                        collision.owner.health -= 10;
+                        collision.owner.health -= 20;
                     }
 
                     this.age = 0;

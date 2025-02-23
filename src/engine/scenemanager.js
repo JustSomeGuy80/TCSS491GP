@@ -57,7 +57,7 @@ class SceneManager {
 
         this.player.map = MapExport.TEST_STAGE;
 
-        this.game.addEntity(MapExport.TEST_STAGE);
+        // this.game.addEntity(MapExport.TEST_STAGE);
 
         for (let xIndex = 0; xIndex < tiles.length; xIndex++) {
             for (let yIndex = 0; yIndex < tiles[0].length; yIndex++) {
@@ -101,6 +101,11 @@ class SceneManager {
                     case Tile.HEALTH_PICKUP:
                         this.game.addEntity(
                             new Pickup(this.game, this.assetManager, x, y, "health")
+                        );
+                        break;
+                    case Tile.END_PICKUP:
+                        this.game.addEntity(
+                            new Pickup(this.game, this.assetManager, x, y, "ending")
                         );
                         break;
                 }

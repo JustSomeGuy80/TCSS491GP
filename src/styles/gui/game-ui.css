@@ -55,3 +55,36 @@
 #death-screen button:hover {
     background: #ff6666;
 }
+
+#win-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+#win-screen h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+#win-screen button {
+    padding: 10px 20px;
+    font-size: 24px;
+    cursor: pointer;
+    background: #44ff44;
+    border: none;
+    color: white;
+    border-radius: 5px;
+}
+
+#win-screen button:hover {
+    background: #66ff66;
+}

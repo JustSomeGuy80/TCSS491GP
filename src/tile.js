@@ -14,6 +14,7 @@ class Tile {
     static TELEPORT_PICKUP = -7;
 
     static HEALTH_PICKUP = -8;
+    static END_PICKUP = -9;
 
     static AIR = 0;
     static DIRT = 1;

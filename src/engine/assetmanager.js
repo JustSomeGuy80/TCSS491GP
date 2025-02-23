@@ -116,12 +116,20 @@ class AssetManager {
             if (asset instanceof Audio) {
                 asset.pause();
                 asset.currentTime = 0;
+                // Remove any existing event listeners
+                asset.removeEventListener("ended", () => {
+                    asset.play();
+                });
             }
         }
     }
 
     autoRepeat(path) {
         let aud = this.cache[path];
+        // Remove any existing event listeners first
+        aud.removeEventListener("ended", () => {
+            aud.play();
+        });
         aud.addEventListener("ended", () => {
             aud.play();
         });

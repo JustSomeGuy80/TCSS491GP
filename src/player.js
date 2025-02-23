@@ -182,7 +182,8 @@ class Player {
         this.setState();
 
         if (this.health <= 0) {
-            // this.removeFromWorld = true;
+            GUI.showDeathScreen();
+            this.removeFromWorld = true;
         }
     }
 

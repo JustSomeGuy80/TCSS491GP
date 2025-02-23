@@ -7,8 +7,10 @@
 
 function main() {
     const gameEngine = new GameEngine();
+    window.gameEngine = gameEngine; // Store reference globally
 
     const ASSET_MANAGER = new AssetManager();
+    window.ASSET_MANAGER = ASSET_MANAGER; // Store reference globally
     Tile.AssetManager = ASSET_MANAGER;
 
     ASSET_MANAGER.queueDownload("anims/jump.png");
@@ -42,20 +44,19 @@ function main() {
     ASSET_MANAGER.queueDownload("images/dirt_stair_TR.png");
 
     ASSET_MANAGER.downloadAll(() => {
-        /** @type {HTMLCanvasElement} */
-
-        ASSET_MANAGER.autoRepeat("sounds/music.mp3");
-        ASSET_MANAGER.playAsset("sounds/music.mp3");
-
         const canvas = document.getElementById("gameWorld");
         const ctx = canvas.getContext("2d");
         ctx.imageSmoothingEnabled = false;
+
+        // Stop any existing music before starting new instance
+        ASSET_MANAGER.pauseBackgroundMusic();
+        ASSET_MANAGER.autoRepeat("sounds/music.mp3");
+        ASSET_MANAGER.playAsset("sounds/music.mp3");
 
         const sceneManager = new SceneManager(gameEngine, ASSET_MANAGER);
         gameEngine.addEntity(sceneManager);
 
         gameEngine.init(ctx);
-
         gameEngine.start();
     });
 }

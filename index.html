@@ -46,31 +46,31 @@
             <h1>Controls</h1>
             <div class="control">
                 <h2>Walk (a and d)</h2>
-                <p>Moves the player to the left or right respectively</p>
+                <p>Moves the player to the left or right respectively.</p>
             </div>
             <div class="control">
                 <h2>Jump (space)</h2>
-                <p>Makes the player jump upwards</p>
+                <p>
+                    Makes the player jump upwards. Holding jump makes the player jump higher and
+                    farther.
+                </p>
             </div>
             <div class="control">
                 <h2>Fire (left click)</h2>
-                <p>
-                    The player will shoot a bullet in the direction of the mouse cursor (this move
-                    shares its cooldown with slash)
-                </p>
+                <p>The player will shoot a bullet in the direction of the mouse cursor.</p>
             </div>
             <div class="control hidden" id="slash-control">
                 <h2>Slash (s)</h2>
                 <p>
-                    The player will slash in the direction of the mouse cursor (this move shares its
-                    cooldown with fire)
+                    The player will slash in the direction of the mouse cursor. Slashing the terrain
+                    will cause the player to bounce off of it.
                 </p>
             </div>
             <div class="control hidden" id="teleport-control">
                 <h2>Teleport (w)</h2>
                 <p>
-                    The player will teleport in the direction of their velocity (holding w will
-                    display where you will be teleported)
+                    The player will teleport in the direction of their velocity. (Holding w will
+                    display where you will be teleported. The player must be airborne to teleport.)
                 </p>
             </div>
             <div class="control hidden" id="hook-control">
@@ -121,7 +121,7 @@
             </div>
         </div>
         <div id="objective">
-            <h1>Current Objective</h1>
+            <h1>Command</h1>
             <div id="stdout-container">
                 <div id="stdout"></div>
             </div>

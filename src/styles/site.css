@@ -75,6 +75,8 @@ canvas {
     font-size: 1rem;
     min-height: 0;
     max-height: 100%;
+    min-width: 0;
+    max-width: 100%;
     display: grid;
     align-items: end;
 }
@@ -82,8 +84,10 @@ canvas {
 #stdout {
     overflow-y: auto;
     max-height: 100%;
+    max-width: 100%;
 
     & pre {
+        white-space: pre-wrap;
         margin-block: 0;
         padding: 0.5rem 1rem;
 

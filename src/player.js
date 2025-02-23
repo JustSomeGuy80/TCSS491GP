@@ -170,8 +170,6 @@ class Player {
 
         let origin = this.position.asVector();
 
-        GUI.setHealth(this.health / 100);
-
         this.calcMovement();
 
         this.arm.update();
@@ -181,10 +179,20 @@ class Player {
 
         this.setState();
 
+        this.updateGUI();
+    }
+
+    updateGUI() {
         if (this.health <= 0) {
             GUI.showDeathScreen();
             this.removeFromWorld = true;
+            return;
         }
+
+        GUI.setHealth(this.health / 100);
+        if (this.canSlash) GUI.showSlashControl();
+        if (this.canTeleport) GUI.showTeleportControl();
+        if (this.canHook) GUI.showHookControl();
     }
 
     checkInput() {

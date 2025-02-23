@@ -59,21 +59,21 @@
                     shares its cooldown with slash)
                 </p>
             </div>
-            <div class="control">
+            <div class="control hidden" id="slash-control">
                 <h2>Slash (s)</h2>
                 <p>
                     The player will slash in the direction of the mouse cursor (this move shares its
                     cooldown with fire)
                 </p>
             </div>
-            <div class="control">
+            <div class="control hidden" id="teleport-control">
                 <h2>Teleport (w)</h2>
                 <p>
                     The player will teleport in the direction of their velocity (holding w will
                     display where you will be teleported)
                 </p>
             </div>
-            <div class="control">
+            <div class="control hidden" id="hook-control">
                 <h2>Hook (right click)</h2>
                 <p>
                     Right click to hook on to surfaces and hold right click to swing. If there are
@@ -114,6 +114,12 @@
             <div class="control-group">
                 <label for="volume">Volume</label>
                 <input type="range" id="volume" min="0" max="1" value="0.1" step="0.05" />
+            </div>
+        </div>
+        <div id="objective">
+            <h1>Current Objective</h1>
+            <div id="stdout-container">
+                <div id="stdout"></div>
             </div>
         </div>
 

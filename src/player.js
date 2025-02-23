@@ -12,6 +12,13 @@
  * Player is an entity controlled by the user within the game.
  */
 class Player {
+    static Objectives = [
+        "Get the slash ability at the bottom.",
+        "Get the hook ability by following the path up.",
+        "Get the teleport ability at the very top right.",
+        "Find the finish pickup to win.",
+    ];
+
     /**
      * @param {GameEngine} game
      * @param {AssetManager} assetManager
@@ -145,6 +152,9 @@ class Player {
         this.canShoot = false;
         this.canSlash = false;
         this.canTeleport = false;
+
+        this.objectiveIndex = 0;
+        GUI.printStdOut(Player.Objectives[this.objectiveIndex]);
     }
 
     loadAnimations(assetManager) {
@@ -170,8 +180,6 @@ class Player {
 
         let origin = this.position.asVector();
 
-        GUI.setHealth(this.health / 100);
-
         this.calcMovement();
 
         this.arm.update();
@@ -181,9 +189,30 @@ class Player {
 
         this.setState();
 
+        this.updateGUI();
+    }
+
+    updateGUI() {
         if (this.health <= 0) {
             GUI.showDeathScreen();
             this.removeFromWorld = true;
+            return;
+        }
+
+        GUI.setHealth(this.health / 100);
+
+        console.log(this.canSlash, this.canTeleport, this.canShoot);
+        if (this.canSlash && this.objectiveIndex === 0) {
+            this.#printNextObjective();
+            GUI.showSlashControl();
+        }
+        if (this.canShoot && this.objectiveIndex === 1) {
+            this.#printNextObjective();
+            GUI.showHookControl();
+        }
+        if (this.canTeleport && this.objectiveIndex === 2) {
+            this.#printNextObjective();
+            GUI.showTeleportControl();
         }
     }
 
@@ -339,5 +368,9 @@ class Player {
             // this.collider.draw(ctx);
             // this.position.draw(ctx);
         }
+    }
+
+    #printNextObjective() {
+        GUI.printStdOut(Player.Objectives[++this.objectiveIndex]);
     }
 }

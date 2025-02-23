@@ -66,4 +66,40 @@ class GUI {
         const ability = document.getElementById(id);
         ability.style.setProperty("--percentage", `${percent * 100}%`);
     }
+
+    static showSlashControl() {
+        GUI.#unhideElement("slash-control");
+    }
+
+    static showTeleportControl() {
+        GUI.#unhideElement("teleport-control");
+    }
+
+    static showHookControl() {
+        GUI.#unhideElement("hook-control");
+    }
+
+    /**
+     * @param {string} text
+     */
+    static printStdOut(text) {
+        const element = document.getElementById("stdout");
+        const node = document.createElement("pre");
+        node.textContent = text;
+        element.appendChild(node);
+
+        element.scrollTop = element.scrollHeight;
+    }
+
+    static clearStdOut() {
+        const element = document.getElementById("stdout");
+        element.innerHTML = "";
+    }
+
+    /**
+     * @param {string} elementID
+     */
+    static #unhideElement(elementID) {
+        document.getElementById(elementID).classList.remove("hidden");
+    }
 }

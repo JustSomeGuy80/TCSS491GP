@@ -30,6 +30,7 @@ class GUI {
         if (window.gameEngine) {
             window.gameEngine.entities = [];
             colliders.length = 0; // Clear all colliders
+            window.gameEngine.running = false;
         }
 
         // Stop all audio

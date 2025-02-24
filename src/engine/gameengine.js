@@ -34,6 +34,7 @@ class GameEngine {
     start() {
         this.running = true;
         const gameLoop = () => {
+            if (!this.running) return;
             this.loop();
             // revert to old requestAnimFrame if anything goes wrong
             window.requestAnimationFrame(gameLoop, this.ctx.canvas);

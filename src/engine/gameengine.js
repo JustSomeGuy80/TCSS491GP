@@ -36,7 +36,8 @@ class GameEngine {
         const gameLoop = () => {
             if (!this.running) return;
             this.loop();
-            this.requestId = requestAnimationFrame(gameLoop);
+            // revert to old requestAnimFrame if anything goes wrong
+            window.requestAnimationFrame(gameLoop, this.ctx.canvas);
         };
         gameLoop();
     }
@@ -136,21 +137,6 @@ class GameEngine {
         this.clockTick = this.timer.tick();
         this.update();
         this.draw();
-    }
-
-    stopGame() {
-        this.running = false;
-        if (this.requestId) {
-            window.cancelAnimationFrame(this.requestId);
-            this.requestId = undefined;
-        }
-        this.entities = [];
-        this.camera = { x: 0, y: 0 };
-        this.clicks = [];
-        this.mouse = null;
-        this.wheel = null;
-        this.keys = {};
-        this.buttons = {};
     }
 }
 

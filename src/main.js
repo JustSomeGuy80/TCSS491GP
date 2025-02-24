@@ -6,10 +6,6 @@
 /** @typedef {import("./player")} */
 
 function main() {
-    if (window.gameEngine) {
-        window.gameEngine.stopGame();
-    }
-
     const gameEngine = new GameEngine();
     window.gameEngine = gameEngine; // Store reference globally
 

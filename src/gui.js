@@ -11,9 +11,7 @@ class GUI {
         // Clear any existing game state
         if (window.gameEngine) {
             window.gameEngine.entities = [];
-            window.colliders = [];
-            window.enemies = [];
-            window.gameEngine.running = false;
+            colliders.length = 0; // Clear all colliders
         }
 
         main();
@@ -31,8 +29,7 @@ class GUI {
         // Clear any existing game state
         if (window.gameEngine) {
             window.gameEngine.entities = [];
-            window.colliders = [];
-            window.enemies = [];
+            colliders.length = 0; // Clear all colliders
             window.gameEngine.running = false;
         }
 

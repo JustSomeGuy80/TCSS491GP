@@ -210,7 +210,6 @@ class Player {
 
         GUI.setHealth(this.health / 100);
 
-        console.log(this.canSlash, this.canTeleport, this.canShoot);
         if (this.canSlash && this.objectiveIndex === 0) {
             this.#printNextObjective();
             GUI.showSlashControl();
@@ -324,7 +323,7 @@ class Player {
         // vertical collision
         if (topReadjustment.y !== 0 || stairAdjustment.y !== 0) {
             // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
-            this.groundOverride = 4;
+            this.groundOverride = 12;
             this.velocity.y = 0;
         }
         // no collision

@@ -210,7 +210,6 @@ class Player {
 
         GUI.setHealth(this.health / 100);
 
-        console.log(this.canSlash, this.canTeleport, this.canShoot);
         if (this.canSlash && this.objectiveIndex === 0) {
             this.#printNextObjective();
             GUI.showSlashControl();

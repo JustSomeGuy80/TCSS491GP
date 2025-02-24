@@ -34,6 +34,7 @@ class GameEngine {
     start() {
         this.running = true;
         const gameLoop = () => {
+            if (!this.running) return;
             this.loop();
             this.requestId = requestAnimationFrame(gameLoop);
         };

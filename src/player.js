@@ -14,18 +14,18 @@
 class Player {
     static Objectives = [
         "Breacher Delta, are you there? Come in, Delta!\n\n...\n\nAh, you're finally awake. Here's the situation: " +
-            "something went wrong with the cross-dimensional warp. Pieces of your suit are scattered everywhere. " +
-            "Quite frankly, it's a miracle you're alive. According to our scans, the cross-dimensional warp-drive is just beneath you, " +
-            "and you'll need to recover it if we're going to get you back home. However, it seems that we must first restore " +
-            "more of your suit's functionalities before you can access it. We're picking up the signal of " +
-            "another suit piece far below you, try heading down about 35 meters.\n\nGodspeed, Breacher.",
+        "something went wrong with the cross-dimensional warp. Pieces of your suit are scattered everywhere. " +
+        "Quite frankly, it's a miracle you're alive. According to our scans, the cross-dimensional warp-drive is just beneath you, " +
+        "and you'll need to recover it if we're going to get you back home. However, it seems that we must first restore " +
+        "more of your suit's functionalities before you can access it. We're picking up the signal of " +
+        "another suit piece far below you, try heading down about 35 meters.\n\nGodspeed, Breacher.",
         "You've recovered the slash ability. That's good, but it's not going to get you to the warp-drive. " +
-            "We're detecting another suit piece to your immediate left, but our scans indicate you'll need to head up first to access it. " +
-            "Remember, Breacher, slashing right as you jump will allow you to leap much higher, or farther depending on the angle you slash at.",
+        "We're detecting another suit piece to your immediate left, but our scans indicate you'll need to head up first to access it. " +
+        "Remember, Breacher, slashing right as you jump will allow you to leap much higher, or farther depending on the angle you slash at.",
         "That's the grappling hook. You can use it swing your way out of that pit, but again, it doesn't help you reach the warp-drive. " +
-            "We're picking up one last scan. This should be it. It's above and to the right of the location you first woke up at. Good luck, Delta.",
+        "We're picking up one last scan. This should be it. It's above and to the right of the location you first woke up at. Good luck, Delta.",
         "There it is. The blink-gate generator. With enough velocity, this device will allow you to teleport through thin walls. " +
-            "This should be all you need to recover the cross-dimensional warp-drive. We look forward to your return. Godspeed, Breacher.",
+        "This should be all you need to recover the cross-dimensional warp-drive. We look forward to your return. Godspeed, Breacher.",
     ];
 
     /**

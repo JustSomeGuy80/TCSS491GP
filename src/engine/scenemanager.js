@@ -77,7 +77,7 @@ class SceneManager {
                         break;
                     case Tile.SHOOTER:
                         this.game.addEntity(
-                            new Shooter(this.game, this.assetManager, x, y, this.player)
+                            new Flyer(this.game, this.assetManager, x, y, this.player)
                         );
                         break;
                     case Tile.BLOCKER:

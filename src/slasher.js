@@ -19,7 +19,7 @@ class Slasher {
         this.inWindup = false;
 
         this.position = new Position(x, y);
-        this.collider = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 3, this);
+        this.collider = new ColliderRect(this.position, -30, -48, 30 * 3, 48 * 3, 3, this);
         this.sprite = new Sprite(this.position, this.game, 3, -43, -48, {
             running: new Animator(
                 this.assetManager.getAsset("anims/slasher.png"),

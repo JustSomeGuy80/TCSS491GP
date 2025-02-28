@@ -4,7 +4,7 @@ class Timer {
     constructor() {
         this.gameTime = 0;
         this.maxStep = 0.05;
-        this.lastTimestamp = 0;
+        this.lastTimestamp = Date.now();
     }
 
     tick() {

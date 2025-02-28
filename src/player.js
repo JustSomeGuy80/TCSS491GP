@@ -46,15 +46,6 @@ class Player {
         const width = 36;
 
         this.position = new Position(525, 500);
-        // this.collider = new ColliderRect(
-        //     this.position,
-        //     -width / 2,
-        //     -height / 2,
-        //     width,
-        //     height,
-        //     0,
-        //     this
-        // );
         this.topCollider = new ColliderRect(
             this.position,
             -width / 2,
@@ -378,9 +369,6 @@ class Player {
             }
 
             ctx.restore();
-
-            // this.collider.draw(ctx);
-            // this.position.draw(ctx);
         }
     }
 

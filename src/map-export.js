@@ -66,8 +66,13 @@ class MapExport {
     }
 
     draw(ctx) {
+        const { width, height } = ctx.canvas;
+        const screenBounds = new Boundary(0, width, 0, height);
+
         for (const { x, y, tile } of this.#getTiles()) {
-            Tile.drawTile(tile, ctx, new Vector(x, y));
+            if (screenBounds.containsBoundary(new Boundary(x, x + Tile.SIZE, y, y + Tile.SIZE))) {
+                Tile.drawTile(tile, ctx, new Vector(x, y));
+            }
         }
     }
 

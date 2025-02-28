@@ -38,6 +38,13 @@ class GUI {
             window.ASSET_MANAGER.pauseBackgroundMusic();
         }
 
+        GUI.#hideElement("slash-control");
+        GUI.#hideElement("slash-ability");
+        GUI.#hideElement("teleport-control");
+        GUI.#hideElement("teleport-ability");
+        GUI.#hideElement("hook-control");
+        GUI.#hideElement("hook-ability");
+
         main();
     }
 
@@ -70,14 +77,17 @@ class GUI {
 
     static showSlashControl() {
         GUI.#unhideElement("slash-control");
+        GUI.#unhideElement("slash-ability");
     }
 
     static showTeleportControl() {
         GUI.#unhideElement("teleport-control");
+        GUI.#unhideElement("teleport-ability");
     }
 
     static showHookControl() {
         GUI.#unhideElement("hook-control");
+        GUI.#unhideElement("hook-ability");
     }
 
     /**
@@ -95,6 +105,13 @@ class GUI {
     static clearStdOut() {
         const element = document.getElementById("stdout");
         element.innerHTML = "";
+    }
+
+    /**
+     * @param {string} elementID
+     */
+    static #hideElement(elementID) {
+        document.getElementById(elementID).classList.add("hidden");
     }
 
     /**

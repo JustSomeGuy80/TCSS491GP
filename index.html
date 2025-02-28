@@ -9,39 +9,6 @@
         <link rel="stylesheet" href="./src/styles/gui/ability.css" />
     </head>
     <body>
-        <div
-            id="editorUI"
-            style="
-                display: none;
-                position: absolute;
-                right: 10px;
-                top: 10px;
-                background: rgba(255, 255, 255, 0.9);
-                padding: 10px;
-                border-radius: 5px;
-            "
-        >
-            <div style="margin-bottom: 10px">
-                <label for="toolSelect">Tool:</label>
-                <select id="toolSelect">
-                    <option value="platform">Platform</option>
-                    <option value="spike">Spike</option>
-                </select>
-            </div>
-            <div style="margin-bottom: 10px">
-                <label>Size:</label><br />
-                <input type="number" id="widthInput" value="100" style="width: 60px" /> x
-                <input type="number" id="heightInput" value="20" style="width: 60px" />
-            </div>
-            <div>
-                <button id="deleteMode">Delete Mode (Del)</button>
-                <button id="toggleGrid">Toggle Grid</button>
-            </div>
-            <div style="margin-top: 10px">
-                <small>Press ` to toggle editor</small><br />
-                <small>Ctrl+Z to undo</small>
-            </div>
-        </div>
         <div id="controls">
             <h1>Controls</h1>
             <div class="control">
@@ -89,10 +56,13 @@
                     <div class="ability overlay-container" id="bullet-ability">
                         <p style="font-size: 1.5rem; margin: 0">M1</p>
                     </div>
-                    <div class="ability overlay-container" id="slash-ability">
+                    <div class="ability overlay-container hidden" id="slash-ability">
                         <p style="font-size: 1.5rem; margin: 0">S</p>
                     </div>
-                    <div class="ability overlay-container" id="teleport-ability">
+                    <div class="ability overlay-container hidden" id="hook-ability">
+                        <p style="font-size: 1.5rem; margin: 0">M2</p>
+                    </div>
+                    <div class="ability overlay-container hidden" id="teleport-ability">
                         <p style="font-size: 1.5rem; margin: 0">W</p>
                     </div>
                 </div>
@@ -126,6 +96,8 @@
                 <div id="stdout"></div>
             </div>
         </div>
+
+        <script type="text/javascript" src="./src/frame-logger.js"></script>
 
         <script type="text/javascript" src="./src/primitives/vector.js"></script>
         <script type="text/javascript" src="./src/engine/types/boundary.js"></script>

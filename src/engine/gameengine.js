@@ -33,13 +33,29 @@ class GameEngine {
 
     start() {
         this.running = true;
-        const gameLoop = () => {
+
+        const frameStack = [];
+        FrameLogger.push("FPS");
+        const gameLoop = timestamp => {
+            // COMPUTE FPS
+            frameStack.push(FrameLogger.popFPS("FPS"));
+            if (frameStack.length == 10) {
+                console.log(
+                    "Average FPS:",
+                    frameStack.reduce((accumulated, current) => accumulated + current) / 10
+                );
+                frameStack.length = 0;
+            }
+            FrameLogger.concludeFrame();
+
             if (!this.running) return;
+            FrameLogger.push("FPS");
+
             this.loop();
-            // revert to old requestAnimFrame if anything goes wrong
-            window.requestAnimationFrame(gameLoop, this.ctx.canvas);
+            window.requestAnimationFrame(gameLoop);
         };
-        gameLoop();
+
+        window.requestAnimationFrame(gameLoop);
     }
 
     startInput() {
@@ -139,5 +155,3 @@ class GameEngine {
         this.draw();
     }
 }
-
-// KV Le was here :)

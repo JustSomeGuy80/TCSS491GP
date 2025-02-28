@@ -49,7 +49,7 @@ class Grapple {
         if (currentPos.x >= 0) this.leftFuel = this.maxSwing;
 
         if (currentPos.getMagnitude() > this.mag) {
-            if (!this.player.isGrounded()) {
+            if (!this.player.isPhysicsGrounded()) {
                 this.player.jumped = 3;
             }
 

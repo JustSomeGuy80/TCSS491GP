@@ -324,7 +324,7 @@ class Player {
         if (topReadjustment.y !== 0 || stairAdjustment.y !== 0) {
             // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
             this.animationGroundFrames = 8;
-            this.physicsGroundFrames = 1;
+            this.physicsGroundFrames = 2;
             this.velocity.y = 0;
         }
         // no collision

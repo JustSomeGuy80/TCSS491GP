@@ -2,6 +2,7 @@
 
 class StairController {
     #stairMode;
+    #exittingStair;
     static validIDS = new Set([1, ColliderRect.TYPE.STAIR_BL, ColliderRect.TYPE.STAIR_BR]);
 
     /**
@@ -15,6 +16,7 @@ class StairController {
         this.displacementThreshold = displacementThreshold;
 
         this.#stairMode = false;
+        this.#exittingStair = false;
     }
 
     /**
@@ -30,6 +32,7 @@ class StairController {
         for (const collider of collisions) {
             if (StairController.isStair(collider)) {
                 stairFound = true;
+                this.#exittingStair = true;
             }
         }
 
@@ -78,6 +81,21 @@ class StairController {
                 if (StairController.checkDirectionalCounter(collider, displacement)) {
                     return new Vector(0, collider.position.y - selfY);
                 }
+            } else if (this.#exittingStair) {
+                const highestCollider = { y: Infinity, collider: null };
+
+                for (const collider of collisions) {
+                    if (collider.position.y < highestCollider.y) {
+                        highestCollider.y = collider.position.y;
+                        highestCollider.collider = collider;
+                    }
+                }
+
+                if (highestCollider.collider !== null) {
+                    return new Vector(0, highestCollider.y - selfY);
+                }
+
+                this.#exittingStair = false;
             }
         }
 

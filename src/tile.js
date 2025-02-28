@@ -93,7 +93,6 @@ class Tile {
                 ) {
                     yield new Boundary(left, Tile.SIZE, top, top + Tile.STEP_SIZE);
                 }
-                yield new Boundary(-Tile.STEP_SIZE, 0, Tile.SIZE - 0.1, Tile.SIZE + Tile.STEP_SIZE);
                 break;
             case Tile.DIRT_STAIR_BL:
             case Tile.BRICK_BL:
@@ -104,12 +103,6 @@ class Tile {
                 ) {
                     yield new Boundary(0, right, top, top + Tile.STEP_SIZE);
                 }
-                yield new Boundary(
-                    Tile.SIZE,
-                    Tile.SIZE + Tile.STEP_SIZE,
-                    Tile.SIZE - 0.1,
-                    Tile.SIZE + Tile.STEP_SIZE
-                );
                 break;
             case Tile.DIRT_STAIR_TR:
             case Tile.BRICK_TR:

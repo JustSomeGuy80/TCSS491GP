@@ -301,27 +301,32 @@ class Player {
 
     runCollisions(origin) {
         const displacement = this.position.asVector().subtract(origin);
-        const topReadjustment = this.topCollider.resolveCollisions(displacement, 1, 6);
-        this.position.add(topReadjustment);
+        const topAdjustment = this.topCollider.resolveCollisions(displacement, 1, 6);
+        this.position.add(topAdjustment);
 
         const stairAdjustment = this.stairController.updateState(displacement);
         this.position.add(stairAdjustment);
 
         // horizontal collision
-        if (topReadjustment.x !== 0 || stairAdjustment.x !== 0) {
+        if (topAdjustment.x !== 0 || stairAdjustment.x !== 0) {
             this.velocity.x = 0;
         }
+
         // vertical collision
-        if (topReadjustment.y !== 0 || stairAdjustment.y !== 0) {
-            // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
-            this.animationGroundFrames = 8;
-            this.physicsGroundFrames = 2;
+        if (topAdjustment.y !== 0 || stairAdjustment.y !== 0) {
             this.velocity.y = 0;
         }
-        // no collision
-        if (topReadjustment.y === 0 && topReadjustment.x === 0 && stairAdjustment.isZero()) {
+
+        if (topAdjustment.y < 0 || stairAdjustment.y !== 0) {
+            this.animationGroundFrames = 8;
+            this.physicsGroundFrames = 2;
+        } else {
+            // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
             this.animationGroundFrames -= 1;
             this.physicsGroundFrames -= 1;
+            if (this.animationGroundFrames <= 0) {
+                console.log(this.animationGroundFrames);
+            }
         }
     }
 

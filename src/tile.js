@@ -86,36 +86,49 @@ class Tile {
                 break;
             case Tile.DIRT_STAIR_BR:
             case Tile.BRICK_BR:
-                for (let i = 1; i <= 4; i++) {
-                    yield new Boundary(
-                        Tile.SIZE - i * Tile.STEP_SIZE,
-                        Tile.SIZE,
-                        (i - 1) * Tile.STEP_SIZE,
-                        Tile.SIZE
-                    );
+                for (
+                    let left = 0, top = Tile.SIZE - Tile.STEP_SIZE;
+                    top >= 0;
+                    left += Tile.STEP_SIZE, top -= Tile.STEP_SIZE
+                ) {
+                    yield new Boundary(left, Tile.SIZE, top, top + Tile.STEP_SIZE);
                 }
+                yield new Boundary(-Tile.STEP_SIZE, 0, Tile.SIZE - 0.1, Tile.SIZE + Tile.STEP_SIZE);
                 break;
             case Tile.DIRT_STAIR_BL:
             case Tile.BRICK_BL:
-                for (let i = 1; i <= 4; i++) {
-                    yield new Boundary(0, Tile.STEP_SIZE * i, (i - 1) * Tile.STEP_SIZE, Tile.SIZE);
+                for (
+                    let right = Tile.SIZE, top = Tile.SIZE - Tile.STEP_SIZE;
+                    top >= 0;
+                    right -= Tile.STEP_SIZE, top -= Tile.STEP_SIZE
+                ) {
+                    yield new Boundary(0, right, top, top + Tile.STEP_SIZE);
                 }
+                yield new Boundary(
+                    Tile.SIZE,
+                    Tile.SIZE + Tile.STEP_SIZE,
+                    Tile.SIZE - 0.1,
+                    Tile.SIZE + Tile.STEP_SIZE
+                );
                 break;
             case Tile.DIRT_STAIR_TR:
             case Tile.BRICK_TR:
-                for (let i = 4; i >= 1; i--) {
-                    yield new Boundary(
-                        Tile.SIZE - i * Tile.STEP_SIZE,
-                        Tile.SIZE,
-                        0,
-                        (4 - (i - 1)) * Tile.STEP_SIZE
-                    );
+                for (
+                    let left = 0, top = 0;
+                    top < Tile.SIZE;
+                    left += Tile.STEP_SIZE, top += Tile.STEP_SIZE
+                ) {
+                    yield new Boundary(left, Tile.SIZE, top, top + Tile.STEP_SIZE);
                 }
                 break;
             case Tile.DIRT_STAIR_TL:
             case Tile.BRICK_TL:
-                for (let i = 4; i >= 1; i--) {
-                    yield new Boundary(0, i * Tile.STEP_SIZE, 0, (4 - (i - 1)) * Tile.STEP_SIZE);
+                for (
+                    let right = Tile.SIZE, top = 0;
+                    top < Tile.SIZE;
+                    right -= Tile.STEP_SIZE, top += Tile.STEP_SIZE
+                ) {
+                    yield new Boundary(0, right, top, top + Tile.STEP_SIZE);
                 }
                 break;
         }

@@ -48,6 +48,7 @@ class StairController {
 
         for (const collider of collisions) {
             if (!StairController.isStair(collider)) continue;
+
             if (collider.position.y < highestCollider.y) {
                 highestCollider.y = collider.position.y;
                 highestCollider.collider = collider;

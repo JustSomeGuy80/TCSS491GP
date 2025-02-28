@@ -69,7 +69,7 @@ class Player {
             -width / 2,
             -height / 2 + height,
             width,
-            Tile.STEP_SIZE,
+            Tile.STEP_SIZE * 1.5,
             0,
             this,
             true
@@ -324,9 +324,6 @@ class Player {
             // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
             this.animationGroundFrames -= 1;
             this.physicsGroundFrames -= 1;
-            if (this.animationGroundFrames <= 0) {
-                console.log(this.animationGroundFrames);
-            }
         }
     }
 
@@ -354,6 +351,9 @@ class Player {
         return this.animationGroundFrames > 0;
     }
 
+    /**
+     * @param {CanvasRenderingContext2D} ctx
+     */
     draw(ctx) {
         this.teleport.draw(ctx);
         this.arm.draw(ctx);

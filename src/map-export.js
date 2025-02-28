@@ -49,9 +49,9 @@ class MapExport {
      * @param {Boundary} boundary
      */
     *getTilesInBoundary(boundary) {
-        const left = Math.max(Math.floor(boundary.left / Tile.SIZE), 0);
+        const left = Math.max(Math.floor(boundary.left / Tile.SIZE) - 1, 0);
         const right = Math.min(Math.ceil(boundary.right / Tile.SIZE), this.tiles.length - 1);
-        const top = Math.max(Math.floor(boundary.top / Tile.SIZE), 0);
+        const top = Math.max(Math.floor(boundary.top / Tile.SIZE) - 1, 0);
         const bottom = Math.min(Math.ceil(boundary.bottom / Tile.SIZE), this.tiles[0].length - 1);
 
         for (let xIndex = left; xIndex <= right; xIndex++) {

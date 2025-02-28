@@ -154,8 +154,8 @@ class Player {
         this.animations = [];
         this.loadAnimations(this.assetManager);
 
-        // TEMP (standing on hitboxes is not recognized by Player.isGrounded())
-        this.groundOverride = 0;
+        this.animationGroundFrames = 0;
+        this.physicsGroundFrames = 0;
 
         this.health = 100;
         this.canShoot = false;
@@ -226,7 +226,7 @@ class Player {
 
     checkInput() {
         var move = 0;
-        var grounded = this.isGrounded();
+        var grounded = this.isPhysicsGrounded();
         if (this.game.keys["d"]) move += 1;
         if (this.game.keys["a"]) move -= 1;
 
@@ -286,7 +286,7 @@ class Player {
 
         // Do we apply ground friction to the player?
         var traction =
-            this.isGrounded() &&
+            this.isPhysicsGrounded() &&
             (move == 0 ||
                 (move == 1 && this.velocity.x < 0) ||
                 (move == -1 && this.velocity.x > 0) ||
@@ -323,17 +323,19 @@ class Player {
         // vertical collision
         if (topReadjustment.y !== 0 || stairAdjustment.y !== 0) {
             // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
-            this.groundOverride = 2;
+            this.animationGroundFrames = 8;
+            this.physicsGroundFrames = 1;
             this.velocity.y = 0;
         }
         // no collision
         if (topReadjustment.y === 0 && topReadjustment.x === 0 && stairAdjustment.isZero()) {
-            this.groundOverride -= 1;
+            this.animationGroundFrames -= 1;
+            this.physicsGroundFrames -= 1;
         }
     }
 
     setState() {
-        if (this.isGrounded()) {
+        if (this.isAnimationGrounded()) {
             if (this.velocity.x == 0) this.sprite.setState("idle");
             else if (this.velocity.x * this.facing > 0) this.sprite.setState("running");
             else this.sprite.setState("bwrunning");
@@ -348,8 +350,12 @@ class Player {
         }
     }
 
-    isGrounded() {
-        return this.groundOverride > 0;
+    isPhysicsGrounded() {
+        return this.physicsGroundFrames > 0;
+    }
+
+    isAnimationGrounded() {
+        return this.animationGroundFrames > 0;
     }
 
     draw(ctx) {

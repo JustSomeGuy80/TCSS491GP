@@ -3,30 +3,69 @@
  */
 class Vector {
     /**
-     * @param {number} x
-     * @param {number} y
+     * @param {Vector | number | undefined} arg1
+     * @param {number | undefined} arg2
      */
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
+    constructor(arg1, arg2) {
+        if (arg1 === undefined) {
+            this.x = 0;
+            this.y = 0;
+        } else if (arg2 === undefined) {
+            if (typeof arg1 === "number") {
+                this.x = arg1;
+                this.y = 0;
+            } else {
+                this.x = arg1.x;
+                this.y = arg1.y;
+            }
+        } else {
+            this.x = arg1;
+            this.y = arg2;
+        }
+    }
+
+    /**
+     * Checks if this Vector is equivalent to (0, 0)
+     * @returns true if this Vector equals (0, 0), false otherwise
+     */
+    isZero() {
+        return this.x === 0 && this.y === 0;
     }
 
     /**
      * Adds this vector with another Vector and returns a new Vector
-     * @param {Vector} other
-     * @returns a new Vector object
+     * @param {Vector | number} arg1
+     * @param {number | undefined} arg2
+     * @returns {Vector} a new Vector object
      */
-    add(other) {
-        return new Vector(this.x + other.x, this.y + other.y);
+    add(arg1, arg2) {
+        if (arg2 === undefined) {
+            if (typeof arg1 === "number") {
+                return this.add(arg1, 0);
+            } else {
+                return this.add(arg1.x, arg1.y);
+            }
+        }
+
+        return new Vector(this.x + arg1, this.y + arg2);
     }
 
     /**
      * Subtracts another Vector from this Vector (a-b where a is this and b is other)
-     * @param {*} other
-     * @returns a new Vector object
+     * @param {Vector | number} arg1
+     * @param {number | undefined} arg2
+     * @returns {Vector} a new Vector object
      */
-    subtract(other) {
-        return this.add(other.negate());
+    subtract(arg1, arg2) {
+        if (arg2 === undefined) {
+            if (typeof arg1 === "number") {
+                return this.subtract(arg1, 0);
+            } else {
+                return this.subtract(arg1.x, arg1.y);
+            }
+        }
+
+        return new Vector(this.x - arg1, this.y - arg2);
     }
 
     /**
@@ -50,7 +89,12 @@ class Vector {
      * @returns a new Vector
      */
     normalize() {
+        if (this.isZero()) {
+            return new Vector();
+        }
+
         const length = this.getMagnitude();
+
         return new Vector(this.x / length, this.y / length);
     }
 
@@ -61,6 +105,14 @@ class Vector {
      */
     multiply(scalar) {
         return new Vector(this.x * scalar, this.y * scalar);
+    }
+
+    /**
+     * Applies the transformation each element of a copy of this Vector
+     * @param {(value: number) => number} transformation
+     */
+    map(transformation) {
+        return new Vector(transformation(this.x), transformation(this.y));
     }
 
     /**
@@ -76,18 +128,5 @@ class Vector {
      */
     toString() {
         return `Vector(x=${this.x}, y=${this.y})`;
-    }
-
-    /**
-     * Draws this vector to the canvas as a lime colored 10px square (the center of that square is exactly where this Vector is)
-     * @param {CanvasRenderingContext2D} ctx
-     */
-    draw(ctx) {
-        ctx.save();
-
-        ctx.fillStyle = "lime";
-        ctx.fillRect(this.x - 5, this.y - 5, 10, 10);
-
-        ctx.restore();
     }
 }

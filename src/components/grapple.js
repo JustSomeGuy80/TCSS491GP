@@ -37,42 +37,21 @@ class Grapple {
         this.linkVector = new Vector(0, 0);
         this.currentPos = new Vector(0, 0);
 
-        this.move = 0;
+        this.maxSwing = 0.2;
+        this.leftFuel = this.maxSwing;
+        this.rightFuel = this.maxSwing;
     }
 
     update() {
         var currentPos = this.player.position.asVector().subtract(this.dest.asVector());
-        if (currentPos.getMagnitude() > this.mag) {
-            if (!this.player.isGrounded()) {
-                this.player.jumped = 2;
-            }
 
-            // Make sure the player swings with the proper momentum
-            // if (
-            //     currentPos.x > 0 && // This line checks if the player is in the right half of the grapple range
-            //     this.player.velocity.x <= // These two lines checks if the player moved right this frame
-            //         this.player.maxSpeed + this.player.walkAccel * this.game.clockTick &&
-            //     this.move == 1
-            // ) {
-            //     // Adjust the velocity and position
-            //     this.player.position.x -= this.player.velocity.x * this.game.clockTick;
-            //     this.player.velocity.x -=
-            //         (currentPos.x / this.mag) * this.player.walkAccel * this.game.clockTick;
-            //     this.player.position.x += this.player.velocity.x * this.game.clockTick;
-            // } else if (
-            //     currentPos.x < 0 && // This line checks if the player is in the left half of the grapple range
-            //     this.player.velocity.x >= // These two lines checks if the player moved right this frame
-            //         -this.player.maxSpeed - this.player.walkAccel * this.game.clockTick &&
-            //     this.move == -1
-            // ) {
-            //     // Adjust the velocity and position
-            //     this.player.position.x -= this.player.velocity.x * this.game.clockTick;
-            //     this.player.velocity.x +=
-            //         (Math.abs(currentPos.x) / this.mag) *
-            //         this.player.walkAccel *
-            //         this.game.clockTick;
-            //     this.player.position.x += this.player.velocity.x * this.game.clockTick;
-            // }
+        if (currentPos.x <= 0) this.rightFuel = this.maxSwing;
+        if (currentPos.x >= 0) this.leftFuel = this.maxSwing;
+
+        if (currentPos.getMagnitude() > this.mag) {
+            if (!this.player.isPhysicsGrounded()) {
+                this.player.jumped = 3;
+            }
 
             var exitPoint = this.runCollisions(currentPos);
             // Calculate the player's current energy (Gravity * height + 1/2 * velocity^2)
@@ -121,6 +100,7 @@ class Grapple {
             }
             this.locked = true;
         } else {
+            if (this.player.jumped == 3) this.player.jumped = 2;
             if (this.currentPos.getMagnitude() <= this.mag * 0.99) this.locked = false;
             this.lastInnerPos = currentPos;
         }
@@ -173,6 +153,18 @@ class Grapple {
         this.exitPoint = exitPoint;
 
         return exitPoint;
+    }
+
+    grappleCheck(move) {
+        var returnee = false;
+        if (move == 1) {
+            if (this.rightFuel > 0) returnee = true;
+            this.rightFuel -= this.game.clockTick;
+        } else if (move == -1) {
+            if (this.leftFuel > 0) returnee = true;
+            this.leftFuel -= this.game.clockTick;
+        } else returnee = true;
+        return returnee;
     }
 
     draw(ctx) {

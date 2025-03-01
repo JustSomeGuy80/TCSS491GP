@@ -9,6 +9,7 @@ class GameEngine {
 
         // Everything that will be updated and drawn each frame
         this.entities = [];
+        this.map = MapExport.TEST_STAGE;
 
         // Information on the input
         this.click = [null];
@@ -16,6 +17,7 @@ class GameEngine {
         this.wheel = null;
         this.keys = {};
         this.buttons = {};
+        this.sceneManager = null;
 
         // Options and the Details
         this.options = options || {
@@ -32,6 +34,7 @@ class GameEngine {
     start() {
         this.running = true;
         const gameLoop = () => {
+            if (!this.running) return;
             this.loop();
             // revert to old requestAnimFrame if anything goes wrong
             window.requestAnimationFrame(gameLoop, this.ctx.canvas);
@@ -85,18 +88,39 @@ class GameEngine {
     addEntity(entity) {
         this.entities.push(entity);
     }
+    addTile(tile) {
+        this.tiles.push(tile);
+    }
 
     draw() {
         // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
         // Draw latest things first
+        if (this.sceneManager != null) {
+            this.sceneManager.draw(this.ctx, this);
+        }
+        this.map.draw(this.ctx, this);
         for (let i = this.entities.length - 1; i >= 0; i--) {
             this.entities[i].draw(this.ctx, this);
         }
     }
 
     update() {
+        for (let i = this.entities.length - 1; i >= 0; --i) {
+            if (this.entities[i].removeFromWorld) {
+                if (i < this.entities.length - 1) this.entities[i] = this.entities.pop();
+                else this.entities.pop();
+            }
+        }
+
+        for (let i = 0; i < colliders.length; i++) {
+            if (!colliders[i].owner || colliders[i].owner.removeFromWorld) {
+                var temp = colliders.pop();
+                if (i < colliders.length) colliders[i] = temp;
+            }
+        }
+
         for (let i = 0; i < this.entities.length; i++) {
             let entity = this.entities[i];
 
@@ -104,20 +128,10 @@ class GameEngine {
                 entity.update();
             }
         }
-
-        for (let i = this.entities.length - 1; i >= 0; --i) {
-            if (this.entities[i].removeFromWorld) {
-                this.entities.splice(i, 1);
-            }
-        }
-
-        for (let i = 0; i < colliders.length; i++) {
-            if (!colliders[i].owner || colliders[i].owner.removeFromWorld) {
-                colliders.splice(i, 1);
-            }
+        if (this.sceneManager != null) {
+            this.sceneManager.update();
         }
     }
-
 
     loop() {
         this.clockTick = this.timer.tick();

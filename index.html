@@ -46,59 +46,68 @@
             <h1>Controls</h1>
             <div class="control">
                 <h2>Walk (a and d)</h2>
-                <p>Moves the player to the left or right respectively</p>
+                <p>Moves the player to the left or right respectively.</p>
             </div>
             <div class="control">
                 <h2>Jump (space)</h2>
-                <p>Makes the player jump upwards</p>
+                <p>
+                    Makes the player jump upwards. Holding jump makes the player jump higher and
+                    farther.
+                </p>
             </div>
             <div class="control">
                 <h2>Fire (left click)</h2>
+                <p>The player will shoot a bullet in the direction of the mouse cursor.</p>
+            </div>
+            <div class="control hidden" id="slash-control">
+                <h2>Slash (s)</h2>
                 <p>
-                    The player will shoot a bullet in the direction of the mouse cursor (this move
-                    shares its cooldown with slash)
+                    The player will slash in the direction of the mouse cursor. Slashing the terrain
+                    will cause the player to bounce off of it.
                 </p>
             </div>
-            <div class="control">
-                <h2>slash (s)</h2>
+            <div class="control hidden" id="teleport-control">
+                <h2>Teleport (w)</h2>
                 <p>
-                    The player will slash in the direction of the mouse cursor (this move shares its
-                    cooldown with fire)
+                    The player will teleport in the direction of their velocity. (Holding w will
+                    display where you will be teleported. The player must be airborne to teleport.)
                 </p>
             </div>
-            <div class="control">
-                <h2>teleport (w)</h2>
+            <div class="control hidden" id="hook-control">
+                <h2>Hook (right click)</h2>
                 <p>
-                    The player will teleport in the direction of their velocity (holding w will
-                    display where you will be teleported)
+                    Right click to hook on to surfaces and hold right click to swing. If there are
+                    no valid surface(s) then a red line will display
                 </p>
             </div>
         </div>
         <div class="overlay-container" id="game">
             <canvas id="gameWorld" class="layer" width="1024" height="768" tabindex="0"></canvas>
-            <div id="health"></div>
-            <div
-                style="
-                    display: flex;
-                    gap: 1rem;
-                    margin-top: auto;
-                    margin-inline: auto;
-                    margin-bottom: 1rem;
-                "
-            >
-                <div class="ability overlay-container" id="bullet-ability">
-                    <p style="font-size: 1.5rem; margin: 0">M1</p>
-                </div>
-                <div class="ability overlay-container" id="slash-ability">
-                    <p style="font-size: 1.5rem; margin: 0">S</p>
-                </div>
-                <div class="ability overlay-container" id="teleport-ability">
-                    <p style="font-size: 1.5rem; margin: 0">W</p>
+            <div id="gui">
+                <div id="health"></div>
+                <div id="ability-group">
+                    <div class="ability overlay-container" id="bullet-ability">
+                        <p style="font-size: 1.5rem; margin: 0">M1</p>
+                    </div>
+                    <div class="ability overlay-container" id="slash-ability">
+                        <p style="font-size: 1.5rem; margin: 0">S</p>
+                    </div>
+                    <div class="ability overlay-container" id="teleport-ability">
+                        <p style="font-size: 1.5rem; margin: 0">W</p>
+                    </div>
                 </div>
             </div>
             <div id="menu">
                 <h1>Godspeed Breacher</h1>
                 <button onclick="GUI.onPlayClick()">Play</button>
+            </div>
+            <div id="death-screen" style="display: none">
+                <h1>You Died</h1>
+                <button onclick="GUI.onRestartClick()">Restart</button>
+            </div>
+            <div id="win-screen" style="display: none">
+                <h1>You won! You made it back home!</h1>
+                <button onclick="GUI.onRestartClick()">Restart</button>
             </div>
         </div>
         <div class="controls-container" id="audio">
@@ -111,13 +120,21 @@
                 <input type="range" id="volume" min="0" max="1" value="0.1" step="0.05" />
             </div>
         </div>
+        <div id="objective">
+            <h1>Command</h1>
+            <div id="stdout-container">
+                <div id="stdout"></div>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="./src/primitives/vector.js"></script>
+        <script type="text/javascript" src="./src/engine/types/boundary.js"></script>
 
         <script type="text/javascript" src="./src/engine/assetmanager.js"></script>
         <script type="text/javascript" src="./src/obstacle.js"></script>
         <script type="text/javascript" src="./src/engine/timer.js"></script>
         <script type="text/javascript" src="./src/engine/animator.js"></script>
         <script type="text/javascript" src="./src/engine/gameengine.js"></script>
-        <script type="text/javascript" src="./src/primitives/vector.js"></script>
         <script type="text/javascript" src="./src/components/position.js"></script>
         <script type="text/javascript" src="./src/components/ColliderRect.js"></script>
         <script type="text/javascript" src="./src/components/pickup.js"></script>
@@ -134,7 +151,13 @@
         <script type="text/javascript" src="./src/slasher.js"></script>
         <script type="text/javascript" src="./src/shooter.js"></script>
         <script type="text/javascript" src="./src/blocker.js"></script>
+
+        <script type="text/javascript" src="./src/components//stair-controller.js"></script>
+
+        <script type="text/javascript" src="./src/map-export.js"></script>
+        <script type="text/javascript" src="./src/tile.js"></script>
         <script type="text/javascript" src="./src/engine/scenemanager.js"></script>
+
         <script type="text/javascript" src="./src/main.js"></script>
         <script type="text/javascript" src="./src/gui.js"></script>
     </body>

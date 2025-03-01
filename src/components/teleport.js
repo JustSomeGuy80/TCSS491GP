@@ -37,7 +37,7 @@ class Teleport {
         this.cd = 0; // Tracks the cooldown
 
         this.primed = false; // Player teleports when releasing the button, this tracks if the buttons being held
-        this.grounded = player.isGrounded(); // Remembers if the player is grounded this frame
+        this.grounded = player.isAnimationGrounded(); // Remembers if the player is grounded this frame
         this.colliding = true; // Remembers if the player will warp in to a wall this frame
 
         this.animate = false; // Should we animate the portals this frame?
@@ -104,7 +104,7 @@ class Teleport {
         this.position.add(this.player.velocity.multiply(this.warpTime));
 
         // Check if the player is grounded or if they'll teleport into a wall this frame
-        this.grounded = this.player.isGrounded();
+        this.grounded = this.player.isAnimationGrounded();
         this.colliding = this.runCollisions();
 
         // Stop animating the portal sprites if they're done playing their animations

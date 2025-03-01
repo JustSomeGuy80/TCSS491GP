@@ -58,7 +58,7 @@ class Arm {
         this.bullets = [];
         this.fireRate = 0.6;
         this.slashRate = 0.9;
-        this.grappleRate = 0.5;
+        this.grappleRate = 0.75;
 
         this.fireCD = 0; // tracks when the player can shoot again
         this.slashCD = 0; // tracks when the player can slash again
@@ -123,14 +123,18 @@ class Arm {
         }
     }
 
-    grapple(bool, move = 0) {
+    grapple(bool) {
         if (bool) {
             if (this.grappleCD <= 0 && this.hook == null) {
                 this.grappleCD = this.grappleRate;
 
                 var graPos = new Position(this.parent.position.x, this.parent.position.y);
                 var graVect = this.parent.aimVector.normalize().multiply(350);
-                var mag = ColliderRect.lineCollide(graPos, graVect, [1]);
+                var mag = ColliderRect.lineCollide(graPos, graVect, [
+                    1,
+                    ColliderRect.TYPE.STAIR_BL,
+                    ColliderRect.TYPE.STAIR_BR,
+                ]);
 
                 if (mag != null) {
                     graPos.add(graVect.normalize().multiply(mag));
@@ -151,13 +155,19 @@ class Arm {
             }
         } else {
             if (this.hook != null) {
+                if (this.parent.jumped == 3) this.parent.jumped = 2;
                 this.grappleCD = this.grappleRate;
                 this.hook = null;
             }
         }
+    }
 
+    grappleCheck(move) {
         if (this.hook != null) {
-            this.hook.move = move;
+            return this.hook.grappleCheck(move);
+        } else {
+            this.parent.jumped = 2;
+            return true;
         }
     }
 

@@ -64,14 +64,14 @@ class Sprite {
      * @param {number} tick delta time
      * @param {CanvasRenderingContext2D} ctx
      */
-    drawSprite(tick, ctx) {
+    drawSprite(tick, ctx, cameraScale = 1) {
         let position = this.parent.asVector().add(this.offset);
 
         this.animations[this.state].drawFrame(
             tick,
             ctx,
-            position.x - this.game.camera.x,
-            position.y - this.game.camera.y,
+            position.x - this.game.camera.x * cameraScale,
+            position.y - this.game.camera.y * cameraScale,
             this.scale,
             this.horizontalFlip,
             this.verticalFlip

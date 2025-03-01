@@ -13,10 +13,10 @@ class Shooter {
      * @param {number} x Initial X position
      * @param {number} y Initial Y position
      */
-    constructor(game, assetManager, x, y) {
+    constructor(game, assetManager, x, y, player) {
         this.game = game;
         this.assetManager = assetManager;
-        this.debugMode = true;
+        this.debugMode = false;
         this.active = true;
         this.health = 3;
         this.removeFromWorld = false;
@@ -24,18 +24,35 @@ class Shooter {
         this.lastAttack = 0;
         this.bulletSpeed = 750;
         this.bullets = [];
+        this.player = player;
 
         this.position = new Position(x, y);
-        this.collider = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 3, this);
+        this.collider = new ColliderRect(this.position, -12, -26, 64, 30 * 3, 3, this);
         this.sprite = new Sprite(this.position, this.game, 3, -43, -48, {
-            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.2),
-            death: new Animator(this.assetManager.getAsset("anims/run.png"), 1000, 0, 32, 32, 4, 0.2)
+            running: new Animator(
+                this.assetManager.getAsset("anims/shooter.png"),
+                0,
+                0,
+                43,
+                48,
+                8,
+                0.2
+            ),
+            death: new Animator(
+                this.assetManager.getAsset("anims/run.png"),
+                1000,
+                0,
+                32,
+                32,
+                4,
+                0.2
+            ),
         });
 
-        this.moveSpeed = 200;
+        this.moveSpeed = 0;
         this.facing = 1; // 1 = right, -1 = left
         this.velocity = new Vector(0, 0);
-        this.gravity = 1000; // Enable gravity for falling
+        this.gravity = 0; // Enable gravity for falling
 
         this.patrolLeft = x - 200;
         this.patrolRight = x + 200;
@@ -44,12 +61,6 @@ class Shooter {
         this.sprite.setState("running");
 
         /** @type {Animator[]} */
-        this.animations = [];
-        this.loadAnimations(this.assetManager);
-    }
-
-    loadAnimations(assetManager) {
-        this.animations.push(new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.2));
     }
 
     update() {
@@ -66,17 +77,39 @@ class Shooter {
     }
 
     attack() {
+        const camX = this.position.x - this.game.camera.x;
+        const camY = this.position.y - this.game.camera.y;
+
+        // draws if on screen
+        const onScreen = !(camX < -20 || camX > 1044 || camY < -20 || camY > 788);
+
+        if (!onScreen) {
+            this.lastAttack = this.game.timer.gameTime + 1.5;
+        }
+
         // Fire every 3 seconds
         if (this.game.timer.gameTime >= this.lastAttack) {
-            let aimVector = new Vector(this.facing, 0)
-            let bulPos = new Position(this.position.x + (50 * this.facing), this.position.y); // 50 is the x offset
-            bulPos = bulPos.asVector();
-            bulPos.add(aimVector.normalize().multiply(36));
-            this.bullets.push(new Bullet(this.game, this.assetManager, bulPos.x, bulPos.y, aimVector, this.bulletSpeed, 1));
+            // Calculate the vector from shooter to player
+            const shooterPos = this.position.asVector();
+            const playerPos = this.player.position.asVector();
+            const aimVector = playerPos.subtract(shooterPos).normalize();
 
-            // Reset cooldown
+            const bulPos = shooterPos.add(aimVector.multiply(10));
+
+            this.bullets.push(
+                new Bullet(
+                    this.game,
+                    this.assetManager,
+                    bulPos.x,
+                    bulPos.y,
+                    aimVector,
+                    this.bulletSpeed,
+                    1
+                )
+            );
+
+            // Reset the attack cooldown
             this.lastAttack = this.game.timer.gameTime + 3;
-
         }
     }
 
@@ -97,9 +130,17 @@ class Shooter {
             this.active = false;
             this.removeFromWorld = true;
 
-            if (Math.random() < 0.25) {
-                this.game.addEntity(new Pickup(this.game, this.assetManager, this.position.x, this.position.y, 'health'))
-            }
+            // if (Math.random() < 0.25) {
+            //     this.game.addEntity(
+            //         new Pickup(
+            //             this.game,
+            //             this.assetManager,
+            //             this.position.x,
+            //             this.position.y,
+            //             "health"
+            //         )
+            //     );
+            // }
         }
     }
 
@@ -122,11 +163,10 @@ class Shooter {
             const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
             const difference = target.subtract(origin);
 
-            if (collision.id === 0) { // player
-
-            }
-
-            else if (collision.id === 1) { // platform
+            if (collision.id === 0) {
+                // player
+            } else if (collision.id === 1) {
+                // platform
                 const difference = target.subtract(origin);
 
                 // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
@@ -163,7 +203,7 @@ class Shooter {
                     }
 
                     if (hitNear && isFinite(hitNear)) {
-                        const {x, y} = origin.add(difference.multiply(hitNear));
+                        const { x, y } = origin.add(difference.multiply(hitNear));
 
                         if (horizontalHit) {
                             this.velocity.x = 0;
@@ -201,12 +241,13 @@ class Shooter {
 
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.yEnd - bounds.yStart
+            );
         }
     }
 }

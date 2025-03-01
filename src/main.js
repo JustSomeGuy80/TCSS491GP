@@ -7,8 +7,11 @@
 
 function main() {
     const gameEngine = new GameEngine();
+    window.gameEngine = gameEngine; // Store reference globally
 
     const ASSET_MANAGER = new AssetManager();
+    window.ASSET_MANAGER = ASSET_MANAGER; // Store reference globally
+    Tile.AssetManager = ASSET_MANAGER;
 
     ASSET_MANAGER.queueDownload("anims/jump.png");
     ASSET_MANAGER.queueDownload("anims/idle.png");
@@ -21,9 +24,11 @@ function main() {
     ASSET_MANAGER.queueDownload("anims/teleport.png");
     ASSET_MANAGER.queueDownload("anims/teleIndicator.png");
     ASSET_MANAGER.queueDownload("anims/slasher.png");
+    ASSET_MANAGER.queueDownload("anims/shooter.png");
     ASSET_MANAGER.queueDownload("anims/block.png");
     ASSET_MANAGER.queueDownload("anims/slasherslash.png");
     ASSET_MANAGER.queueDownload("anims/pickup.png");
+    ASSET_MANAGER.queueDownload("anims/enemy_bullet.png");
 
     ASSET_MANAGER.queueDownload("sounds/music.mp3");
     ASSET_MANAGER.queueDownload("sounds/jump.mp3");
@@ -64,21 +69,19 @@ function main() {
     ASSET_MANAGER.queueDownload("images/leaf_tr_bg.png");
 
     ASSET_MANAGER.downloadAll(() => {
-        /** @type {HTMLCanvasElement} */
-
-        ASSET_MANAGER.autoRepeat("sounds/music.mp3");
-        ASSET_MANAGER.playAsset("sounds/music.mp3");
-
         const canvas = document.getElementById("gameWorld");
         const ctx = canvas.getContext("2d");
         ctx.imageSmoothingEnabled = false;
 
+        // Stop any existing music before starting new instance
+        ASSET_MANAGER.pauseBackgroundMusic();
+        ASSET_MANAGER.autoRepeat("sounds/music.mp3");
+        ASSET_MANAGER.playAsset("sounds/music.mp3");
+
         const sceneManager = new SceneManager(gameEngine, ASSET_MANAGER);
-        gameEngine.addEntity(sceneManager);
-        // gameEngine.addEntity(new Player(gameEngine, ASSET_MANAGER));
+        gameEngine.sceneManager = sceneManager;
 
         gameEngine.init(ctx);
-
         gameEngine.start();
     });
 }

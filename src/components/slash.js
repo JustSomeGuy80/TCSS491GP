@@ -22,25 +22,34 @@ class Slash {
         this.assetManager = assetManager;
         this.player = player;
         this.position = player.position.copy();
-        this.xOffset = xOffset
-        this.yOffset = yOffset
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
         this.vect = vect.normalize();
 
         this.debugMode = false;
 
-        this.flip = this.vect.x < 0
+        this.flip = this.vect.x < 0;
 
         let temp = 30;
         if (this.flip) {
-            temp *= -1
+            temp *= -1;
         }
         this.sprite = new Sprite(this.position, this.game, 3, -48 + temp, -48, {
-            slash: new Animator(assetManager.getAsset("anims/slashEffect.png"), 0, 0, 32, 32, 5, .05, false),
+            slash: new Animator(
+                assetManager.getAsset("anims/slashEffect.png"),
+                0,
+                0,
+                32,
+                32,
+                5,
+                0.05,
+                false
+            ),
         });
         if (this.flip) {
-            this.sprite.setHorizontalFlip(true)
+            this.sprite.setHorizontalFlip(true);
         }
-      
+
         //this.sprite.setState("slash");
 
         this.unload = false;
@@ -56,7 +65,10 @@ class Slash {
         var hit = false; // set to true if the slash hits anything, wall or enemy, and plays a sound later if so
 
         // Calculate where the collision should be placed
-        var slashPos = new Position(this.position.x + (this.xOffset * this.player.facing), this.position.y + this.yOffset);
+        var slashPos = new Position(
+            this.position.x + this.xOffset * this.player.facing,
+            this.position.y + this.yOffset
+        );
         slashPos = slashPos.asVector();
         slashPos = slashPos.add(this.player.aimVector.normalize().multiply(60));
         // Place collision
@@ -71,8 +83,13 @@ class Slash {
                 break;
             }
 
-            if (!clanged && collision.id == 1) {
-                const bounce = this.vect.multiply(this.calcPush())
+            if (
+                !clanged &&
+                (collision.id == 1 ||
+                    collision.id == ColliderRect.TYPE.STAIR_BL ||
+                    collision.id == ColliderRect.TYPE.STAIR_BL)
+            ) {
+                const bounce = this.vect.multiply(this.calcPush());
                 this.neutralize();
                 this.player.velocity = this.player.velocity.add(bounce);
                 clanged = true;
@@ -102,17 +119,19 @@ class Slash {
         var push = 350;
 
         // Find the angle between the player's velocity vector and the vector of the momentum they'll recieve from the slash
-        let angle = Math.atan2(-this.vect.y, -this.vect.x) - Math.atan2(this.player.velocity.y, this.player.velocity.x);
-        if (angle < -Math.PI) angle = angle + 2*Math.PI;
-        else if (angle > Math.PI) angle = angle - 2*Math.PI;
-        angle = Math.abs(angle)
+        let angle =
+            Math.atan2(-this.vect.y, -this.vect.x) -
+            Math.atan2(this.player.velocity.y, this.player.velocity.x);
+        if (angle < -Math.PI) angle = angle + 2 * Math.PI;
+        else if (angle > Math.PI) angle = angle - 2 * Math.PI;
+        angle = Math.abs(angle);
 
         // Convert from radians to a scale of 0 to 1. 0 being 0 degrees, 1 being 180 degrees
-        angle = (angle / (Math.PI)) % 1;
+        angle = (angle / Math.PI) % 1;
 
         // The tighter the angle, and the faster you're moving, the less momentum you recieve.
-        if (angle < .5) {
-            push -= this.player.velocity.getMagnitude() * (1 - (angle * 2));
+        if (angle < 0.5) {
+            push -= this.player.velocity.getMagnitude() * (1 - angle * 2);
             if (push < 150) push = 150;
         }
 
@@ -122,11 +141,18 @@ class Slash {
     // When slashing terrain, this method allows the player to brake by slashing against their momentum
     neutralize() {
         let angle = Math.atan2(this.vect.y, this.vect.x);
-        if ((angle <= Math.PI/8 && angle >= -Math.PI/8 && this.player.velocity.x > 0) // did the player slash to the right while moving right?
-            || ((angle >= Math.PI * (7/8) || angle <= -Math.PI * (7/8)) && this.player.velocity.x < 0)) { // or did they slash to the left while moving left?
+        if (
+            (angle <= Math.PI / 8 && angle >= -Math.PI / 8 && this.player.velocity.x > 0) || // did the player slash to the right while moving right?
+            ((angle >= Math.PI * (7 / 8) || angle <= -Math.PI * (7 / 8)) &&
+                this.player.velocity.x < 0)
+        ) {
+            // or did they slash to the left while moving left?
             this.player.velocity.x = 0; // If so, halt horizontal momentum
-        } else if ((angle <= Math.PI * (7/8) && angle >= Math.PI/8 && this.player.velocity.y > 0) // did the player slash downward while moving down?
-            || (angle <= -Math.PI/8 && angle >= -Math.PI * (7/8) && this.player.velocity.y < 0))  {  // or did they slash upward while moving up?
+        } else if (
+            (angle <= Math.PI * (7 / 8) && angle >= Math.PI / 8 && this.player.velocity.y > 0) || // did the player slash downward while moving down?
+            (angle <= -Math.PI / 8 && angle >= -Math.PI * (7 / 8) && this.player.velocity.y < 0)
+        ) {
+            // or did they slash upward while moving up?
             this.player.velocity.y = 0; // If so, halt vertical momentum
         }
     }
@@ -152,7 +178,7 @@ class Slash {
         }
 
         ctx.save();
-        ctx.translate(xTranslate, (this.position.y + this.yOffset - this.game.camera.y));
+        ctx.translate(xTranslate, this.position.y + this.yOffset - this.game.camera.y);
         ctx.rotate(angle);
         ctx.translate(-xTranslate, -(this.position.y + this.yOffset - this.game.camera.y));
         this.sprite.drawSprite(this.game.clockTick, ctx);
@@ -161,13 +187,14 @@ class Slash {
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
             ctx.save();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.yEnd - bounds.yStart
+            );
             ctx.restore();
         }
     }
-} 
+}

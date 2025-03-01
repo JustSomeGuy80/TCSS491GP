@@ -10,11 +10,23 @@ class Pickup {
         this.game.addEntity(this.collision);
 
         this.sprite = new Sprite(this.position, this.game, 3, 0, 0, {
-            new: new Animator(assetManager.getAsset("anims/pickup.png"), 0, 0, 10, 10, 1, .25),
-            picked_up: new Animator(assetManager.getAsset("anims/pickup.png"), 0, 0, 10, 10, 2, .5),
+            upgrade: new Animator(assetManager.getAsset("anims/pickup.png"), 0, 0, 16, 16, 1, 1),
+            health: new Animator(assetManager.getAsset("anims/pickup.png"), 16, 0, 16, 16, 1, 1),
+            ending: new Animator(assetManager.getAsset("anims/pickup.png"), 32, 0, 16, 16, 1, 1),
+            picked_up: new Animator(
+                assetManager.getAsset("anims/pickup.png"),
+                0,
+                0,
+                10,
+                10,
+                2,
+                0.5
+            ),
         });
 
-        this.sprite.setState("new");
+        this.sprite.setState("upgrade");
+        if (this.id == "health") this.sprite.setState("health");
+        if (this.id == "ending") this.sprite.setState("ending");
     }
 
     update() {
@@ -29,18 +41,22 @@ class Pickup {
             if (done) break;
 
             if (collision.id === 0) {
-                switch(this.id) {
-                    case 'health':
-                        collision.owner.health += 50;
+                switch (this.id) {
+                    case "health":
+                        collision.owner.health += 20;
                         break;
-                    case 'shoot':
+                    case "shoot":
                         collision.owner.canShoot = true;
                         break;
-                    case 'slash':
+                    case "slash":
                         collision.owner.canSlash = true;
                         break;
-                    case 'teleport':
+                    case "teleport":
                         collision.owner.canTeleport = true;
+                        break;
+                    case "ending":
+                        GUI.showWinScreen();
+                        collision.owner.removeFromWorld = true;
                         break;
                 }
                 this.removeFromWorld = true;
@@ -55,12 +71,13 @@ class Pickup {
         if (this.debugMode) {
             const bounds = this.collision.getBounds();
             ctx.save();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.yEnd - bounds.yStart
+            );
             ctx.restore();
         }
     }

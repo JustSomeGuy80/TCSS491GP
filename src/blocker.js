@@ -26,8 +26,24 @@ class Blocker {
         this.position = new Position(x, y);
         this.collider = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 3, this);
         this.sprite = new Sprite(this.position, this.game, 3, -43, -48, {
-            running: new Animator(this.assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.2),
-            death: new Animator(this.assetManager.getAsset("anims/run.png"), 1000, 0, 32, 32, 4, 0.2)
+            running: new Animator(
+                this.assetManager.getAsset("anims/slasher.png"),
+                0,
+                0,
+                43,
+                48,
+                7,
+                0.2
+            ),
+            death: new Animator(
+                this.assetManager.getAsset("anims/run.png"),
+                1000,
+                0,
+                32,
+                32,
+                4,
+                0.2
+            ),
         });
 
         this.moveSpeed = 200;
@@ -47,7 +63,9 @@ class Blocker {
     }
 
     loadAnimations(assetManager) {
-        this.animations.push(new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.2));
+        this.animations.push(
+            new Animator(assetManager.getAsset("anims/slasher.png"), 0, 0, 43, 48, 7, 0.2)
+        );
     }
 
     update() {
@@ -65,36 +83,66 @@ class Blocker {
     attack() {
         // Fire every 6 seconds
         if (this.game.timer.gameTime >= this.lastAttack) {
-            let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
+            let attackRect = new ColliderRect(
+                this.position,
+                -43,
+                -48,
+                43 * 3,
+                48 * 3,
+                4,
+                this,
+                true
+            );
             attackRect.expandW(6);
             attackRect.expandH(5);
 
             const collisions = attackRect.getCollision();
 
             while (true) {
-                const {value: collision, done} = collisions.next();
+                const { value: collision, done } = collisions.next();
                 if (done) break;
 
-                const {xStart, xEnd, yStart, yEnd} = collision.getBounds();
-
                 if (collision.id === 0) {
-
                     const gridSize = 5;
                     const blockSize = 50;
-
                     const offset = (gridSize / 2) * blockSize;
 
-                    for (let row = 0; row < gridSize; row++) {
-                        for (let col = 0; col < gridSize; col++) {
-                            if (row > 0 && row < gridSize - 1 && col > 0 && col < gridSize - 1) {
-                                continue;
+                    const side = Math.floor(Math.random() * 4);
+
+                    let row = 0;
+                    let col = 0;
+
+                    switch (side) {
+                        case 0: // up
+                            for (let col = 0; col < gridSize; col++) {
+                                let x = collision.owner.position.x - offset + col * blockSize;
+                                let y = collision.owner.position.y - offset + row * blockSize;
+                                this.game.addEntity(new Block(this.game, this.assetManager, x, y));
                             }
-
-                            let x = collision.owner.position.x - offset + (col * blockSize);
-                            let y = collision.owner.position.y - offset + (row * blockSize);
-
-                            this.game.addEntity(new Block(this.game, this.assetManager, x, y));
-                        }
+                            break;
+                        case 1: // down
+                            row = gridSize - 1;
+                            for (let col = 0; col < gridSize; col++) {
+                                let x = collision.owner.position.x - offset + col * blockSize;
+                                let y = collision.owner.position.y - offset + row * blockSize;
+                                this.game.addEntity(new Block(this.game, this.assetManager, x, y));
+                            }
+                            break;
+                        case 2: // left
+                            for (let row = 0; row < gridSize; row++) {
+                                let x = collision.owner.position.x - offset + col * blockSize;
+                                let y = collision.owner.position.y - offset + row * blockSize;
+                                this.game.addEntity(new Block(this.game, this.assetManager, x, y));
+                            }
+                            break;
+                        case 3: // right
+                            col = gridSize - 1;
+                            for (let row = 0; row < gridSize; row++) {
+                                let x = collision.owner.position.x - offset + col * blockSize;
+                                let y = collision.owner.position.y - offset + row * blockSize;
+                                this.game.addEntity(new Block(this.game, this.assetManager, x, y));
+                            }
+                            break;
                     }
                 }
                 this.lastAttack = this.game.timer.gameTime + 6;
@@ -109,7 +157,15 @@ class Blocker {
             this.removeFromWorld = true;
 
             if (Math.random() < 0.25) {
-                this.game.addEntity(new Pickup(this.game, this.assetManager, this.position.x, this.position.y, 'health'))
+                this.game.addEntity(
+                    new Pickup(
+                        this.game,
+                        this.assetManager,
+                        this.position.x,
+                        this.position.y,
+                        "health"
+                    )
+                );
             }
         }
     }
@@ -133,11 +189,10 @@ class Blocker {
             const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
             const difference = target.subtract(origin);
 
-            if (collision.id === 0) { // player
-
-            }
-
-            else if (collision.id === 1) { // platform
+            if (collision.id === 0) {
+                // player
+            } else if (collision.id === 1) {
+                // platform
                 const difference = target.subtract(origin);
 
                 // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
@@ -174,7 +229,7 @@ class Blocker {
                     }
 
                     if (hitNear && isFinite(hitNear)) {
-                        const {x, y} = origin.add(difference.multiply(hitNear));
+                        const { x, y } = origin.add(difference.multiply(hitNear));
 
                         if (horizontalHit) {
                             this.velocity.x = 0;
@@ -208,23 +263,34 @@ class Blocker {
 
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.yEnd - bounds.yStart
+            );
 
-            let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this);
+            let attackRect = new ColliderRect(
+                this.position,
+                -43,
+                -48,
+                43 * 3,
+                48 * 3,
+                4,
+                this,
+                true
+            );
             attackRect.expandW(6);
             attackRect.expandH(5);
             const attackBounds = attackRect.getBounds();
-            ctx.strokeStyle = 'lightblue';
+            ctx.strokeStyle = "lightblue";
             ctx.strokeRect(
                 attackBounds.xStart - this.game.camera.x,
                 attackBounds.yStart - this.game.camera.y,
                 attackBounds.xEnd - attackBounds.xStart,
-                attackBounds.yEnd - attackBounds.yStart);
+                attackBounds.yEnd - attackBounds.yStart
+            );
         }
     }
 }

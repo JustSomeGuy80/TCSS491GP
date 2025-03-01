@@ -1,5 +1,5 @@
 /** @typedef {import("./position")} */
-
+/** @typedef {import("../tile")} */
 /** @type {ColliderRect[]} */
 const colliders = [];
 
@@ -10,16 +10,23 @@ const colliders = [];
  * Currently, if there are 3 or more collisions then they will be ignored (only first counts)
  */
 class ColliderRect {
+    static TYPE = {
+        STAIR_BR: Symbol("staircase ascending towards right"),
+        STAIR_BL: Symbol("staircase ascending towards left"),
+    };
+
     /**
      * @param {Position} parent
      * @param {number} xOffset
      * @param {number} yOffset
      * @param {number} w width
      * @param {number} h height
-     * @param {number} id identification. 0 = player, 1 = block, 2 = bullet, 3 = enemy, 4 = attack hitbox, 5 = pick up
+     * @param {number | Symbol} id identification. 0 = player, 1 = block, 2 = bullet, 3 = enemy, 4 = attack hitbox, 5 = pick up
+     * @param {boolean} dontCache
      */
-    constructor(parent, xOffset, yOffset, w, h, id, owner) {
+    constructor(parent, xOffset, yOffset, w, h, id, owner, dontCache) {
         this.parent = parent;
+        this.position = parent; // FOR COMPATIBILITY (with hais gameengine) REASONS
         this.xOffset = xOffset;
         this.yOffset = yOffset;
         this.w = w;
@@ -65,6 +72,27 @@ class ColliderRect {
                 yield collider;
             }
         }
+        const boundary = this.getBoundary();
+        for (const { x, y, tile } of MapExport.TEST_STAGE.getTilesInBoundary(boundary)) {
+            for (const tileBoundary of Tile.getBoundaries(tile)) {
+                tileBoundary.move(new Vector(x, y));
+                if (boundary.containsBoundary(tileBoundary)) {
+                    const { left: x, top: y } = tileBoundary;
+                    const { x: w, y: h } = tileBoundary.asShape();
+
+                    yield new ColliderRect(
+                        new Vector(x, y),
+                        0,
+                        0,
+                        w,
+                        h,
+                        ColliderRect.fromTile(tile),
+                        null,
+                        true
+                    );
+                }
+            }
+        }
     }
 
     /**
@@ -74,54 +102,19 @@ class ColliderRect {
      * @returns needed displacement
      */
     resolveCollision(displacement, other) {
-        const ERROR = 0.01;
+        return this.getBoundary().resolveCollision(displacement, other.getBoundary());
+    }
 
-        const otherBounds = other.getBounds();
-        const selfBounds = this.getBounds();
-
-        const horizontalDifference = Math.max(
-            0,
-            displacement.x > 0
-                ? selfBounds.xEnd - otherBounds.xStart
-                : displacement.x < 0
-                ? otherBounds.xEnd - selfBounds.xStart
-                : 0
+    /**
+     * Resolves all collisions within the given array of collisions
+     * @param {Vector} displacement
+     * @param {ColliderRect[]} collisions
+     */
+    resolveCollisionsWith(displacement, collisions) {
+        return this.getBoundary().resolveCollisions(
+            displacement,
+            collisions.map(collider => collider.getBoundary())
         );
-        const verticalDifference = Math.max(
-            0,
-            displacement.y > 0
-                ? selfBounds.yEnd - otherBounds.yStart
-                : displacement.y < 0
-                ? otherBounds.yEnd - selfBounds.yStart
-                : 0
-        );
-
-        const direction = displacement.normalize().negate();
-        const tHorizontal = Math.abs(horizontalDifference / direction.x);
-        const tVertical = Math.abs(verticalDifference / direction.y);
-
-        const state = isNaN(tHorizontal) * 0b10 + isNaN(tVertical) * 0b1;
-        switch (state) {
-            case 0b00: {
-                const newDisplacement = direction.multiply(
-                    Math.min(tHorizontal, tVertical) + ERROR
-                );
-
-                if (tHorizontal < tVertical) {
-                    return new Vector(newDisplacement.x, 0);
-                } else if (tVertical < tHorizontal) {
-                    return new Vector(0, newDisplacement.y);
-                }
-
-                return new Vector();
-            }
-            case 0b10:
-                return direction.multiply(tVertical + ERROR);
-            case 0b01:
-                return direction.multiply(tHorizontal + ERROR);
-        }
-
-        return new Vector(0, 0);
     }
 
     /**
@@ -131,21 +124,10 @@ class ColliderRect {
      * @returns the needed displacement to move this collider out of all collisions
      */
     resolveCollisions(displacement, ...validIDs) {
-        let neededDisplacement = new Vector(0, 0);
-
-        const collisions = this.getCollision();
-        while (true) {
-            const { value: collider, done } = collisions.next();
-
-            if (done) break;
-            if (!validIDs.includes(collider.id)) continue;
-
-            neededDisplacement = neededDisplacement.add(
-                this.resolveCollision(displacement, collider)
-            );
-        }
-
-        return neededDisplacement;
+        return this.resolveCollisionsWith(
+            displacement,
+            [...this.getCollision()].filter(collider => validIDs.includes(collider.id))
+        );
     }
 
     expandW(percent) {
@@ -179,6 +161,17 @@ class ColliderRect {
     }
 
     /**
+     * Converts this ColliderRect into a Boundary object
+     * @returns
+     */
+    getBoundary() {
+        const xStart = this.parent.x + this.xOffset;
+        const yStart = this.parent.y + this.yOffset;
+
+        return new Boundary(xStart, xStart + this.w, yStart, yStart + this.h);
+    }
+
+    /**
      * Checks if this ColliderRect collides with the other ColliderRect
      * @param {ColliderRect} other
      * @returns true if there is a collision and false otherwise
@@ -204,25 +197,42 @@ class ColliderRect {
      */
     static lineCollide(pos, vect, ids) {
         var magnitudes = [];
+
+        var xStart = pos.x;
+        var xEnd = pos.x + vect.x;
+        if (xEnd < xStart) {
+            const temp = xEnd;
+            xEnd = xStart;
+            xStart = temp;
+        }
+        var yStart = pos.y;
+        var yEnd = pos.y + vect.y;
+        if (yEnd < yStart) {
+            const temp = yEnd;
+            yEnd = yStart;
+            yStart = temp;
+        }
+        var lineRect = new ColliderRect(
+            new Position(xStart, yStart),
+            0,
+            0,
+            Math.abs(vect.x),
+            Math.abs(vect.y),
+            -1
+        );
+        const collisions = lineRect.getCollision();
+
         if (vect.x === 0 && vect.y === 0) {
             // if the line has a magnitude of zero,
         } else if (vect.x === 0 || vect.y === 0) {
             // if the line is perfectly horizontal or vertical, account for parallel lines;
-            var xStart = pos.x;
-            var xEnd = pos.x + vect.x;
-            if (xEnd < xStart) {
-                const temp = xEnd;
-                xEnd = xStart;
-                xStart = temp;
-            }
-            var yStart = pos.y;
-            var yEnd = pos.y + vect.y;
-            if (yEnd < yStart) {
-                const temp = yEnd;
-                yEnd = yStart;
-                yStart = temp;
-            }
-            for (const collider of colliders) {
+            while (true) {
+                const { value: collider, done } = collisions.next();
+
+                if (done) {
+                    break;
+                }
+
                 if (ids.includes(collider.id)) {
                     bounds = collider.getBounds();
                     if (
@@ -243,6 +253,9 @@ class ColliderRect {
                     }
                 }
             }
+
+            for (const collider of colliders) {
+            }
         } else {
             // else, find where the line and each bound meet, and check if it's within the collider
             const m = vect.y / vect.x;
@@ -258,7 +271,13 @@ class ColliderRect {
 
             var bounds;
             var coord;
-            for (const collider of colliders) {
+
+            while (true) {
+                const { value: collider, done } = collisions.next();
+
+                if (done) {
+                    break;
+                }
                 if (ids.includes(collider.id)) {
                     bounds = collider.getBounds();
                     // Left bound
@@ -298,6 +317,8 @@ class ColliderRect {
                         magnitudes.push(getMag(coord, bounds.yEnd));
                     }
                 }
+            }
+            for (const collider of colliders) {
             }
         }
         if (magnitudes.length < 1 || Math.min.apply(Math, magnitudes) > vect.getMagnitude())

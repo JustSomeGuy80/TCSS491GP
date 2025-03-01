@@ -1,9 +1,18 @@
 class AssetManager {
+    /** @type {AssetManager} meant for compatibility with Hai's stuff dw */
+    static #instance = null;
+
+    static getImage(path) {
+        return AssetManager.#instance.getAsset(path);
+    }
+
     constructor() {
         this.successCount = 0;
         this.errorCount = 0;
         this.cache = [];
         this.downloadQueue = [];
+
+        AssetManager.#instance = this;
     }
 
     queueDownload(path) {
@@ -107,12 +116,20 @@ class AssetManager {
             if (asset instanceof Audio) {
                 asset.pause();
                 asset.currentTime = 0;
+                // Remove any existing event listeners
+                asset.removeEventListener("ended", () => {
+                    asset.play();
+                });
             }
         }
     }
 
     autoRepeat(path) {
         let aud = this.cache[path];
+        // Remove any existing event listeners first
+        aud.removeEventListener("ended", () => {
+            aud.play();
+        });
         aud.addEventListener("ended", () => {
             aud.play();
         });

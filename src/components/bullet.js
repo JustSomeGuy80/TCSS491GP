@@ -23,11 +23,33 @@ class Bullet {
         this.debugMode = false;
 
         this.sprite = new Sprite(this.position, this.game, 3, -10.5, -10.5, {
-            blue: new Animator(assetManager.getAsset("anims/bullet.png"), 0, 0, 7, 7, 2, .25),
-            blueExplode: new Animator(assetManager.getAsset("anims/bullet.png"), 14, 0, 7, 7, 6, .05),
+            blue: new Animator(assetManager.getAsset("anims/bullet.png"), 0, 0, 7, 7, 2, 0.25),
+            blueExplode: new Animator(
+                assetManager.getAsset("anims/bullet.png"),
+                14,
+                0,
+                7,
+                7,
+                6,
+                0.05
+            ),
+            red: new Animator(assetManager.getAsset("anims/enemy_bullet.png"), 0, 0, 7, 7, 2, 0.25),
+            redExplode: new Animator(
+                assetManager.getAsset("anims/enemy_bullet.png"),
+                14,
+                0,
+                7,
+                7,
+                6,
+                0.05
+            ),
         });
-    
-        this.sprite.setState("blue");
+
+        if (this.team === 0) {
+            this.sprite.setState("blue");
+        } else {
+            this.sprite.setState("red");
+        }
 
         this.collider = new ColliderRect(this.position, -7.5, -7.5, 15, 15, 2, this);
 
@@ -40,16 +62,21 @@ class Bullet {
 
     update() {
         if (this.active) {
-            this.position.add(this.vect.multiply(this.game.clockTick))
+            this.position.add(this.vect.multiply(this.game.clockTick));
             this.runCollisions();
             if (this.age >= 4) {
                 this.age = 0;
                 this.active = false;
-                this.sprite.setState("blueExplode");
+
+                if (this.team === 0) {
+                    this.sprite.setState("blueExplode");
+                } else {
+                    this.sprite.setState("redExplode");
+                }
 
                 this.removeFromWorld = true;
             }
-        } else if (this.age > .3) {
+        } else if (this.age > 0.3) {
             this.collider.removeFromWorld = true;
             this.unload = true;
         }
@@ -59,16 +86,20 @@ class Bullet {
     runCollisions() {
         const collisions = this.collider.getCollision();
 
-
         while (true) {
             const { value: collision, done } = collisions.next();
 
             if (done) {
                 break;
             }
-            if (this.team === 0) { // player bullet
-                if (collision.id !== 0 && collision.id !== 4 && collision.id !== 5 && collision.id !== -1) {
-
+            if (this.team === 0) {
+                // player bullet
+                if (
+                    collision.id !== 0 &&
+                    collision.id !== 4 &&
+                    collision.id !== 5 &&
+                    collision.id !== -1
+                ) {
                     if (collision.id === 3) {
                         collision.owner.health -= 1;
                     }
@@ -78,21 +109,25 @@ class Bullet {
                     this.sprite.setState("blueExplode");
                     this.removeFromWorld = true;
                 }
-            } else { // enemy bullet
-                if (collision.id !== 3 && collision.id !== 4 && collision.id !== 5 && collision.id !== -1) {
-
+            } else {
+                // enemy bullet
+                if (
+                    collision.id !== 3 &&
+                    collision.id !== 4 &&
+                    collision.id !== 5 &&
+                    collision.id !== -1
+                ) {
                     if (collision.id === 0) {
-                        collision.owner.health -= 10;
+                        collision.owner.health -= 20;
                     }
 
                     this.age = 0;
                     this.active = false;
-                    this.sprite.setState("blueExplode");
+                    this.sprite.setState("redExplode");
                     this.removeFromWorld = true;
                 }
             }
         }
-
     }
 
     draw(ctx) {
@@ -101,13 +136,14 @@ class Bullet {
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
             ctx.save();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.yEnd - bounds.yStart
+            );
             ctx.restore();
         }
     }
-} 
+}

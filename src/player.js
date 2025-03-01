@@ -106,9 +106,12 @@ class Player {
         this.groundOverride = 0;
 
         this.health = 100;
-        this.canShoot = false;
-        this.canSlash = false;
-        this.canTeleport = false;
+        this.canShoot = this.debugMode;
+        this.canSlash = this.debugMode;
+        this.canTeleport = this.debugMode;
+
+        this.objectiveIndex = 0;
+        GUI.printStdOut(Player.Objectives[this.objectiveIndex]);
     }
 
     loadAnimations(assetManager) {
@@ -201,9 +204,9 @@ class Player {
             this.aimVector.y =
                 this.game.mouse.y + this.game.camera.y - (this.position.y + this.arm.yOffset);
         }
-        if (this.canShoot &&  this.game.buttons[0]) this.arm.fire();
-        if (this.canSlash && this.game.keys["s"] || this.game.buttons[3]) this.arm.slash();
-        if ((this.canTeleport) && this.teleport.teleport(this.game.keys["w"]) === true) {
+        if (this.canShoot && this.game.buttons[0]) this.arm.fire();
+        if ((this.canSlash && this.game.keys["s"]) || this.game.buttons[3]) this.arm.slash();
+        if (this.canTeleport && this.teleport.teleport(this.game.keys["w"]) === true) {
             this.arm.grapple(false);
         }
         if (this.game.buttons[2] != null) this.arm.grapple(this.game.buttons[2], move);
@@ -286,12 +289,13 @@ class Player {
         if (this.debugMode) {
             const bounds = this.collider.getBounds();
             ctx.save();
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = "yellow";
             ctx.strokeRect(
                 bounds.xStart - this.game.camera.x,
                 bounds.yStart - this.game.camera.y,
                 bounds.xEnd - bounds.xStart,
-                bounds.yEnd - bounds.yStart);
+                bounds.yEnd - bounds.yStart
+            );
             ctx.restore();
 
             this.collider.draw(ctx);

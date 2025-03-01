@@ -22,13 +22,46 @@ function main() {
     ASSET_MANAGER.queueDownload("anims/teleIndicator.png");
     ASSET_MANAGER.queueDownload("anims/slasher.png");
     ASSET_MANAGER.queueDownload("anims/block.png");
-    ASSET_MANAGER.queueDownload("anims/slasherslash.png")
-    ASSET_MANAGER.queueDownload("anims/pickup.png")
+    ASSET_MANAGER.queueDownload("anims/slasherslash.png");
+    ASSET_MANAGER.queueDownload("anims/pickup.png");
 
     ASSET_MANAGER.queueDownload("sounds/music.mp3");
     ASSET_MANAGER.queueDownload("sounds/jump.mp3");
     ASSET_MANAGER.queueDownload("sounds/slashHit.mp3");
     ASSET_MANAGER.queueDownload("sounds/slashReady.mp3");
+
+    ASSET_MANAGER.queueDownload("images/bg.png");
+
+    ASSET_MANAGER.queueDownload("images/dirt.png");
+    ASSET_MANAGER.queueDownload("images/dirt_stair_BL.png");
+    ASSET_MANAGER.queueDownload("images/dirt_stair_BR.png");
+    ASSET_MANAGER.queueDownload("images/dirt_stair_TL.png");
+    ASSET_MANAGER.queueDownload("images/dirt_stair_TR.png");
+
+    ASSET_MANAGER.queueDownload("images/brick.png");
+    ASSET_MANAGER.queueDownload("images/brick_bg.png");
+    ASSET_MANAGER.queueDownload("images/brick_bl.png");
+    ASSET_MANAGER.queueDownload("images/brick_br.png");
+    ASSET_MANAGER.queueDownload("images/brick_tl.png");
+    ASSET_MANAGER.queueDownload("images/brick_tr.png");
+
+    ASSET_MANAGER.queueDownload("images/wood.png");
+    ASSET_MANAGER.queueDownload("images/wood_bg.png");
+    ASSET_MANAGER.queueDownload("images/wood_bl.png");
+    ASSET_MANAGER.queueDownload("images/wood_br.png");
+    ASSET_MANAGER.queueDownload("images/wood_tl.png");
+    ASSET_MANAGER.queueDownload("images/wood_tr.png");
+
+    ASSET_MANAGER.queueDownload("images/leaf.png");
+    ASSET_MANAGER.queueDownload("images/leaf_bg.png");
+    ASSET_MANAGER.queueDownload("images/leaf_bl.png");
+    ASSET_MANAGER.queueDownload("images/leaf_br.png");
+    ASSET_MANAGER.queueDownload("images/leaf_tl.png");
+    ASSET_MANAGER.queueDownload("images/leaf_tr.png");
+    ASSET_MANAGER.queueDownload("images/leaf_bl_bg.png");
+    ASSET_MANAGER.queueDownload("images/leaf_br_bg.png");
+    ASSET_MANAGER.queueDownload("images/leaf_tl_bg.png");
+    ASSET_MANAGER.queueDownload("images/leaf_tr_bg.png");
 
     ASSET_MANAGER.downloadAll(() => {
         /** @type {HTMLCanvasElement} */

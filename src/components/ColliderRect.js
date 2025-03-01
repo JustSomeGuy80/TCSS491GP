@@ -29,7 +29,28 @@ class ColliderRect {
 
         this.debugMode = false;
 
-        colliders.push(this);
+        if (!dontCache) {
+            colliders.push(this);
+        }
+    }
+
+    static fromTile(tile) {
+        switch (tile) {
+            case Tile.DIRT_STAIR_BL:
+            case Tile.BRICK_BL:
+            case Tile.WOOD_BL:
+            case Tile.LEAF_BL:
+            case Tile.LEAF_BL_BG:
+                return ColliderRect.TYPE.STAIR_BL;
+            case Tile.DIRT_STAIR_BR:
+            case Tile.BRICK_BR:
+            case Tile.WOOD_BR:
+            case Tile.LEAF_BR:
+            case Tile.LEAF_BR_BG:
+                return ColliderRect.TYPE.STAIR_BR;
+            default:
+                return 1;
+        }
     }
 
     update() {}

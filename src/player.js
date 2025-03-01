@@ -158,9 +158,9 @@ class Player {
         this.physicsGroundFrames = 0;
 
         this.health = 100;
-        this.canShoot = false;
-        this.canSlash = false;
-        this.canTeleport = false;
+        this.canShoot = this.debugMode;
+        this.canSlash = this.debugMode;
+        this.canTeleport = this.debugMode;
 
         this.objectiveIndex = 0;
         GUI.printStdOut(Player.Objectives[this.objectiveIndex]);

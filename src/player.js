@@ -158,8 +158,8 @@ class Player {
         this.groundOverride = 0;
 
         this.health = 100;
-        this.canShoot = false;
-        this.canSlash = false;
+        this.canShoot = true;
+        this.canSlash = true;
         this.canTeleport = false;
 
         this.objectiveIndex = 0;

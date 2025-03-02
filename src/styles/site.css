@@ -12,6 +12,7 @@ body {
         "........ audio .........";
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-columns: 1fr max-content 1fr;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 canvas {

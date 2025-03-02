@@ -24,23 +24,23 @@ class Blocker {
         this.lastAttack = 0;
 
         this.position = new Position(x, y);
-        this.collider = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 3, this);
+        this.collider = new ColliderRect(this.position, -43, -48, 24 * 3, 43 * 3, 3, this);
         this.sprite = new Sprite(this.position, this.game, 3, -43, -48, {
             running: new Animator(
-                this.assetManager.getAsset("anims/slasher.png"),
+                this.assetManager.getAsset("anims/blocker.png"),
                 0,
                 0,
+                24,
                 43,
-                48,
-                7,
+                2,
                 0.2
             ),
             death: new Animator(
                 this.assetManager.getAsset("anims/run.png"),
                 1000,
                 0,
-                32,
-                32,
+                24,
+                43,
                 4,
                 0.2
             ),
@@ -83,70 +83,62 @@ class Blocker {
     attack() {
         // Fire every 6 seconds
         if (this.game.timer.gameTime >= this.lastAttack) {
-            let attackRect = new ColliderRect(
-                this.position,
-                -43,
-                -48,
-                43 * 3,
-                48 * 3,
-                4,
-                this,
-                true
-            );
+            let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this, true);
             attackRect.expandW(6);
             attackRect.expandH(5);
 
             const collisions = attackRect.getCollision();
+            let attacked = false;
+            const blockSize = 48;
 
-            while (true) {
-                const { value: collision, done } = collisions.next();
-                if (done) break;
-
-                if (collision.id === 0) {
+            for (const collision of collisions) {
+                if (!attacked && collision.id === 0) {
                     const gridSize = 5;
-                    const blockSize = 50;
-                    const offset = (gridSize / 2) * blockSize;
+
+                    const snappedX = Math.floor(collision.owner.position.x / blockSize) * blockSize;
+                    const snappedY = Math.floor(collision.owner.position.y / blockSize) * blockSize;
 
                     const side = Math.floor(Math.random() * 4);
 
-                    let row = 0;
-                    let col = 0;
+                    const patternOffset = Math.floor(gridSize/2) * blockSize;
+                    const baseX = snappedX - patternOffset;
+                    const baseY = snappedY - patternOffset;
 
                     switch (side) {
-                        case 0: // up
+                        case 0: // Top
                             for (let col = 0; col < gridSize; col++) {
-                                let x = collision.owner.position.x - offset + col * blockSize;
-                                let y = collision.owner.position.y - offset + row * blockSize;
+                                const x = baseX + col * blockSize;
+                                const y = baseY;
                                 this.game.addEntity(new Block(this.game, this.assetManager, x, y));
                             }
                             break;
-                        case 1: // down
-                            row = gridSize - 1;
+                        case 1: // Bottom
                             for (let col = 0; col < gridSize; col++) {
-                                let x = collision.owner.position.x - offset + col * blockSize;
-                                let y = collision.owner.position.y - offset + row * blockSize;
+                                const x = baseX + col * blockSize;
+                                const y = baseY + (gridSize-1) * blockSize;
                                 this.game.addEntity(new Block(this.game, this.assetManager, x, y));
                             }
                             break;
-                        case 2: // left
+                        case 2: // Left
                             for (let row = 0; row < gridSize; row++) {
-                                let x = collision.owner.position.x - offset + col * blockSize;
-                                let y = collision.owner.position.y - offset + row * blockSize;
+                                const x = baseX;
+                                const y = baseY + row * blockSize;
                                 this.game.addEntity(new Block(this.game, this.assetManager, x, y));
                             }
                             break;
-                        case 3: // right
-                            col = gridSize - 1;
+                        case 3: // Right
                             for (let row = 0; row < gridSize; row++) {
-                                let x = collision.owner.position.x - offset + col * blockSize;
-                                let y = collision.owner.position.y - offset + row * blockSize;
+                                const x = baseX + (gridSize-1) * blockSize;
+                                const y = baseY + row * blockSize;
                                 this.game.addEntity(new Block(this.game, this.assetManager, x, y));
                             }
                             break;
                     }
+                    attacked = true;
+                    break;
                 }
-                this.lastAttack = this.game.timer.gameTime + 6;
             }
+            this.lastAttack = this.game.timer.gameTime + 6;
         }
     }
 
@@ -155,18 +147,6 @@ class Blocker {
             this.sprite.setState("death");
             this.active = false;
             this.removeFromWorld = true;
-
-            if (Math.random() < 0.25) {
-                this.game.addEntity(
-                    new Pickup(
-                        this.game,
-                        this.assetManager,
-                        this.position.x,
-                        this.position.y,
-                        "health"
-                    )
-                );
-            }
         }
     }
 
@@ -179,70 +159,21 @@ class Blocker {
     }
 
     runCollisions(origin) {
-        const collisions = this.collider.getCollision();
-        let target = this.position.asVector();
+        const readjustment = this.collider.resolveCollisions(
+            this.position.asVector().subtract(origin),
+            1
+        );
+        this.position.add(readjustment);
 
-        while (true) {
-            const { value: collision, done } = collisions.next();
-            if (done) break;
-
-            const { xStart, xEnd, yStart, yEnd } = collision.getBounds();
-            const difference = target.subtract(origin);
-
-            if (collision.id === 0) {
-                // player
-            } else if (collision.id === 1) {
-                // platform
-                const difference = target.subtract(origin);
-
-                // TEMP (hacky solution but when player hugs wall by going left and switches directions, they tp across wall. This prevents that since switching direction slows you down.)
-                if (difference.getMagnitude() >= 0.0) {
-                    let nearX = (xStart - this.collider.w / 1.5 - origin.x) / difference.x;
-                    let farX = (xEnd + this.collider.w / 1.5 - origin.x) / difference.x;
-                    let nearY = (yStart - this.collider.h / 1.5 - origin.y) / difference.y;
-                    let farY = (yEnd + this.collider.h / 1.5 - origin.y) / difference.y;
-
-                    if (nearX > farX) {
-                        [farX, nearX] = [nearX, farX];
-                    }
-                    if (nearY > farY) {
-                        [farY, nearY] = [nearY, farY];
-                    }
-
-                    const horizontalHit = nearX > nearY;
-                    const hitNear = horizontalHit ? nearX : nearY;
-
-                    let normal = undefined;
-                    if (horizontalHit) {
-                        this.facing = -1;
-                        if (difference.x >= 0) {
-                            normal = new Vector(-1, 0);
-                        } else {
-                            normal = new Vector(1, 0);
-                        }
-                    } else {
-                        if (difference.y >= 0) {
-                            normal = new Vector(0, -1);
-                        } else {
-                            normal = new Vector(0, 1);
-                        }
-                    }
-
-                    if (hitNear && isFinite(hitNear)) {
-                        const { x, y } = origin.add(difference.multiply(hitNear));
-
-                        if (horizontalHit) {
-                            this.velocity.x = 0;
-                            this.position.set(x, this.position.y);
-                        } else {
-                            // guarantee some frames of "grounded" where the first is this one and the second causes player to fall into hitbox (triggers collision)
-                            this.groundOverride = 4;
-                            this.velocity.y = 0;
-                            this.position.set(this.position.x, y);
-                        }
-                    }
-                }
-            }
+        // horizontal collision
+        if (readjustment.x !== 0) {
+            this.velocity.x = 0;
+            // turn around after hitting wall
+            this.facing *= -1;
+        }
+        // vertical collision
+        if (readjustment.y !== 0) {
+            this.velocity.y = 0;
         }
     }
 
@@ -271,16 +202,7 @@ class Blocker {
                 bounds.yEnd - bounds.yStart
             );
 
-            let attackRect = new ColliderRect(
-                this.position,
-                -43,
-                -48,
-                43 * 3,
-                48 * 3,
-                4,
-                this,
-                true
-            );
+            let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this, true);
             attackRect.expandW(6);
             attackRect.expandH(5);
             const attackBounds = attackRect.getBounds();

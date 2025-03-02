@@ -53,15 +53,16 @@ class Flyer {
             if (this.damageCooldown > 0) {
                 this.damageCooldown -= this.game.clockTick;
             }
+            const origin = this.position.asVector();
             this.attack();
             this.calcMovement();
+            this.runCollisions(origin);
             this.flip();
             this.death();
         }
     }
 
     attack() {
-        // Create the two collision rectangles.
         let colliderRect = new ColliderRect(
             this.position,
             -43,
@@ -130,6 +131,23 @@ class Flyer {
 
         this.position.x += this.velocity.x * this.game.clockTick;
         this.position.y += this.velocity.y * this.game.clockTick;
+    }
+
+    runCollisions(origin) {
+        const readjustment = this.collider.resolveCollisions(
+            this.position.asVector().subtract(origin),
+            1
+        );
+        this.position.add(readjustment);
+
+        // horizontal collision
+        if (readjustment.x !== 0) {
+            this.velocity.x = 0;
+        }
+        // vertical collision
+        if (readjustment.y !== 0) {
+            this.velocity.y = 0;
+        }
     }
 
     flip() {

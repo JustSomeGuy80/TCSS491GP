@@ -71,8 +71,22 @@ class Slash {
         );
         slashPos = slashPos.asVector();
         slashPos = slashPos.add(this.player.aimVector.normalize().multiply(60));
+
+        // Add extra leeway to the vertical hitbox under certain conditions of the slash to make slash-jumping easier
+        let slashAngle = Math.atan2(this.player.aimVector.y, this.player.aimVector.x);
+        let vertHitbox = 70;
+        if (
+            // is the player jumping and aiming toward the ground?
+            !this.player.isAnimationGrounded() &&
+            slashAngle > Math.PI / 12 &&
+            slashAngle < (Math.PI * 11) / 12
+        ) {
+            vertHitbox += 15; // if so, make the hitbox more generous
+            if (this.player.velocity.y < 0) vertHitbox += 15; // even more if the player is moving away from the ground
+        }
+
         // Place collision
-        var slashCol = new ColliderRect(slashPos, -25, -35, 50, 80, 4);
+        var slashCol = new ColliderRect(slashPos, -25, -35, 50, vertHitbox, 4);
 
         // Handle collisions
         const collisions = slashCol.getCollision();

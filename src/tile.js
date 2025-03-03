@@ -45,6 +45,19 @@ class Tile {
     static LEAF_TL_BG = 26;
     static LEAF_TR_BG = 27;
 
+    static LEAF_BG_TR = 28;
+    static WOOD_BG_BL = 29;
+    static WOOD_BG_TR = 30;
+
+    static TERRAIN_BG = 31;
+    static TERRAIN_BG_BL = 32;
+    static TERRAIN_BG_BR = 33;
+    static TERRAIN_BG_TL = 34;
+    static TERRAIN_BG_TR = 35;
+
+    static GRASS = 36;
+    static FLOWER = 37;
+
     constructor() {
         throw new Error("Tile is a static class and should not have any instances");
     }
@@ -139,6 +152,36 @@ class Tile {
             case Tile.LEAF_TR_BG:
                 ctx.drawImage(this.AssetManager.getAsset("images/leaf_tr_bg.png"), ...args);
                 break;
+            case Tile.LEAF_BG_TR:
+                ctx.drawImage(this.AssetManager.getAsset("images/leaf_bg_tr.png"), ...args);
+                break;
+            case Tile.WOOD_BG_BL:
+                ctx.drawImage(this.AssetManager.getAsset("images/wood_bg_bl.png"), ...args);
+                break;
+            case Tile.WOOD_BG_TR:
+                ctx.drawImage(this.AssetManager.getAsset("images/wood_bg_tr.png"), ...args);
+                break;
+            case Tile.TERRAIN_BG:
+                ctx.drawImage(this.AssetManager.getAsset("images/terrain_bg.png"), ...args);
+                break;
+            case Tile.TERRAIN_BG_BL:
+                ctx.drawImage(this.AssetManager.getAsset("images/terrain_bg_bl.png"), ...args);
+                break;
+            case Tile.TERRAIN_BG_BR:
+                ctx.drawImage(this.AssetManager.getAsset("images/terrain_bg_br.png"), ...args);
+                break;
+            case Tile.TERRAIN_BG_TL:
+                ctx.drawImage(this.AssetManager.getAsset("images/terrain_bg_tl.png"), ...args);
+                break;
+            case Tile.TERRAIN_BG_TR:
+                ctx.drawImage(this.AssetManager.getAsset("images/terrain_bg_tr.png"), ...args);
+                break;
+            case Tile.GRASS:
+                ctx.drawImage(this.AssetManager.getAsset("images/grass.png"), ...args);
+                break;
+            case Tile.FLOWER:
+                ctx.drawImage(this.AssetManager.getAsset("images/flower.png"), ...args);
+                break;
         }
     }
 
@@ -155,6 +198,7 @@ class Tile {
             case Tile.BRICK_BR:
             case Tile.LEAF_BR:
             case Tile.LEAF_BR_BG:
+            case Tile.TERRAIN_BG_BR:
                 for (let i = 1; i <= 4; i++) {
                     yield new Boundary(
                         Tile.SIZE - i * Tile.STEP_SIZE,
@@ -169,6 +213,7 @@ class Tile {
             case Tile.BRICK_BL:
             case Tile.LEAF_BL:
             case Tile.LEAF_BL_BG:
+            case Tile.TERRAIN_BG_BL:
                 for (let i = 1; i <= 4; i++) {
                     yield new Boundary(0, Tile.STEP_SIZE * i, (i - 1) * Tile.STEP_SIZE, Tile.SIZE);
                 }
@@ -178,6 +223,7 @@ class Tile {
             case Tile.BRICK_TR:
             case Tile.LEAF_TR:
             case Tile.LEAF_TR_BG:
+            case Tile.TERRAIN_BG_TR:
                 for (let i = 4; i >= 1; i--) {
                     yield new Boundary(
                         Tile.SIZE - i * Tile.STEP_SIZE,
@@ -192,6 +238,7 @@ class Tile {
             case Tile.BRICK_TL:
             case Tile.LEAF_TL:
             case Tile.LEAF_TL_BG:
+            case Tile.TERRAIN_BG_TL:
                 for (let i = 4; i >= 1; i--) {
                     yield new Boundary(0, i * Tile.STEP_SIZE, 0, (4 - (i - 1)) * Tile.STEP_SIZE);
                 }

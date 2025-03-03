@@ -50,6 +50,35 @@ function main() {
     ASSET_MANAGER.queueDownload("images/brick_tl.png");
     ASSET_MANAGER.queueDownload("images/brick_tr.png");
 
+    ASSET_MANAGER.queueDownload("images/wood.png");
+    ASSET_MANAGER.queueDownload("images/wood_bg.png");
+    ASSET_MANAGER.queueDownload("images/wood_bl.png");
+    ASSET_MANAGER.queueDownload("images/wood_br.png");
+    ASSET_MANAGER.queueDownload("images/wood_tl.png");
+    ASSET_MANAGER.queueDownload("images/wood_tr.png");
+
+    ASSET_MANAGER.queueDownload("images/leaf.png");
+    ASSET_MANAGER.queueDownload("images/leaf_bg.png");
+    ASSET_MANAGER.queueDownload("images/leaf_bl.png");
+    ASSET_MANAGER.queueDownload("images/leaf_br.png");
+    ASSET_MANAGER.queueDownload("images/leaf_tl.png");
+    ASSET_MANAGER.queueDownload("images/leaf_tr.png");
+    ASSET_MANAGER.queueDownload("images/leaf_bl_bg.png");
+    ASSET_MANAGER.queueDownload("images/leaf_br_bg.png");
+    ASSET_MANAGER.queueDownload("images/leaf_tl_bg.png");
+    ASSET_MANAGER.queueDownload("images/leaf_tr_bg.png");
+
+    ASSET_MANAGER.queueDownload("images/leaf_bg_tr.png");
+    ASSET_MANAGER.queueDownload("images/wood_bg_bl.png");
+    ASSET_MANAGER.queueDownload("images/wood_bg_tr.png");
+    ASSET_MANAGER.queueDownload("images/terrain_bg.png");
+    ASSET_MANAGER.queueDownload("images/terrain_bg_bl.png");
+    ASSET_MANAGER.queueDownload("images/terrain_bg_br.png");
+    ASSET_MANAGER.queueDownload("images/terrain_bg_tl.png");
+    ASSET_MANAGER.queueDownload("images/terrain_bg_tr.png");
+    ASSET_MANAGER.queueDownload("images/grass.png");
+    ASSET_MANAGER.queueDownload("images/flower.png");
+
     ASSET_MANAGER.downloadAll(() => {
         const canvas = document.getElementById("gameWorld");
         const ctx = canvas.getContext("2d");

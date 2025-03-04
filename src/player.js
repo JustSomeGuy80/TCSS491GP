@@ -49,7 +49,7 @@ class Player {
         this.topCollider = new ColliderRect(
             this.position,
             -width / 2,
-            -height / 2,
+            -height / 2 + 0.1,
             width,
             height - Tile.STEP_SIZE,
             0,

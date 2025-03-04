@@ -67,10 +67,18 @@ class SceneManager {
 
                 switch (tile) {
                     case Tile.PLAYER:
-                        this.player.position.x = x;
-                        this.player.position.y = y;
-                        this.x = x - 1024 / 2;
-                        this.y = y - 768 / 2;
+                        const saveState = PlayerSaveState.load();
+                        if (saveState !== undefined) {
+                            this.player.load(saveState);
+                            const { x, y } = this.player.position;
+                            this.x = x - 1024 / 2;
+                            this.y = y - 768 / 2;
+                        } else {
+                            this.player.position.x = x;
+                            this.player.position.y = y;
+                            this.x = x - 1024 / 2;
+                            this.y = y - 768 / 2;
+                        }
                         break;
                     case Tile.SLASHER:
                         this.game.addEntity(new Slasher(this.game, this.assetManager, x, y));

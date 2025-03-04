@@ -36,7 +36,6 @@ class Player {
         this.game = game;
         this.assetManager = assetManager;
         this.map = null;
-        this.tempGrounded = 1000;
         this.jumpHeight = 550;
         this.debugMode = false;
         this.removeFromWorld = false;
@@ -129,14 +128,6 @@ class Player {
             ),
         });
 
-        this.sprite.setHorizontalFlip(false);
-        this.sprite.setState("idle");
-
-        this.facing = 1; // 1 = right, -1 = left, used for calculations, should never be set to 0
-        this.jumped = 0; // 0 = can jump, 1 = can vary gravity, 2 = can't vary gravity 3 = grappling
-        this.jumpBuffer = 0;
-
-        this.velocity = new Vector(0, 0);
         this.maxSpeed = 350;
         this.walkAccel = 1050;
         this.aimVector = new Vector(1, 0);
@@ -145,16 +136,48 @@ class Player {
         this.animations = [];
         this.loadAnimations(this.assetManager);
 
-        this.animationGroundFrames = 0;
-        this.physicsGroundFrames = 0;
+        this.load();
+    }
 
-        this.health = 100;
-        this.canShoot = false;
-        this.canSlash = false;
-        this.canTeleport = false;
+    #save() {
+        PlayerSaveState.save({
+            position: this.position.asVector(),
+            canShoot: this.canShoot,
+            canSlash: this.canSlash,
+            canTeleport: this.canTeleport,
+        });
+    }
 
-        this.objectiveIndex = 0;
-        GUI.printStdOut(Player.Objectives[this.objectiveIndex]);
+    /**
+     * @param {SaveState | undefined} saveState
+     */
+    load(saveState) {
+        // saved states
+        if (saveState !== undefined) {
+            const { position, canShoot, canSlash, canTeleport } = saveState;
+            this.position.set(position.x, position.y);
+            this.canShoot = canShoot;
+            this.canSlash = canSlash;
+            this.canTeleport = canTeleport;
+        } else {
+            // default unsaved states
+            this.sprite.setHorizontalFlip(false);
+            this.sprite.setState("idle");
+
+            this.facing = 1; // 1 = right, -1 = left, used for calculations, should never be set to 0
+            this.jumped = 0; // 0 = can jump, 1 = can vary gravity, 2 = can't vary gravity 3 = grappling
+            this.jumpBuffer = 0;
+
+            this.animationGroundFrames = 0;
+            this.physicsGroundFrames = 0;
+
+            this.velocity = new Vector(0, 0);
+
+            this.health = 100;
+            this.objectiveIndex = 0;
+
+            GUI.printStdOut(Player.Objectives[this.objectiveIndex]);
+        }
     }
 
     loadAnimations(assetManager) {
@@ -194,6 +217,7 @@ class Player {
 
     updateGUI() {
         if (this.health <= 0) {
+            GUI.clearStdOut();
             GUI.showDeathScreen();
             this.removeFromWorld = true;
             return;
@@ -204,14 +228,17 @@ class Player {
         if (this.canSlash && this.objectiveIndex === 0) {
             this.#printNextObjective();
             GUI.showSlashControl();
+            this.#save();
         }
         if (this.canShoot && this.objectiveIndex === 1) {
             this.#printNextObjective();
             GUI.showHookControl();
+            this.#save();
         }
         if (this.canTeleport && this.objectiveIndex === 2) {
             this.#printNextObjective();
             GUI.showTeleportControl();
+            this.#save();
         }
     }
 

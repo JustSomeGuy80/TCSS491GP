@@ -188,10 +188,13 @@ class Tile {
     static *getBoundaries(tile) {
         switch (tile) {
             case Tile.DIRT:
+            case Tile.WOOD:
             case Tile.BRICK:
+            case Tile.LEAF:
                 yield new Boundary(0, Tile.SIZE, 0, Tile.SIZE);
                 break;
             case Tile.DIRT_STAIR_BR:
+            case Tile.WOOD_BR:
             case Tile.BRICK_BR:
             case Tile.LEAF_BR:
             case Tile.LEAF_BR_BG:
@@ -206,6 +209,7 @@ class Tile {
                 }
                 break;
             case Tile.DIRT_STAIR_BL:
+            case Tile.WOOD_BL:
             case Tile.BRICK_BL:
             case Tile.LEAF_BL:
             case Tile.LEAF_BL_BG:
@@ -215,6 +219,7 @@ class Tile {
                 }
                 break;
             case Tile.DIRT_STAIR_TR:
+            case Tile.WOOD_TR:
             case Tile.BRICK_TR:
             case Tile.LEAF_TR:
             case Tile.LEAF_TR_BG:
@@ -229,6 +234,7 @@ class Tile {
                 }
                 break;
             case Tile.DIRT_STAIR_TL:
+            case Tile.WOOD_TL:
             case Tile.BRICK_TL:
             case Tile.LEAF_TL:
             case Tile.LEAF_TL_BG:

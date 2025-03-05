@@ -63,10 +63,11 @@ function main() {
     ASSET_MANAGER.queueDownload("images/leaf_br.png");
     ASSET_MANAGER.queueDownload("images/leaf_tl.png");
     ASSET_MANAGER.queueDownload("images/leaf_tr.png");
-    ASSET_MANAGER.queueDownload("images/leaf_bl_bg.png");
-    ASSET_MANAGER.queueDownload("images/leaf_br_bg.png");
-    ASSET_MANAGER.queueDownload("images/leaf_tl_bg.png");
-    ASSET_MANAGER.queueDownload("images/leaf_tr_bg.png");
+
+    ASSET_MANAGER.queueDownload("images/brick_bg_bl.png");
+    ASSET_MANAGER.queueDownload("images/brick_bg_br.png");
+    ASSET_MANAGER.queueDownload("images/brick_bg_tl.png");
+    ASSET_MANAGER.queueDownload("images/brick_bg_tr.png");
 
     ASSET_MANAGER.queueDownload("images/leaf_bg_tr.png");
     ASSET_MANAGER.queueDownload("images/wood_bg_bl.png");

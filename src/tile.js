@@ -26,10 +26,11 @@ class Tile {
     static LEAF_BR = 21;
     static LEAF_TL = 22;
     static LEAF_TR = 23;
-    static LEAF_BL_BG = 24;
-    static LEAF_BR_BG = 25;
-    static LEAF_TL_BG = 26;
-    static LEAF_TR_BG = 27;
+
+    static BRICK_BG_BL = 24;
+    static BRICK_BG_BR = 25;
+    static BRICK_BG_TL = 26;
+    static BRICK_BG_TR = 27;
 
     static LEAF_BG_TR = 28;
     static WOOD_BG_BL = 29;
@@ -146,17 +147,17 @@ class Tile {
                 case Tile.LEAF_TR:
                     ctx.drawImage(this.AssetManager.getAsset("images/leaf_tr.png"), ...args);
                     break;
-                case Tile.LEAF_BL_BG:
-                    ctx.drawImage(this.AssetManager.getAsset("images/leaf_bl_bg.png"), ...args);
+                case Tile.BRICK_BG_BL:
+                    ctx.drawImage(this.AssetManager.getAsset("images/brick_bg_bl.png"), ...args);
                     break;
-                case Tile.LEAF_BR_BG:
-                    ctx.drawImage(this.AssetManager.getAsset("images/leaf_br_bg.png"), ...args);
+                case Tile.BRICK_BG_BR:
+                    ctx.drawImage(this.AssetManager.getAsset("images/brick_bg_br.png"), ...args);
                     break;
-                case Tile.LEAF_TL_BG:
-                    ctx.drawImage(this.AssetManager.getAsset("images/leaf_tl_bg.png"), ...args);
+                case Tile.BRICK_BG_TL:
+                    ctx.drawImage(this.AssetManager.getAsset("images/brick_bg_tl.png"), ...args);
                     break;
-                case Tile.LEAF_TR_BG:
-                    ctx.drawImage(this.AssetManager.getAsset("images/leaf_tr_bg.png"), ...args);
+                case Tile.BRICK_BG_TR:
+                    ctx.drawImage(this.AssetManager.getAsset("images/brick_bg_tr.png"), ...args);
                     break;
                 case Tile.LEAF_BG_TR:
                     ctx.drawImage(this.AssetManager.getAsset("images/leaf_bg_tr.png"), ...args);
@@ -205,8 +206,6 @@ class Tile {
                 case Tile.WOOD_BR:
                 case Tile.BRICK_BR:
                 case Tile.LEAF_BR:
-                case Tile.LEAF_BR_BG:
-                case Tile.TERRAIN_BG_BR:
                     for (let i = 1; i <= 4; i++) {
                         yield new Boundary(
                             Tile.SIZE - i * Tile.STEP_SIZE,
@@ -220,8 +219,6 @@ class Tile {
                 case Tile.WOOD_BL:
                 case Tile.BRICK_BL:
                 case Tile.LEAF_BL:
-                case Tile.LEAF_BL_BG:
-                case Tile.TERRAIN_BG_BL:
                     for (let i = 1; i <= 4; i++) {
                         yield new Boundary(
                             0,
@@ -235,8 +232,6 @@ class Tile {
                 case Tile.WOOD_TR:
                 case Tile.BRICK_TR:
                 case Tile.LEAF_TR:
-                case Tile.LEAF_TR_BG:
-                case Tile.TERRAIN_BG_TR:
                     for (let i = 4; i >= 1; i--) {
                         yield new Boundary(
                             Tile.SIZE - i * Tile.STEP_SIZE,
@@ -250,8 +245,6 @@ class Tile {
                 case Tile.WOOD_TL:
                 case Tile.BRICK_TL:
                 case Tile.LEAF_TL:
-                case Tile.LEAF_TL_BG:
-                case Tile.TERRAIN_BG_TL:
                     for (let i = 4; i >= 1; i--) {
                         yield new Boundary(
                             0,

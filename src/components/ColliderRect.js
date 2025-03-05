@@ -47,15 +47,11 @@ class ColliderRect {
             case Tile.BRICK_BL:
             case Tile.WOOD_BL:
             case Tile.LEAF_BL:
-            case Tile.LEAF_BL_BG:
-            case Tile.TERRAIN_BG_BL:
                 return ColliderRect.TYPE.STAIR_BL;
             case Tile.DIRT_STAIR_BR:
             case Tile.BRICK_BR:
             case Tile.WOOD_BR:
             case Tile.LEAF_BR:
-            case Tile.LEAF_BR_BG:
-            case Tile.TERRAIN_BG_BR:
                 return ColliderRect.TYPE.STAIR_BR;
             default:
                 return 1;

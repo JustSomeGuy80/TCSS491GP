@@ -42,7 +42,7 @@ class ColliderRect {
     }
 
     static fromTile(tile) {
-        switch (tile) {
+        switch (Tile.getTileLayer(tile, 1)) {
             case Tile.DIRT_STAIR_BL:
             case Tile.BRICK_BL:
             case Tile.WOOD_BL:
@@ -75,7 +75,7 @@ class ColliderRect {
             }
         }
         const boundary = this.getBoundary();
-        for (const { x, y, tile } of MapExport.TEST_STAGE.getTilesInBoundary(boundary)) {
+        for (const { x, y, tile } of MapExport.currentMap.getTilesInBoundary(boundary)) {
             for (const tileBoundary of Tile.getBoundaries(tile)) {
                 tileBoundary.move(new Vector(x, y));
                 if (boundary.containsBoundary(tileBoundary)) {

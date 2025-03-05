@@ -52,20 +52,19 @@ class SceneManager {
     }
 
     createTestLevel() {
-        const tiles = MapExport.TEST_STAGE.tiles;
-        MapExport.TEST_STAGE.init(this.game);
+        const { top, left, tiles } = MAP_EXPORT_DATA;
+        const map = new MapExport(this.game, top, left, tiles);
 
-        this.player.map = MapExport.TEST_STAGE;
+        MapExport.init(map);
+        this.player.map = MapExport.map;
 
-        // this.game.addEntity(MapExport.TEST_STAGE);
-
-        for (let xIndex = 0; xIndex < tiles.length; xIndex++) {
-            for (let yIndex = 0; yIndex < tiles[0].length; yIndex++) {
-                const tile = tiles[xIndex][yIndex];
+        for (let xIndex = 0; xIndex < map.tiles.length; xIndex++) {
+            for (let yIndex = 0; yIndex < map.tiles[0].length; yIndex++) {
+                const tile = map.tiles[xIndex][yIndex];
                 const x = xIndex * Tile.SIZE;
                 const y = yIndex * Tile.SIZE;
 
-                switch (tile) {
+                switch (Tile.getTileLayer(tile, 3)) {
                     case Tile.PLAYER:
                         const saveState = PlayerSaveState.load();
                         if (saveState !== undefined) {

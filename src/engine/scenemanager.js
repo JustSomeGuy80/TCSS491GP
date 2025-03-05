@@ -64,7 +64,7 @@ class SceneManager {
                 const x = xIndex * Tile.SIZE;
                 const y = yIndex * Tile.SIZE;
 
-                switch (Tile.getTileLayer(tile, 2)) {
+                switch (Tile.getTileLayer(tile, 3)) {
                     case Tile.PLAYER:
                         const saveState = PlayerSaveState.load();
                         if (saveState !== undefined) {

@@ -38,7 +38,7 @@ class Player {
         this.map = null;
         this.tempGrounded = 1000;
         this.jumpHeight = 550;
-        this.debugMode = false;
+        this.debugMode = true;
         this.removeFromWorld = false;
 
         // make height slightly lower so that player can fit through 96px areas
@@ -203,6 +203,7 @@ class Player {
 
     updateGUI() {
         if (this.health <= 0) {
+            this.assetManager.playAsset("sounds/gameover.wav")
             GUI.showDeathScreen();
             this.removeFromWorld = true;
             return;

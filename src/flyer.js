@@ -103,7 +103,7 @@ class Flyer {
             const { value: collision, done } = colliderIterator.next();
             if (done) break;
             if (collision.id === 0 && this.game.timer.gameTime > this.lastAttack) {
-                console.log('damage');
+                this.assetManager.playAsset("sounds/player_hurt.wav")
                 collision.owner.health -= 40;
                 this.lastAttack = this.game.timer.gameTime + 2;
             }

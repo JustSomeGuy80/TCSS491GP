@@ -35,6 +35,18 @@ function main() {
     ASSET_MANAGER.queueDownload("sounds/slashHit.mp3");
     ASSET_MANAGER.queueDownload("sounds/slashReady.mp3");
 
+    ASSET_MANAGER.queueDownload("sounds/grapple.wav");
+    ASSET_MANAGER.queueDownload("sounds/enemy_shoot.wav");
+    ASSET_MANAGER.queueDownload("sounds/teleport.wav");
+    ASSET_MANAGER.queueDownload("sounds/shoot.wav");
+    ASSET_MANAGER.queueDownload("sounds/slasher_slash.wav");
+    ASSET_MANAGER.queueDownload("sounds/healthup.wav");
+    ASSET_MANAGER.queueDownload("sounds/gameover.wav");
+    ASSET_MANAGER.queueDownload("sounds/player_hurt.wav")
+    ASSET_MANAGER.queueDownload("sounds/block_break.wav")
+    ASSET_MANAGER.queueDownload("sounds/win.wav");
+    ASSET_MANAGER.queueDownload("sounds/powerup.wav");
+
     ASSET_MANAGER.queueDownload("images/bg.png");
 
     ASSET_MANAGER.queueDownload("images/dirt.png");
@@ -86,8 +98,8 @@ function main() {
 
         // Stop any existing music before starting new instance
         ASSET_MANAGER.pauseBackgroundMusic();
-        ASSET_MANAGER.autoRepeat("sounds/music.mp3");
-        ASSET_MANAGER.playAsset("sounds/music.mp3");
+        // ASSET_MANAGER.autoRepeat("sounds/music.mp3");
+        // ASSET_MANAGER.playAsset("sounds/music.mp3");
 
         const sceneManager = new SceneManager(gameEngine, ASSET_MANAGER);
         gameEngine.sceneManager = sceneManager;

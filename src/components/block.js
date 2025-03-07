@@ -8,6 +8,7 @@
 class Block {
     constructor(game, assetManager, x, y) {
         this.game = game;
+        this.assetManager = assetManager;
         this.position = new Position(x, y);
         this.removeFromWorld = false;
         this.age = 0;
@@ -36,14 +37,17 @@ class Block {
                 if (this.age >= this.deathStartTime + 0.5) {
                     this.removeFromWorld = true;
                     this.collision.removeFromWorld = true;
+                    this.assetManager.playAsset("sounds/block_break.wav")
                 }
             } else {
                 if (this.age >= 3) {
                     this.sprite.setState("break");
+
                 }
                 if (this.age >= 4) {
                     this.removeFromWorld = true;
                     this.collision.removeFromWorld = true;
+                    this.assetManager.playAsset("sounds/block_break.wav")
                 }
             }
 

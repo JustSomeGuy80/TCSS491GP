@@ -53,6 +53,7 @@ class AssetManager {
                     break;
 
                 case "mp3":
+                case "wav":
                     let aud = new Audio();
 
                     aud.addEventListener("loadeddata", () => {

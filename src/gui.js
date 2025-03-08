@@ -91,6 +91,20 @@ class GUI {
     }
 
     /**
+     * Shows the mini map in the game UI
+     */
+    static showMiniMap() {
+        GUI.#unhideElement("mini-map");
+    }
+
+    /**
+     * Hides the mini map in the game UI
+     */
+    static hideMiniMap() {
+        GUI.#hideElement("mini-map");
+    }
+
+    /**
      * @param {string} text
      */
     static printStdOut(text) {

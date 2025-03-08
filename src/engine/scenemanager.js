@@ -49,6 +49,16 @@ class SceneManager {
         this.player = new Player(this.game, this.assetManager);
         this.game.addEntity(this.player);
         this.createTestLevel();
+
+        // Create the mini map after everything is loaded
+        // Wrapped in setTimeout to ensure map is fully initialized
+        setTimeout(() => {
+            try {
+                this.miniMap = new MiniMap(this.game, this.player);
+            } catch (e) {
+                console.error("Error initializing minimap:", e);
+            }
+        }, 500);
     }
 
     createTestLevel() {
@@ -123,6 +133,15 @@ class SceneManager {
     update() {
         this.updateCamera();
         this.updateAudio();
+
+        // Update the mini map safely
+        if (this.miniMap) {
+            try {
+                this.miniMap.update();
+            } catch (e) {
+                console.error("Error updating minimap:", e);
+            }
+        }
     }
 
     updateCamera() {
@@ -183,16 +202,34 @@ class SceneManager {
     }
 
     draw(ctx) {
-        this.sprite.drawSprite(this.game.clockTick, ctx, 0);
+        // Draw background first
+        try {
+            this.sprite.drawSprite(this.game.clockTick, ctx);
+        } catch (e) {
+            console.error("Error drawing background:", e);
+        }
+
         if (this.debug) {
-            this.drawDebugInfo(ctx);
-        }
-        if (this.isEditMode) {
-            if (this.showGrid) {
-                this.drawGrid(ctx);
+            try {
+                this.drawDebugInfo(ctx);
+            } catch (e) {
+                console.error("Error drawing debug info:", e);
             }
-            this.drawEditorOverlay(ctx);
         }
+
+        if (this.isEditMode) {
+            try {
+                if (this.showGrid) {
+                    this.drawGrid(ctx);
+                }
+                this.drawEditorOverlay(ctx);
+            } catch (e) {
+                console.error("Error drawing editor overlay:", e);
+            }
+        }
+
+        // The minimap is now drawn in its own canvas element in the DOM
+        // No need to call draw here
     }
 
     drawDebugInfo(ctx) {

@@ -290,4 +290,73 @@ class Tile {
             remaining = remainder;
         }
     }
+
+    /**
+     * Checks if a tile is solid (platforms, walls, etc.)
+     * @param {number} tile - The tile to check
+     * @return {boolean} True if the tile is solid
+     */
+    static isSolid(tile) {
+        // Check all 4 layers
+        for (const layerValue of Tile.iterate(tile)) {
+            // Check if any layer contains a solid tile
+            if (layerValue >= Tile.DIRT && layerValue <= Tile.FLOWER) {
+                // Skip background tiles
+                if (
+                    !(
+                        layerValue === Tile.BRICK_BG ||
+                        layerValue === Tile.WOOD_BG ||
+                        layerValue === Tile.LEAF_BG ||
+                        layerValue === Tile.BRICK_BG_BL ||
+                        layerValue === Tile.BRICK_BG_BR ||
+                        layerValue === Tile.BRICK_BG_TL ||
+                        layerValue === Tile.BRICK_BG_TR ||
+                        layerValue === Tile.LEAF_BG_TR ||
+                        layerValue === Tile.WOOD_BG_BL ||
+                        layerValue === Tile.WOOD_BG_TR ||
+                        layerValue === Tile.TERRAIN_BG ||
+                        layerValue === Tile.TERRAIN_BG_BL ||
+                        layerValue === Tile.TERRAIN_BG_BR ||
+                        layerValue === Tile.TERRAIN_BG_TL ||
+                        layerValue === Tile.TERRAIN_BG_TR
+                    )
+                ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a tile is a background tile
+     * @param {number} tile - The tile to check
+     * @return {boolean} True if the tile is a background
+     */
+    static isBackground(tile) {
+        // Check all 4 layers
+        for (const layerValue of Tile.iterate(tile)) {
+            // Check if any layer contains a background tile
+            if (
+                layerValue === Tile.BRICK_BG ||
+                layerValue === Tile.WOOD_BG ||
+                layerValue === Tile.LEAF_BG ||
+                layerValue === Tile.BRICK_BG_BL ||
+                layerValue === Tile.BRICK_BG_BR ||
+                layerValue === Tile.BRICK_BG_TL ||
+                layerValue === Tile.BRICK_BG_TR ||
+                layerValue === Tile.LEAF_BG_TR ||
+                layerValue === Tile.WOOD_BG_BL ||
+                layerValue === Tile.WOOD_BG_TR ||
+                layerValue === Tile.TERRAIN_BG ||
+                layerValue === Tile.TERRAIN_BG_BL ||
+                layerValue === Tile.TERRAIN_BG_BR ||
+                layerValue === Tile.TERRAIN_BG_TL ||
+                layerValue === Tile.TERRAIN_BG_TR
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -11,6 +11,7 @@ class SceneManager {
         this.game.camera = this;
         this.x = 0;
         this.y = 0;
+        this.position = new Position(0, 0);
 
         // map dimensions
         this.mapWidth = Infinity;
@@ -40,7 +41,7 @@ class SceneManager {
 
         this.loadLevel();
 
-        this.sprite = new Sprite(new Position(0, 0), this.game, 3, 0, 0, {
+        this.sprite = new Sprite(this.position, this.game, 3, 0, 0, {
             new: new Animator(assetManager.getAsset("images/bg.png"), 0, 0, 1024, 768, 1, 1),
         });
     }
@@ -88,6 +89,7 @@ class SceneManager {
                             this.x = x - 1024 / 2;
                             this.y = y - 768 / 2;
                         }
+                        this.position.set(this.x, this.y);
                         break;
                     case Tile.SLASHER:
                         this.game.addEntity(new Slasher(this.game, this.assetManager, x, y));
@@ -197,6 +199,8 @@ class SceneManager {
         if (this.y > this.mapHeight - this.game.ctx.canvas.height) {
             this.y = this.mapHeight - this.game.ctx.canvas.height;
         }
+
+        this.position.set(this.x, this.y);
     }
 
     updateAudio() {

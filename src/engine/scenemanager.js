@@ -90,6 +90,11 @@ class SceneManager {
                     case Tile.BLOCKER:
                         this.game.addEntity(new Blocker(this.game, this.assetManager, x, y));
                         break;
+                    case Tile.FLYER:
+                        this.game.addEntity(
+                            new Flyer(this.game, this.assetManager, x, y, this.player)
+                        );
+                        break;
                     case Tile.SHOOT_PICKUP:
                         this.game.addEntity(
                             new Pickup(this.game, this.assetManager, x, y, "shoot")

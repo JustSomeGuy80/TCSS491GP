@@ -70,14 +70,17 @@ class GUI {
 
     static showSlashControl() {
         GUI.#unhideElement("slash-control");
+        GUI.#unhideElement("slash-ability");
     }
 
     static showTeleportControl() {
         GUI.#unhideElement("teleport-control");
+        GUI.#unhideElement("teleport-ability");
     }
 
     static showHookControl() {
         GUI.#unhideElement("hook-control");
+        GUI.#unhideElement("hook-ability");
     }
 
     /**

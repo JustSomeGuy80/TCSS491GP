@@ -25,7 +25,9 @@ function main() {
     ASSET_MANAGER.queueDownload("anims/teleIndicator.png");
     ASSET_MANAGER.queueDownload("anims/slasher.png");
     ASSET_MANAGER.queueDownload("anims/shooter.png");
+    ASSET_MANAGER.queueDownload("anims/flyer.png");
     ASSET_MANAGER.queueDownload("anims/block.png");
+    ASSET_MANAGER.queueDownload("anims/blocker.png");
     ASSET_MANAGER.queueDownload("anims/slasherslash.png");
     ASSET_MANAGER.queueDownload("anims/pickup.png");
     ASSET_MANAGER.queueDownload("anims/enemy_bullet.png");
@@ -35,15 +37,15 @@ function main() {
     ASSET_MANAGER.queueDownload("sounds/slashHit.mp3");
     ASSET_MANAGER.queueDownload("sounds/slashReady.mp3");
 
-    ASSET_MANAGER.queueDownload("sounds/grapple.wav");
+    ASSET_MANAGER.queueDownload("sounds/grapple.mp3");
     ASSET_MANAGER.queueDownload("sounds/enemy_shoot.wav");
     ASSET_MANAGER.queueDownload("sounds/teleport.wav");
-    ASSET_MANAGER.queueDownload("sounds/shoot.wav");
+    ASSET_MANAGER.queueDownload("sounds/shot.mp3");
     ASSET_MANAGER.queueDownload("sounds/slasher_slash.wav");
     ASSET_MANAGER.queueDownload("sounds/healthup.wav");
     ASSET_MANAGER.queueDownload("sounds/gameover.wav");
-    ASSET_MANAGER.queueDownload("sounds/player_hurt.wav")
-    ASSET_MANAGER.queueDownload("sounds/block_break.wav")
+    ASSET_MANAGER.queueDownload("sounds/player_hurt.wav");
+    ASSET_MANAGER.queueDownload("sounds/block_break.wav");
     ASSET_MANAGER.queueDownload("sounds/win.wav");
     ASSET_MANAGER.queueDownload("sounds/powerup.wav");
 

@@ -70,7 +70,9 @@ class Grapple {
             else if (angle > Math.PI) angle = angle - 2 * Math.PI;
 
             // Place player in their new position
-            var diffAngle = (diffVector.getMagnitude() / this.mag) * (angle / Math.abs(angle));
+            var diffAngle = diffVector.getMagnitude() / this.mag;
+            if (angle < 0) diffAngle *= -1;
+
             this.player.position.x =
                 this.dest.x + Math.cos(Math.atan2(exitPoint.y, exitPoint.x) + diffAngle) * this.mag;
             this.player.position.y =

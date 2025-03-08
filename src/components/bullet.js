@@ -48,7 +48,7 @@ class Bullet {
 
         if (this.team === 0) {
             this.sprite.setState("blue");
-            assetManager.playAsset("sounds/shoot.wav");
+            assetManager.playAsset("sounds/shot.mp3");
         } else {
             this.sprite.setState("red");
             assetManager.playAsset("sounds/enemy_shoot.wav");

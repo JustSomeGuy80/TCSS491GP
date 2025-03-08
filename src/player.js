@@ -37,7 +37,7 @@ class Player {
         this.assetManager = assetManager;
         this.map = null;
         this.jumpHeight = 550;
-        this.debugMode = false;
+        this.debugMode = true;
         this.removeFromWorld = false;
 
         // make height slightly lower so that player can fit through 96px areas
@@ -176,6 +176,10 @@ class Player {
             this.health = 100;
             this.objectiveIndex = 0;
 
+            this.canShoot = this.debugMode;
+            this.canSlash = this.debugMode;
+            this.canTeleport = this.debugMode;
+
             GUI.printStdOut(Player.Objectives[this.objectiveIndex]);
         }
     }
@@ -218,7 +222,7 @@ class Player {
     updateGUI() {
         if (this.health <= 0) {
             GUI.clearStdOut();
-            this.assetManager.playAsset("sounds/gameover.wav")
+            this.assetManager.playAsset("sounds/gameover.wav");
             GUI.showDeathScreen();
             this.removeFromWorld = true;
             return;

@@ -10,7 +10,7 @@ class Flyer {
         this.assetManager = assetManager;
         this.debugMode = true;
         this.active = true;
-        this.health = 3;
+        this.health = 2;
         this.removeFromWorld = false;
         this.player = player;
         this.lastAttack = 0;
@@ -19,7 +19,7 @@ class Flyer {
         this.collider = new ColliderRect(this.position, -12, -26, 64, 30 * 3, 3, this);
         this.sprite = new Sprite(this.position, this.game, 3, -43, -48, {
             running: new Animator(
-                this.assetManager.getAsset("anims/shooter.png"),
+                this.assetManager.getAsset("anims/flyer.png"),
                 0,
                 0,
                 43,
@@ -63,26 +63,8 @@ class Flyer {
     }
 
     attack() {
-        let colliderRect = new ColliderRect(
-            this.position,
-            -43,
-            -48,
-            43 * 3,
-            48 * 3,
-            4,
-            this,
-            true
-        );
-        let attackRect = new ColliderRect(
-            this.position,
-            -43,
-            -48,
-            43 * 3,
-            48 * 3,
-            4,
-            this,
-            true
-        );
+        let colliderRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this, true);
+        let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this, true);
         attackRect.expandW(6);
         attackRect.expandH(5);
 
@@ -103,13 +85,12 @@ class Flyer {
             const { value: collision, done } = colliderIterator.next();
             if (done) break;
             if (collision.id === 0 && this.game.timer.gameTime > this.lastAttack) {
-                this.assetManager.playAsset("sounds/player_hurt.wav")
+                this.assetManager.playAsset("sounds/player_hurt.wav");
                 collision.owner.health -= 40;
                 this.lastAttack = this.game.timer.gameTime + 2;
             }
         }
     }
-
 
     calcMovement() {
         if (this.chasing) {

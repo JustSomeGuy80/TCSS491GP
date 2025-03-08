@@ -2,7 +2,7 @@
 
 class StairController {
     #stairMode;
-    static validIDS = new Set([1, ColliderRect.TYPE.STAIR_BL, ColliderRect.TYPE.STAIR_BR]);
+    static validIDS = new Set([1, 6, ColliderRect.TYPE.STAIR_BL, ColliderRect.TYPE.STAIR_BR]);
 
     /**
      * @param {ColliderRect} snapUpCollider

@@ -37,7 +37,7 @@ class Player {
         this.assetManager = assetManager;
         this.map = null;
         this.jumpHeight = 550;
-        this.debugMode = true;
+        this.debugMode = false;
         this.removeFromWorld = false;
 
         // make height slightly lower so that player can fit through 96px areas

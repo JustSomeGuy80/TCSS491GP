@@ -104,7 +104,7 @@ class Teleport {
         this.position.add(this.player.velocity.multiply(this.warpTime));
 
         // Check if the player is grounded or if they'll teleport into a wall this frame
-        this.grounded = this.player.isAnimationGrounded();
+        this.grounded = this.player.isAnimationGrounded() && this.player.isPhysicsGrounded();
         this.colliding = this.runCollisions();
 
         // Stop animating the portal sprites if they're done playing their animations
@@ -131,6 +131,7 @@ class Teleport {
                     this.exitSprite.resetAnim();
 
                     // Teleports player and puts it on cooldown
+                    this.assetManager.playAsset("sounds/teleport.wav");
                     this.player.position.inherit(this.position);
                     this.cd = this.cdMax;
                     return true;

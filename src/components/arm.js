@@ -149,6 +149,7 @@ class Arm {
                         graPos,
                         mag + 5
                     );
+                    this.assetManager.playAsset("sounds/grapple.mp3");
                 } else {
                     this.hookErrorPos = graPos.asVector().add(graVect);
                 }

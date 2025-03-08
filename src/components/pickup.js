@@ -1,6 +1,7 @@
 class Pickup {
     constructor(game, assetManager, x, y, id) {
         this.game = game;
+        this.assetManager = assetManager;
         this.position = new Position(x, y);
         this.removeFromWorld = false;
         this.debugMode = false;
@@ -44,17 +45,22 @@ class Pickup {
                 switch (this.id) {
                     case "health":
                         collision.owner.health += 20;
+                        this.assetManager.playAsset("sounds/healthup.wav")
                         break;
                     case "shoot":
                         collision.owner.canShoot = true;
+                        this.assetManager.playAsset("sounds/powerup.wav")
                         break;
                     case "slash":
                         collision.owner.canSlash = true;
+                        this.assetManager.playAsset("sounds/powerup.wav")
                         break;
                     case "teleport":
                         collision.owner.canTeleport = true;
+                        this.assetManager.playAsset("sounds/powerup.wav")
                         break;
                     case "ending":
+                        this.assetManager.playAsset("sounds/win.wav")
                         GUI.showWinScreen();
                         collision.owner.removeFromWorld = true;
                         break;

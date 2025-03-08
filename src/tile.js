@@ -55,6 +55,7 @@ class Tile {
     static TELEPORT_PICKUP = 87;
     static HEALTH_PICKUP = 88;
     static END_PICKUP = 89;
+    static FLYER = 90;
 
     static #precision = Tile.#getDigits(Object.values(Tile).reduce((a, b) => Math.max(a, b)));
     static #precision10 = Math.pow(10, Tile.#precision);

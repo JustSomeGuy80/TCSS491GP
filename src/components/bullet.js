@@ -17,6 +17,7 @@ class Bullet {
      */
     constructor(game, assetManager, x, y, vect, speed, team) {
         this.game = game;
+        this.assetManager = assetManager;
         this.position = new Position(x, y);
         this.vect = vect.normalize().multiply(speed);
         this.team = team;
@@ -47,8 +48,10 @@ class Bullet {
 
         if (this.team === 0) {
             this.sprite.setState("blue");
+            assetManager.playAsset("sounds/shot.mp3");
         } else {
             this.sprite.setState("red");
+            assetManager.playAsset("sounds/enemy_shoot.wav");
         }
 
         this.collider = new ColliderRect(this.position, -7.5, -7.5, 15, 15, 2, this);
@@ -119,6 +122,7 @@ class Bullet {
                 ) {
                     if (collision.id === 0) {
                         collision.owner.health -= 20;
+                        this.assetManager.playAsset("sounds/player_hurt.wav");
                     }
 
                     this.age = 0;

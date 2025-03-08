@@ -16,7 +16,7 @@ class Flyer {
         this.lastAttack = 0;
 
         this.position = new Position(x, y);
-        this.collider = new ColliderRect(this.position, -12, -26, 64, 30 * 3, 3, this);
+        this.collider = new ColliderRect(this.position, -18, -26, 76, 28 * 3, 3, this);
         this.sprite = new Sprite(this.position, this.game, 3, -43, -48, {
             running: new Animator(
                 this.assetManager.getAsset("anims/flyer.png"),

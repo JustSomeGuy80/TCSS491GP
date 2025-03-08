@@ -61,7 +61,7 @@ class ColliderRect {
     update() {}
 
     /**
-     * Finds the first colliding rectangle and returns it.
+     * Finds all colliding rectangles and returns them.
      * @returns The ColliderRect object which collides with this one
      */
     *getCollision() {

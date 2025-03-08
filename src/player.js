@@ -336,8 +336,24 @@ class Player {
         const topAdjustment = this.topCollider.resolveCollisions(displacement, 1, 6);
         this.position.add(topAdjustment);
 
-        const stairAdjustment = this.stairController.updateState(displacement);
+        let stairAdjustment = this.stairController.updateState(displacement);
         this.position.add(stairAdjustment);
+
+        const validIDs = [ColliderRect.TYPE.STAIR_BL, ColliderRect.TYPE.STAIR_BR, 1, 6];
+        const validIDSet = new Set(validIDs);
+        const { top } = this.topCollider.getBoundary();
+        for (const collider of this.topCollider.getCollision()) {
+            if (!validIDSet.has(collider.id)) {
+                continue;
+            }
+            const { bottom } = collider.getBoundary();
+
+            if (top < bottom) {
+                this.position.add(stairAdjustment.negate());
+                stairAdjustment = this.middleCollider.resolveCollisions(displacement, ...validIDs);
+                this.position.add(stairAdjustment);
+            }
+        }
 
         // horizontal collision
         if (topAdjustment.x !== 0 || stairAdjustment.x !== 0) {

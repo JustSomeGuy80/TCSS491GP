@@ -65,17 +65,16 @@ class StairController {
      */
     updateState(displacement) {
         const selfY = this.snapUpCollider.getBoundary().bottom;
+        const snapDownCollisions = [...this.snapDownCollider.getCollision()].filter(collider =>
+            StairController.validIDS.has(collider.id)
+        );
+        const snapDownStairCollider = this.#getHighestStair(snapDownCollisions);
 
         // snap down
         if (this.#stairMode && isBetween(displacement.y, 0, this.displacementThreshold)) {
-            const collisions = [...this.snapDownCollider.getCollision()].filter(collider =>
-                StairController.validIDS.has(collider.id)
-            );
-            const collider = this.#getHighestStair(collisions);
-
-            if (collider !== null) {
-                if (StairController.checkDirectionalCounter(collider, displacement)) {
-                    return new Vector(0, collider.position.y - selfY);
+            if (snapDownStairCollider !== null) {
+                if (StairController.checkDirectionalCounter(snapDownStairCollider, displacement)) {
+                    return new Vector(0, snapDownStairCollider.position.y - selfY);
                 }
             }
         }
@@ -87,7 +86,7 @@ class StairController {
             );
             const collider = this.#getHighestStair(collisions);
 
-            if (collider === null) {
+            if (collider === null || (displacement.y < 0 && snapDownStairCollider === null)) {
                 return this.#resolveCollisions(displacement, collisions);
             } else {
                 if (StairController.checkDirectionalCounter(collider, displacement)) {

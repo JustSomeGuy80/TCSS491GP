@@ -32,15 +32,13 @@ class GameEngine {
 
     start() {
         this.running = true;
-
         const gameLoop = () => {
             if (!this.running) return;
-
             this.loop();
-            window.requestAnimationFrame(gameLoop);
+            // revert to old requestAnimFrame if anything goes wrong
+            window.requestAnimationFrame(gameLoop, this.ctx.canvas);
         };
-
-        window.requestAnimationFrame(gameLoop);
+        gameLoop();
     }
 
     startInput() {
@@ -140,3 +138,5 @@ class GameEngine {
         this.draw();
     }
 }
+
+// KV Le was here :)

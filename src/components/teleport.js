@@ -131,6 +131,7 @@ class Teleport {
                     this.exitSprite.resetAnim();
 
                     // Teleports player and puts it on cooldown
+                    this.assetManager.playAsset("sounds/teleport.wav");
                     this.player.position.inherit(this.position);
                     this.cd = this.cdMax;
                     return true;

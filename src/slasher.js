@@ -260,6 +260,7 @@ class SlashEffect {
         });
         this.sprite.setHorizontalFlip(facing === -1);
         this.sprite.setState("slash");
+        this.assetManager.playAsset("sounds/slasher_slash.wav")
     }
 
     update() {

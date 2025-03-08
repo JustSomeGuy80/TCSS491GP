@@ -218,6 +218,7 @@ class Player {
     updateGUI() {
         if (this.health <= 0) {
             GUI.clearStdOut();
+            this.assetManager.playAsset("sounds/gameover.wav")
             GUI.showDeathScreen();
             this.removeFromWorld = true;
             return;

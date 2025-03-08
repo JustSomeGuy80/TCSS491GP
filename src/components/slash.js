@@ -99,16 +99,16 @@ class Slash {
 
             if (
                 !clanged &&
-                (collision.id == 1 ||
-                    collision.id == ColliderRect.TYPE.STAIR_BL ||
-                    collision.id == ColliderRect.TYPE.STAIR_BL)
+                (collision.id === 1 ||
+                    collision.id === ColliderRect.TYPE.STAIR_BL ||
+                    collision.id === ColliderRect.TYPE.STAIR_BL)
             ) {
                 const bounce = this.vect.multiply(this.calcPush());
                 this.neutralize();
                 this.player.velocity = this.player.velocity.add(bounce);
                 clanged = true;
                 hit = true;
-            } else if (collision.id == 3) {
+            } else if (collision.id === 3 || collision.id === 6) {
                 collision.owner.health -= 3;
                 hit = true;
             }

@@ -16,7 +16,7 @@ class Blocker {
     constructor(game, assetManager, x, y) {
         this.game = game;
         this.assetManager = assetManager;
-        this.debugMode = true;
+        this.debugMode = false;
         this.active = true;
         this.health = 3;
         this.removeFromWorld = false;
@@ -83,7 +83,16 @@ class Blocker {
     attack() {
         // Fire every 6 seconds
         if (this.game.timer.gameTime >= this.lastAttack) {
-            let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this, true);
+            let attackRect = new ColliderRect(
+                this.position,
+                -43,
+                -48,
+                43 * 3,
+                48 * 3,
+                4,
+                this,
+                true
+            );
             attackRect.expandW(6);
             attackRect.expandH(5);
 
@@ -100,7 +109,7 @@ class Blocker {
 
                     const side = Math.floor(Math.random() * 4);
 
-                    const patternOffset = Math.floor(gridSize/2) * blockSize;
+                    const patternOffset = Math.floor(gridSize / 2) * blockSize;
                     const baseX = snappedX - patternOffset;
                     const baseY = snappedY - patternOffset;
 
@@ -115,7 +124,7 @@ class Blocker {
                         case 1: // Bottom
                             for (let col = 0; col < gridSize; col++) {
                                 const x = baseX + col * blockSize;
-                                const y = baseY + (gridSize-1) * blockSize;
+                                const y = baseY + (gridSize - 1) * blockSize;
                                 this.game.addEntity(new Block(this.game, this.assetManager, x, y));
                             }
                             break;
@@ -128,7 +137,7 @@ class Blocker {
                             break;
                         case 3: // Right
                             for (let row = 0; row < gridSize; row++) {
-                                const x = baseX + (gridSize-1) * blockSize;
+                                const x = baseX + (gridSize - 1) * blockSize;
                                 const y = baseY + row * blockSize;
                                 this.game.addEntity(new Block(this.game, this.assetManager, x, y));
                             }
@@ -202,7 +211,16 @@ class Blocker {
                 bounds.yEnd - bounds.yStart
             );
 
-            let attackRect = new ColliderRect(this.position, -43, -48, 43 * 3, 48 * 3, 4, this, true);
+            let attackRect = new ColliderRect(
+                this.position,
+                -43,
+                -48,
+                43 * 3,
+                48 * 3,
+                4,
+                this,
+                true
+            );
             attackRect.expandW(6);
             attackRect.expandH(5);
             const attackBounds = attackRect.getBounds();

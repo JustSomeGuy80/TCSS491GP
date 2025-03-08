@@ -1,5 +1,14 @@
 class Animator {
-    constructor(spritesheet, xStart, yStart, width, height, frameCount, frameDuration, loops = true) {
+    constructor(
+        spritesheet,
+        xStart,
+        yStart,
+        width,
+        height,
+        frameCount,
+        frameDuration,
+        loops = true
+    ) {
         Object.assign(this, {
             spritesheet,
             xStart,
@@ -28,7 +37,7 @@ class Animator {
         if (this.elapsedTime > this.totalTime) {
             if (this.loops) this.elapsedTime -= this.totalTime; //loops animation
             this.done = true;
-        } 
+        }
         const frame = this.currentFrame();
         ctx.drawImage(
             this.spritesheet,
@@ -45,8 +54,16 @@ class Animator {
         ctx.restore();
     }
 
+    getWidth() {
+        return this.width;
+    }
+
+    getHeight() {
+        return this.height;
+    }
+
     currentFrame() {
-        var frame = Math.floor(this.elapsedTime / this.frameDuration)
+        var frame = Math.floor(this.elapsedTime / this.frameDuration);
         if (frame >= this.frameCount) frame = this.frameCount - 1;
         return frame;
     }

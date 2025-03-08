@@ -61,8 +61,8 @@ class MiniMap {
             this.exploredAreas.add(`${tileX},${tileY}`);
 
             // Also mark neighboring tiles as explored
-            for (let dx = -1; dx <= 1; dx++) {
-                for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -8; dx <= 8; dx++) {
+                for (let dy = -6; dy <= 6; dy++) {
                     this.exploredAreas.add(`${tileX + dx},${tileY + dy}`);
                 }
             }

@@ -66,6 +66,19 @@ class Sprite {
      */
     drawSprite(tick, ctx, cameraScale = 1) {
         let position = this.parent.asVector().add(this.offset);
+        const camX = position.x - this.game.camera.x * cameraScale;
+        const camY = position.y - this.game.camera.y * cameraScale;
+
+        if (
+            camX + this.animations[this.state].getWidth() * this.scale < 0 ||
+            camX > ctx.canvas.width
+        )
+            return;
+        if (
+            camY + this.animations[this.state].getHeight() * this.scale < 0 ||
+            camY > ctx.canvas.height
+        )
+            return;
 
         this.animations[this.state].drawFrame(
             tick,

@@ -8,7 +8,7 @@ class Flyer {
     constructor(game, assetManager, x, y, player) {
         this.game = game;
         this.assetManager = assetManager;
-        this.debugMode = true;
+        this.debugMode = false;
         this.active = true;
         this.health = 2;
         this.removeFromWorld = false;
@@ -75,7 +75,7 @@ class Flyer {
             if (attackCollision.id === 0) {
                 if (!this.chasing) {
                     this.chasing = true;
-                    this.moveSpeed = 300;
+                    this.moveSpeed = 250;
                 }
             }
         }

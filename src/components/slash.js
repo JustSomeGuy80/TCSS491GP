@@ -9,6 +9,7 @@
  * Handles logic and effects for the player's slash attack.
  */
 class Slash {
+    static #DAMAGE = 2;
     /**
      * @param {GameEngine} game
      * @param {AssetManager} assetManager
@@ -109,7 +110,7 @@ class Slash {
                 clanged = true;
                 hit = true;
             } else if (collision.id === 3 || collision.id === 6) {
-                collision.owner.health -= 3;
+                collision.owner.health -= Slash.#DAMAGE;
                 hit = true;
             }
         }

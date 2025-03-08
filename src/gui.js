@@ -91,6 +91,13 @@ class GUI {
     }
 
     /**
+     * Hides the mini map in the game UI
+     */
+    static hideMiniMap() {
+        GUI.#hideElement("mini-map");
+    }
+
+    /**
      * @param {string} text
      */
     static printStdOut(text) {
@@ -112,5 +119,12 @@ class GUI {
      */
     static #unhideElement(elementID) {
         document.getElementById(elementID).classList.remove("hidden");
+    }
+
+    /**
+     * @param {string} elementID
+     */
+    static #hideElement(elementID) {
+        document.getElementById(elementID).classList.add("hidden");
     }
 }

@@ -139,8 +139,14 @@ class MiniMap {
                             const y = centerY + (tileY * Tile.SIZE - playerY) * this.scale;
                             const tileSize = Tile.SIZE * this.scale;
 
-                            // Draw different types of tiles
-                            try {
+                            // Check if this is an air tile (all layers are Tile.AIR or 0)
+                            const isAirTile = this.isAirTile(tile);
+
+                            if (isAirTile) {
+                                // Draw air tile with a distinct color
+                                this.ctx.fillStyle = "rgba(60, 90, 120, 0.25)"; // Light blue for air
+                                this.ctx.fillRect(x, y, tileSize, tileSize);
+                            } else {
                                 let hasDrawnTile = false;
 
                                 // Check for solid tiles to draw
@@ -168,19 +174,14 @@ class MiniMap {
                                         }
                                     }
                                 }
+                            }
 
-                                // Draw special objects
-                                for (const layerValue of Tile.iterate(tile)) {
-                                    // Draw pickups, enemies, etc. with different colors
-                                    if (
-                                        layerValue >= Tile.PLAYER &&
-                                        layerValue <= Tile.END_PICKUP
-                                    ) {
-                                        this.drawSpecialTile(x, y, tileSize, layerValue);
-                                    }
+                            // Draw special objects
+                            for (const layerValue of Tile.iterate(tile)) {
+                                // Draw pickups, enemies, etc. with different colors
+                                if (layerValue >= Tile.PLAYER && layerValue <= Tile.END_PICKUP) {
+                                    this.drawSpecialTile(x, y, tileSize, layerValue);
                                 }
-                            } catch (e) {
-                                console.error("Error drawing tile:", e);
                             }
                         }
                     }
@@ -195,6 +196,20 @@ class MiniMap {
         } catch (e) {
             console.error("Error drawing map content:", e);
         }
+    }
+
+    /**
+     * Checks if a tile is an air tile (all layers are Tile.AIR)
+     * @param {number} tile - The tile to check
+     * @return {boolean} Whether it's an air tile
+     */
+    isAirTile(tile) {
+        for (const layerValue of Tile.iterate(tile)) {
+            if (layerValue !== Tile.AIR) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

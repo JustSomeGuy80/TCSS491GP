@@ -10,6 +10,7 @@
     --full-width: 18rem;
     --percentage: 1;
     background-color: green;
+    border: 2.5px solid white;
     width: calc(var(--full-width) * var(--percentage));
     height: 1.5rem;
     margin: 1rem 0 0 1rem;

@@ -40,7 +40,6 @@ class Grapple {
         this.maxSwing = 0.2;
         this.leftFuel = this.maxSwing;
         this.rightFuel = this.maxSwing;
-
     }
 
     update() {

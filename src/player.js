@@ -364,6 +364,9 @@ class Player {
 
         // vertical collision
         if (topAdjustment.y !== 0 || stairAdjustment.y !== 0) {
+            if (this.jumped === 3 && topAdjustment.y > 0) {
+                this.velocity.x = 0;
+            }
             this.velocity.y = 0;
         }
 

@@ -20,4 +20,8 @@ class PlayerSaveState {
 
         return undefined;
     }
+
+    static reset() {
+        this.#saveStates.length = 0;
+    }
 }

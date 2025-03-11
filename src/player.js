@@ -237,11 +237,13 @@ class Player {
             GUI.showSlashControl();
             this.#save();
         }
+
         if (this.canShoot && this.objectiveIndex === 1) {
             this.#printNextObjective();
             GUI.showHookControl();
             this.#save();
         }
+
         if (this.canTeleport && this.objectiveIndex === 2) {
             this.#printNextObjective();
             GUI.showTeleportControl();

@@ -45,22 +45,24 @@ class Pickup {
                 switch (this.id) {
                     case "health":
                         collision.owner.health += 20;
-                        this.assetManager.playAsset("sounds/healthup.wav")
+                        this.assetManager.playAsset("sounds/healthup.wav");
                         break;
                     case "shoot":
                         collision.owner.canShoot = true;
-                        this.assetManager.playAsset("sounds/powerup.wav")
+                        this.assetManager.playAsset("sounds/powerup.wav");
                         break;
                     case "slash":
                         collision.owner.canSlash = true;
-                        this.assetManager.playAsset("sounds/powerup.wav")
+                        this.assetManager.playAsset("sounds/powerup.wav");
                         break;
                     case "teleport":
                         collision.owner.canTeleport = true;
-                        this.assetManager.playAsset("sounds/powerup.wav")
+                        this.assetManager.playAsset("sounds/powerup.wav");
                         break;
                     case "ending":
-                        this.assetManager.playAsset("sounds/win.wav")
+                        this.assetManager.playAsset("sounds/win.wav");
+                        PlayerSaveState.reset();
+                        GUI.clearStdOut();
                         GUI.showWinScreen();
                         collision.owner.removeFromWorld = true;
                         break;

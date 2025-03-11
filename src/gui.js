@@ -38,6 +38,10 @@ class GUI {
             window.ASSET_MANAGER.pauseBackgroundMusic();
         }
 
+        GUI.hideSlashControl();
+        GUI.hideTeleportControl();
+        GUI.hideHookControl();
+
         main();
     }
 
@@ -73,14 +77,29 @@ class GUI {
         GUI.#unhideElement("slash-ability");
     }
 
+    static hideSlashControl() {
+        GUI.#hideElement("slash-control");
+        GUI.#hideElement("slash-ability");
+    }
+
     static showTeleportControl() {
         GUI.#unhideElement("teleport-control");
         GUI.#unhideElement("teleport-ability");
     }
 
+    static hideTeleportControl() {
+        GUI.#hideElement("teleport-control");
+        GUI.#hideElement("teleport-ability");
+    }
+
     static showHookControl() {
         GUI.#unhideElement("hook-control");
         GUI.#unhideElement("hook-ability");
+    }
+
+    static hideHookControl() {
+        GUI.#hideElement("hook-control");
+        GUI.#hideElement("hook-ability");
     }
 
     /**

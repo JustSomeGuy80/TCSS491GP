@@ -62,6 +62,7 @@ class Pickup {
                     case "ending":
                         this.assetManager.playAsset("sounds/win.wav");
                         PlayerSaveState.reset();
+                        GUI.clearStdOut();
                         GUI.showWinScreen();
                         collision.owner.removeFromWorld = true;
                         break;
